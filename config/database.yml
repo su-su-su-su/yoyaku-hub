@@ -19,7 +19,6 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
   <<: *default
   database: yoyaku_hub_development
@@ -81,5 +80,6 @@ test:
 production:
   <<: *default
   database: yoyaku_hub_production
-  username: yoyaku_hub
+  username: <%= ENV["APP_DATABASE_USER"] %>
   password: <%= ENV["YOYAKU_HUB_DATABASE_PASSWORD"] %>
+  host: <%= ENV["YOYAKU_HUB_DATABASE_HOST"] %>
