@@ -1,0 +1,21 @@
+{
+  "name": "yoyaku-hub",
+  "version": "1.0.0",
+  "description": "YOYAKU HUBというサービスは、予約終了の30分後に予約が入ると、その30分は施術に使えない隙間時間になり、予約枠が効率的に埋まらない問題を解決したいフリーランス美容師向けの、 web予約です。ユーザーは、予約の前後に隙間時間ができる場合は自動的に検出し、その時間の表示を変えて他の時間へ促すことで、予約枠を最適に管理することができます。 また、他のサービスとは違って予約の柔軟な管理機能が備わっていることが特徴です。",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.11.0",
+    "prettier": "^3.3.3"
+  }
+}
