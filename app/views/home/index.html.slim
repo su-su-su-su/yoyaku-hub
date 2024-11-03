@@ -1,0 +1,9 @@
+h1 Welcome to the Homepage
+
+- if user_signed_in?
+  p ログイン中: = current_user.email
+  = button_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'btn btn-primary'
+- else
+  = link_to 'ログイン', new_user_session_path, class: 'btn btn-primary'
+  | |
+  = link_to 'サインアップ', new_user_registration_path, class: 'btn btn-secondary'

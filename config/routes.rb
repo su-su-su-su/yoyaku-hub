@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get "home/index"
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -17,6 +18,11 @@ Rails.application.routes.draw do
     get 'stylists/sign_in', to: 'devise/sessions#new', defaults: { role: 'stylist' }
   end
 
+  unauthenticated do
+    root to: 'home#index', as: :unauthenticated_root
+  end
+
+  root to: 'home#index'
   # Defines the root path route ("/")
   # root "posts#index"
 end
