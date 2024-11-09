@@ -39,9 +39,9 @@ module Users
         clean_up_passwords resource
         set_minimum_password_length
         if @role == 'stylist'
-          render 'users/registrations/stylist_new'
+          render 'users/registrations/stylist_new', status: :unprocessable_entity
         elsif @role == 'customer'
-          render 'users/registrations/customer_new'
+          render 'users/registrations/customer_new', status: :unprocessable_entity
         else
           render :new
         end
