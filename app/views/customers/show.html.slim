@@ -1,0 +1,11 @@
+- if user_signed_in?
+  p ログイン中: = current_user.email
+  = button_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'btn btn-primary'
+.link-item
+  a href="/customers/stylists"
+    .image-box
+      img src="/images/customers/reservation.png" alt="予約する"
+.link-item
+  a href="/customers/reservations"
+    .image-box
+      img src="/images/customers/reservation_history.png" alt="予約履歴"
