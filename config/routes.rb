@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
   get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
 
+  get 'stylists' => redirect('/stylists/sign_up')
+  get 'customers' => redirect('/customers/sign_up')
+  
   get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
 
