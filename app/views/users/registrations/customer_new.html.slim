@@ -1,8 +1,8 @@
-h2
-  | ユーザー会員登録
-= form_for(resource, as: resource_name, url: customer_registration_path, html: { data: { turbo: false } }) do |f|
+h2.text-2xl.font-bold.mt-4.px-4 ユーザー会員登録
+= form_for(resource, as: resource_name, url: customer_registration_path, html: { data: { turbo: false }, class: 'space-y-4 mt-6'}) do |f|
   = render 'devise/shared/error_messages', resource: resource
   = render 'devise/shared/form', f: f
-  .actions
-    = f.submit t('devise.registrations.new.sign_up')
-= render 'devise/shared/links'
+  .actions.px-4
+    button.btn = t('devise.registrations.new.sign_up')
+.px-4.px-4.mt-4
+  = render 'devise/shared/links'
