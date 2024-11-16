@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  get 'stylists/dashboard'
-  get 'customers/dashboard'
   get 'home/index'
-  devise_for :users
+  devise_for :users, skip: :all
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -15,11 +13,28 @@ Rails.application.routes.draw do
   get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
   get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
 
-  devise_scope :user do
-    get 'customers/sign_in', to: 'devise/sessions#new', defaults: { role: 'customer' }
-    get 'stylists/sign_in', to: 'devise/sessions#new', defaults: { role: 'stylist' }
-  end
+  get 'stylists' => redirect('/stylists/sign_up')
+  get 'customers' => redirect('/customers/sign_up')
 
+  get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
+  get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
+
+  devise_scope :user do
+    get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
+    post 'stylists', to: 'users/registrations#create', as: :stylist_registration
+
+    get 'customers/sign_up', to: 'users/registrations#new', as: :new_customer_registration
+    post 'customers', to: 'users/registrations#create', as: :customer_registration
+
+    get 'login', to: 'devise/sessions#new', as: :new_user_session
+    post 'login', to: 'devise/sessions#create', as: :user_session
+    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+
+    get 'password/new', to: 'devise/passwords#new', as: :new_user_password
+    post 'password', to: 'devise/passwords#create', as: :user_password
+    get 'password/edit', to: 'devise/passwords#edit', as: :edit_user_password
+    patch 'password', to: 'devise/passwords#update'
+  end
   unauthenticated do
     root to: 'home#index', as: :unauthenticated_root
   end
