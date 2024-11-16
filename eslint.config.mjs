@@ -12,6 +12,7 @@ export default [
         ...globals.node,
       },
     },
+    ignorePatterns: ["app/assets/builds/", "node_modules/"],
   },
   pluginJs.configs.recommended,
   eslintConfigPrettier,
