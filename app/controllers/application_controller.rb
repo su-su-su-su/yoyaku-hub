@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
     when 'stylist'
       stylists_dashboard_path
     when 'customer'
-      customers_dashboard_path 
+      customers_dashboard_path
     else
       root_path
     end

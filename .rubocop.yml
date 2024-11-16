@@ -28,3 +28,4 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Exclude:
     - "config/environments/development.rb"
+    - "config/routes.rb"

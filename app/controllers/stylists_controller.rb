@@ -4,8 +4,7 @@ class StylistsController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_stylist_role
 
-  def show
-  end
+  def show; end
 
   private
 

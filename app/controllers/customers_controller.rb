@@ -4,8 +4,7 @@ class CustomersController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_customer_role
 
-  def show
-  end
+  def show; end
 
   private
 

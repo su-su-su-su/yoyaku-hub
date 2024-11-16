@@ -15,14 +15,14 @@ Rails.application.routes.draw do
 
   get 'stylists' => redirect('/stylists/sign_up')
   get 'customers' => redirect('/customers/sign_up')
-  
+
   get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
 
   devise_scope :user do
     get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
     post 'stylists', to: 'users/registrations#create', as: :stylist_registration
-  
+
     get 'customers/sign_up', to: 'users/registrations#new', as: :new_customer_registration
     post 'customers', to: 'users/registrations#create', as: :customer_registration
 

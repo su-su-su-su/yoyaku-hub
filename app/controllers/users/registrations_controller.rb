@@ -4,7 +4,7 @@ module Users
   class RegistrationsController < Devise::RegistrationsController
     # before_action :configure_sign_up_params, only: [:create]
     # before_action :configure_account_update_params, only: [:update]
-    before_action :set_role, only: [:new, :create]
+    before_action :set_role, only: %i[new create]
     before_action :configure_sign_up_params, only: [:create]
 
     # GET /resource/sign_up
@@ -26,25 +26,9 @@ module Users
       resource.save
       yield resource if block_given?
       if resource.persisted?
-        if resource.active_for_authentication?
-          set_flash_message! :notice, :signed_up
-          sign_up(resource_name, resource)
-          respond_with resource, location: after_sign_up_path_for(resource)
-        else
-          set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
-          expire_data_after_sign_in!
-          respond_with resource, location: after_inactive_sign_up_path_for(resource)
-        end
+        handle_successful_signup
       else
-        clean_up_passwords resource
-        set_minimum_password_length
-        if @role == 'stylist'
-          render 'users/registrations/stylist_new', status: :unprocessable_entity
-        elsif @role == 'customer'
-          render 'users/registrations/customer_new', status: :unprocessable_entity
-        else
-          render :new
-        end
+        handle_failed_resource
       end
     end
 
@@ -75,13 +59,11 @@ module Users
     protected
 
     def set_role
-      if request.path.include?('stylists')
-        @role = 'stylist'
-      elsif request.path.include?('customers')
-        @role = 'customer'
-      else
-        @role = 'customer'
-      end
+      @role = if request.path.include?('stylists')
+                'stylist'
+              else
+                'customer'
+              end
     end
 
     def build_resource(hash = {})
@@ -93,6 +75,36 @@ module Users
       devise_parameter_sanitizer.permit(:sign_up, keys: [:role])
     end
 
+    private
+
+    def handle_successful_signup
+      if resource.active_for_authentication?
+        set_flash_message! :notice, :signed_up
+        sign_up(resource_name, resource)
+        respond_with resource, location: after_sign_up_path_for(resource)
+      else
+        set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
+        expire_data_after_sign_in!
+        respond_with resource, location: after_inactive_sign_up_path_for(resource)
+      end
+    end
+
+    def handle_failed_resource
+      clean_up_passwords resource
+      set_minimum_password_length
+      render_registration_form
+    end
+
+    def render_registration_form
+      case @role
+      when 'stylist'
+        render 'users/registrations/stylist_new', status: :unprocessable_entity
+      when 'customer'
+        render 'users/registrations/customer_new', status: :unprocessable_entity
+      else
+        render :new
+      end
+    end
     # If you have extra params to permit, append them to the sanitizer.
     # def configure_sign_up_params
     #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
