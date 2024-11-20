@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_20_110539) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_20_111009) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_20_110539) do
     t.boolean "is_active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["stylist_id", "name"], name: "index_menus_on_stylist_id_and_name", unique: true
     t.index ["stylist_id"], name: "index_menus_on_stylist_id"
   end
 
