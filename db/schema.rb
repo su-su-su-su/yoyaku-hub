@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_02_132652) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_20_104055) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "menus", force: :cascade do |t|
+    t.bigint "stylist_id", null: false
+    t.string "name"
+    t.integer "price"
+    t.integer "duration"
+    t.text "description"
+    t.string "category", default: [], array: true
+    t.integer "sort_order"
+    t.boolean "is_active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stylist_id"], name: "index_menus_on_stylist_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -34,4 +48,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_02_132652) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "menus", "users", column: "stylist_id"
 end
