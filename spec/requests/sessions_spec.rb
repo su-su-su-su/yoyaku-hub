@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Users::OmniauthCallbacks' do
+RSpec.describe 'Sessions' do
   describe 'GET /index' do
     pending "add some examples (or delete) #{__FILE__}"
   end

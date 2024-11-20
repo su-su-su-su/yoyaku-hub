@@ -2,7 +2,7 @@
 
 Rails.application.routes.draw do
   get 'home/index'
-  devise_for :users, skip: [:registrations, :sessions, :passwords], controllers: {
+  devise_for :users, skip: %i[registrations sessions passwords], controllers: {
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   get 'stylists' => redirect('/stylists/sign_up')
   get 'customers' => redirect('/customers/sign_up')
+  get 'login_with_google/:role', to: 'sessions#set_role', as: :set_role_and_auth
 
   get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
