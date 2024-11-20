@@ -10,19 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_20_104055) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_20_110539) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "menus", force: :cascade do |t|
     t.bigint "stylist_id", null: false
-    t.string "name"
-    t.integer "price"
-    t.integer "duration"
+    t.string "name", null: false
+    t.integer "price", null: false
+    t.integer "duration", null: false
     t.text "description"
     t.string "category", default: [], array: true
     t.integer "sort_order"
-    t.boolean "is_active"
+    t.boolean "is_active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stylist_id"], name: "index_menus_on_stylist_id"
