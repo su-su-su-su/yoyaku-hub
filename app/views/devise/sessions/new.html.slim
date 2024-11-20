@@ -1,4 +1,6 @@
 h2.text-2xl.font-bold.mt-4.px-4 ログイン
+= render 'devise/shared/google_login_link_customer'
+= render 'devise/shared/google_login_link_stylist'
 .form-container.px-4
   = form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'space-y-4 mt-6' }) do |f|
     .field.mb-4

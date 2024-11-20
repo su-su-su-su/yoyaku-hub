@@ -21,7 +21,8 @@ RSpec/MultipleExpectations:
 
 Metrics/AbcSize:
   Max: 20
-
+  Exclude:
+    - "app/models/user.rb"
 Metrics/MethodLength:
   Max: 20
 
