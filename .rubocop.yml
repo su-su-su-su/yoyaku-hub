@@ -7,8 +7,18 @@ require:
   - rubocop-capybara
 
 AllCops:
-  SuggestExtensions: false
   NewCops: enable
+  Exclude:
+    - "**/templates/**/*"
+    - "**/vendor/**/*"
+    - app/views/**/*
+    - config/**/*
+    - node_modules/**/*
+    - db/migrate/*
+    - db/schema.rb
+    - storage/**/*
+    - tmp/**/*
+    - bin/**/*
 
 Style/Documentation:
   Enabled: false
