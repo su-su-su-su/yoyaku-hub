@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get 'service-worker' => 'rails/pwa#service_worker', as: :pwa_service_worker
   get 'manifest' => 'rails/pwa#manifest', as: :pwa_manifest
 
-  namespace :stylists do
+  scope '/stylists' do
     get '/', to: redirect('/stylists/sign_up'), as: :sign_up_redirect
     resources :menus_settings, only: [:index, :create, :update], param: :menu_id
   end
