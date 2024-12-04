@@ -46,7 +46,7 @@ module Stylists
     private
 
     def menu_params
-      params.require(:menu).permit(:sort_order, :name, :price, :duration, :description, category: [])
+      params.require(:menu).permit(:sort_order, :name, :price, :duration, :description, :is_active, category: [])
     end
   end
 end
