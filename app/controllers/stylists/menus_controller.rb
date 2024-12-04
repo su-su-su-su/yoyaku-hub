@@ -14,6 +14,10 @@ module Stylists
       end
     end
 
+    def edit
+      @menu = current_user.menus.find(params[:id])
+    end
+
     def create
       @menu = current_user.menus.new(menu_params)
       @menus = current_user.menus
@@ -27,6 +31,15 @@ module Stylists
           format.turbo_stream { redirect_to menus_settings_path, status: :unprocessable_entity } # 失敗時
           format.html { render :new }
         end
+      end
+    end
+
+    def update
+      @menu = current_user.menus.find(params[:id])
+      if @menu.update(menu_params)
+        redirect_to menus_settings_path
+      else
+        render :edit
       end
     end
 

@@ -10,3 +10,5 @@
             p.text-gray-600 備考: #{menu.description}
             p.text-gray-600 カテゴリー: #{menu.category.join(', ')}
             p.text-gray-600 表示: #{menu.is_active}
+            .flex.justify-end.mt-4
+            = link_to '編集', edit_menus_setting_path(menu), class: 'btn btn-primary', data: { turbo_frame: 'menu' }
