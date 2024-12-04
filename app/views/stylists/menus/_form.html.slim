@@ -27,7 +27,7 @@
           = form.label :description, '備考', class: 'w-1/3 font-bold mb-2 text-sm'
           = form.text_area :description, class: 'input input-bordered w-full h-24', placeholder: '備考を入力してください'
 
-        .form-group.flex.flex-row.items-start
+        .form-group.flex.flex-row.items-start.border-b.border-gray-300.pb-4
           = form.label :categories, 'カテゴリー', class: 'w-1/3 font-bold mb-2 text-sm'
           .flex.flex-col.flex-1
             p.text-sm.text-gray-500.mb-2 * 複数選択可
@@ -37,6 +37,13 @@
                 label.flex.items-center.text-sm
                   = form.check_box :category, { multiple: true }, category.downcase, nil
                   | #{category}
+
+        .form-group.flex.flex-row.items-center.border-b.border-gray-300.pb-4
+          = form.label :is_active, '掲載の有無', class: 'w-1/3 font-bold mb-2 text-sm'
+          .flex.items-center.flex-1
+            label.switch.flex.items-center.cursor-pointer
+              = form.check_box :is_active, class: 'toggle toggle-primary', checked: menu.is_active
+              span.ml-2.text-sm 掲載する
 
         .flex.justify-center.space-x-6.mt-8
           = form.submit class: 'btn btn-primary text-base'
