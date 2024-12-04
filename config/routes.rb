@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   scope '/stylists', module: :stylists do
     get '/', to: redirect('/stylists/sign_up'), as: :sign_up_redirect
-    resources :menus_settings, controller: 'menus', only: %i[index new create update]
+    resources :menus_settings, controller: 'menus', only: %i[index new create edit update]
   end
 
   get 'customers' => redirect('/customers/sign_up')
