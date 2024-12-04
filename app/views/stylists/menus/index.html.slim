@@ -7,7 +7,9 @@
 
   = turbo_frame_tag 'new_menu'
 
-  .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3#menus
-    .card.bg-gray-200.shadow-xl.w-full.p-8
-      .card-body
-        p.text-center.text-gray-600 メニューが登録されていません。
+  = turbo_frame_tag 'menus_list' do
+    .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3#menus
+      - if @menus.empty?
+            p.text-center.text-red-600 メニューが登録されていません。
+      - else
+        = render 'menus', menus: @menus

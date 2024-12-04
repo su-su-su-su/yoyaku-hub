@@ -12,4 +12,16 @@ module ApplicationHelper
       render 'layouts/navbars/guest_navbar'
     end
   end
+
+  def menu_form_url(menu)
+    if menu.new_record?
+      menus_settings_path
+    else
+      menus_setting_path(menu_id: menu.id)
+    end
+  end
+
+  def menu_form_method(menu)
+    menu.new_record? ? :post : :patch
+  end
 end
