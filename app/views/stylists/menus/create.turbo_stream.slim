@@ -1,0 +1,5 @@
+= turbo_stream.replace 'menus_list' do
+  .col-span-1.mt-6
+    = render 'menus', menus: @menus
+
+= turbo_stream.remove 'new_menu'
