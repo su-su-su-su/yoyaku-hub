@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_20_111009) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_07_131824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,5 +50,18 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_20_111009) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "working_hours", force: :cascade do |t|
+    t.bigint "stylist_id", null: false
+    t.date "target_date"
+    t.time "start_time"
+    t.time "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stylist_id", "target_date"], name: "index_working_hours_on_stylist_id_and_target_date", unique: true
+    t.index ["stylist_id"], name: "index_working_hours_on_stylist_id"
+    t.index ["target_date"], name: "index_working_hours_on_target_date"
+  end
+
   add_foreign_key "menus", "users", column: "stylist_id"
+  add_foreign_key "working_hours", "users", column: "stylist_id"
 end
