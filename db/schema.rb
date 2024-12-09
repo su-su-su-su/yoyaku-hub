@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_07_131824) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_09_050752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -57,6 +57,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_07_131824) do
     t.time "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "day_of_week"
     t.index ["stylist_id", "target_date"], name: "index_working_hours_on_stylist_id_and_target_date", unique: true
     t.index ["stylist_id"], name: "index_working_hours_on_stylist_id"
     t.index ["target_date"], name: "index_working_hours_on_target_date"
