@@ -185,4 +185,6 @@ ja:
   stylists:
     shift_settings:
       working_hours:
-        create_success: "営業時間が更新されました。"
+        create_success: "営業時間が設定されました。"
+      holidays:
+        create_success: "休業日が設定されました。"
