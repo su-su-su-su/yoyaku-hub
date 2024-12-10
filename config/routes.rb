@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   namespace :stylists do
     resource :shift_settings, only: [:show] do
       resources :working_hours, only: [:create], controller: "shift_settings/working_hours"
+      resources :holidays, only: [:create], controller: "shift_settings/holidays"
     end
   end
 
