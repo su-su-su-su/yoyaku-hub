@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_10_043422) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_10_071529) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,6 +38,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_10_043422) do
     t.datetime "updated_at", null: false
     t.index ["stylist_id", "name"], name: "index_menus_on_stylist_id_and_name", unique: true
     t.index ["stylist_id"], name: "index_menus_on_stylist_id"
+  end
+
+  create_table "reservation_limits", force: :cascade do |t|
+    t.bigint "stylist_id", null: false
+    t.date "target_date"
+    t.time "time_slot"
+    t.integer "max_reservations"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stylist_id"], name: "index_reservation_limits_on_stylist_id"
+    t.index ["target_date"], name: "index_reservation_limits_on_target_date"
   end
 
   create_table "users", force: :cascade do |t|
@@ -76,5 +87,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_10_043422) do
 
   add_foreign_key "holidays", "users", column: "stylist_id"
   add_foreign_key "menus", "users", column: "stylist_id"
+  add_foreign_key "reservation_limits", "users", column: "stylist_id"
   add_foreign_key "working_hours", "users", column: "stylist_id"
 end
