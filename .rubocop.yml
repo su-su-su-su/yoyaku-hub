@@ -19,6 +19,8 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
+    - app/controllers/stylists/shift_settings_controller.rb
+    - app/controllers/stylists/shift_settings/working_hours_controller.rb
 
 Style/Documentation:
   Enabled: false

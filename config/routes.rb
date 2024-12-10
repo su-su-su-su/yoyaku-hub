@@ -20,6 +20,12 @@ Rails.application.routes.draw do
     resources :menus_settings, controller: 'menus', only: %i[index new create edit update]
   end
 
+  namespace :stylists do
+    resource :shift_settings, only: [:show] do
+      resources :working_hours, only: [:create], controller: "shift_settings/working_hours"
+    end
+  end
+
   get 'customers' => redirect('/customers/sign_up')
   get 'login_with_google/:role', to: 'sessions#set_role', as: :set_role_and_auth
 
