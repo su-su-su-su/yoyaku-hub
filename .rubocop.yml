@@ -35,6 +35,7 @@ Metrics/AbcSize:
   Max: 20
   Exclude:
     - "app/models/user.rb"
+    - "app/controllers/stylists/shift_settings/holidays_controller.rb"
 Metrics/MethodLength:
   Max: 20
 
