@@ -2,7 +2,25 @@
 
 module Stylists
   module ShiftSettings
-    class WorkingHoursController < StylistsController
+    class HolidaysController < StylistsController
+      before_action :authenticate_user!
+
+      def create
+        holiday_params = params.require(:holiday).permit(day_of_weeks: [])
+        chosen_wdays = holiday_params[:day_of_weeks].map(&:to_i)
+
+        existing = Holiday.where(stylist_id: current_user.id)
+
+        existing.where.not(day_of_week: chosen_wdays).destroy_all
+
+        chosen_wdays.each do |wday|
+          hol = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday)
+          hol.save! unless hol.persisted?
+        end
+
+        redirect_to stylists_shift_settings_path, notice: "休業日が更新されました。"
+      end
     end
   end
 end
+

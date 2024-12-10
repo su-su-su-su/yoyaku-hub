@@ -1,0 +1,16 @@
+h2 休業日
+
+= form_with model: Holiday.new, url: stylists_shift_settings_holidays_path, method: :post, local: true do |f|
+  p.text-sm.text-gray-500.mb-2 "休業日にしたい曜日にチェックを入れてください"
+
+  - weekdays = {1 => "月曜日",2 => "火曜日",3 => "水曜日",4 => "木曜日",5 => "金曜日",6 => "土曜日", 0 => "日曜日"}
+
+  .grid.grid-cols-3.gap-4
+    - weekdays.each do |wday, label|
+      label.flex.items-center.gap-2
+        // checkedオプションに@chosen_wdays.include?(wday)を用いる
+        = f.check_box :day_of_weeks, { multiple: true, checked: @chosen_wdays.include?(wday) }, wday, nil
+        span.text-sm= label
+
+  .mt-4
+    = f.submit "設定", class: "btn btn-primary text-base"
