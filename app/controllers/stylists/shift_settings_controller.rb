@@ -33,6 +33,15 @@ module Stylists
         @sunday_end_str = '18:00'
       end
 
+      holiday_wh = WorkingHour.find_by(stylist_id: current_user.id, day_of_week: 7)
+      if holiday_wh
+        @holiday_start_str = holiday_wh.start_time.strftime('%H:%M')
+        @holiday_end_str = holiday_wh.end_time.strftime('%H:%M')
+      else
+        @holiday_start_str = '09:00'
+        @holiday_end_str = '18:00'
+      end
+
       @time_options = (0..47).map do |i|
         hour = i / 2
         minute = (i % 2) * 30
