@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :menus, foreign_key: :stylist_id, dependent: :destroy, inverse_of: :stylist
   has_many :working_hours, foreign_key: :stylist_id, dependent: :destroy, inverse_of: :stylist
   has_many :holidays, foreign_key: :stylist_id, dependent: :destroy, inverse_of: :stylist
+  has_many :reservation_limits, foreign_key: :stylist_id, dependent: :destroy, inverse_of: :stylist
 
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
