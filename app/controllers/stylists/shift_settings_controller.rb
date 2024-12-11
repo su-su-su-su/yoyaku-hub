@@ -39,7 +39,11 @@ module Stylists
         time_str = format('%<hour>02d:%<minute>02d', hour: hour, minute: minute)
         [time_str, time_str]
       end
+
       @chosen_wdays = Holiday.where(stylist_id: current_user.id).pluck(:day_of_week)
+
+      @current_limit = ReservationLimit.find_by(stylist_id: current_user.id)
+
     end
   end
 end

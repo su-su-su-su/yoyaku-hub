@@ -188,3 +188,5 @@ ja:
         create_success: "営業時間が設定されました。"
       holidays:
         create_success: "休業日が設定されました。"
+      reservation_limits:
+        create_success: "受付可能数が設定されました。"
