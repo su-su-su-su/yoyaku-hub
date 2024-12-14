@@ -1,6 +1,6 @@
 h2 受付可能数
 
-= form_with model: ReservationLimit.new, url: stylists_shift_settings_reservation_limits_path, method: :post, local: true do |f|
+= form_with model: ReservationLimit.new, url: reservation_limits_stylists_shift_settings_path, method: :post, local: true do |f|
   p.text-sm.text-gray-500.mb-2 "1日に受付可能な予約数を選択してください"
 
   - options = (0..2).map { |n| [n.to_s, n] }

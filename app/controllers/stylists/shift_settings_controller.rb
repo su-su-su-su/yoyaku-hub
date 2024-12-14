@@ -4,7 +4,7 @@ module Stylists
   class ShiftSettingsController < StylistsController
     before_action :authenticate_user!
 
-    def show
+    def index
       wday_example = 1
       weekday_wh = WorkingHour.find_by(stylist_id: current_user.id, day_of_week: wday_example)
       if weekday_wh

@@ -21,10 +21,17 @@ Rails.application.routes.draw do
   end
 
   namespace :stylists do
-    resource :shift_settings, only: [:show] do
-      resources :working_hours, only: [:create], controller: "shift_settings/working_hours"
-      resources :holidays, only: [:create], controller: "shift_settings/holidays"
-      resources :reservation_limits, only: [:create], controller: "shift_settings/reservation_limits"
+    resources :shift_settings, only: [:index] do
+      collection do
+        post 'working_hours', to: 'shift_settings/working_hours#create'
+        patch 'working_hours/:id', to: 'shift_settings/working_hours#update'
+  
+        post 'holidays', to: 'shift_settings/holidays#create'
+        patch 'holidays/:id', to: 'shift_settings/holidays#update'
+  
+        post 'reservation_limits', to: 'shift_settings/reservation_limits#create'
+        patch 'reservation_limits/:id', to: 'shift_settings/reservation_limits#update'
+      end
     end
   end
 

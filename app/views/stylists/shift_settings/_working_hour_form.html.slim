@@ -1,5 +1,5 @@
 h2 営業時間
-= form_with model: WorkingHour.new, url: stylists_shift_settings_working_hours_path, method: :post, local: true do |f|
+= form_with model: WorkingHour.new, url: working_hours_stylists_shift_settings_path, method: :post, local: true do |f|
   .form-group.flex.flex-row.items-center.border-b.border-gray-300.pb-4
     .flex.items-center.flex-1
       = f.label :weekday_start_time, "平日", class: 'w-1/3 font-bold text-sm mr-2'
