@@ -53,6 +53,22 @@ module Stylists
 
       @current_limit = ReservationLimit.find_by(stylist_id: current_user.id)
 
+      today = Date.today
+      @this_month_year = today.year
+      @this_month = today.month
+
+      next_month_date = today.next_month
+      @next_month_year = next_month_date.year
+      @next_month = next_month_date.month
+
+      next_next_month_date = next_month_date.next_month
+      @next_next_month_year = next_next_month_date.year
+      @next_next_month = next_next_month_date.month
+
+    end
+    def show
+      @year = params[:year].to_i
+      @month = params[:month].to_i
     end
   end
 end

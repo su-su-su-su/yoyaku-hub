@@ -5,5 +5,29 @@
         = render "working_hour_form", time_options: @time_options, weekday_start_str: @weekday_start_str, weekday_end_str: @weekday_end_str, saturday_start_str: @saturday_start_str, saturday_end_str: @saturday_end_str, sunday_start_str: @sunday_start_str, sunday_end_str: @sunday_end_str
         = render "holiday_form"
         = render "reservation_limits_form"
-
- 
+    h2.text-xl.font-bold.mt-8 毎月の受付設定
+    .grid.grid-cols-3.gap-4.mt-4
+      .card.bg-base-100.shadow
+        .card-body.flex.flex-col.items-center
+          p.text-lg.font-bold
+            = "#{@this_month_year}"
+            br
+            = "#{@this_month}月"
+          a.btn.btn-secondary.mt-2 href=show_stylists_shift_settings_path(year: @this_month_year, month: @this_month)
+              = "未設定"
+      .card.bg-base-100.shadow
+        .card-body.flex.flex-col.items-center
+          p.text-lg.font-bold
+            = "#{@next_month_year}"
+            br
+            = "#{@next_month}月"
+          a.btn.btn-secondary.mt-2 href=show_stylists_shift_settings_path(year: @next_month_year, month: @next_month)
+              = "未設定"
+      .card.bg-base-100.shadow
+        .card-body.flex.flex-col.items-center
+          p.text-lg.font-bold
+            = "#{@next_next_month_year}"
+            br
+            = "#{@next_next_month}月"
+          a.btn.btn-secondary.mt-2 href=show_stylists_shift_settings_path(year: @next_next_month_year, month: @next_next_month)
+              = "未設定"

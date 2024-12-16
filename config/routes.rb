@@ -31,6 +31,10 @@ Rails.application.routes.draw do
   
         post 'reservation_limits', to: 'shift_settings/reservation_limits#create'
         patch 'reservation_limits/:id', to: 'shift_settings/reservation_limits#update'
+  
+        get ':year/:month', to: 'shift_settings#show', as: 'show'
+        post ':year/:month', to: 'shift_settings#create', as: 'create'
+        patch ':year/:month', to: 'shift_settings#update', as: 'update'
       end
     end
   end
