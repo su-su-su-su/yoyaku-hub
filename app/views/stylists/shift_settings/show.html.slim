@@ -1,1 +1,3 @@
 h1 = "#{@year}年#{@month}月の受付設定"
+= month_calendar(start_date: @start_date) do |date|
+  = date.day
