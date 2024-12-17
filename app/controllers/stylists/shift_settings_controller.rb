@@ -71,6 +71,11 @@ module Stylists
       @month = params[:month].to_i
 
       @start_date = Date.new(@year, @month, 1)
+      @working_hours_for_month = {}
+
+      (@start_date..@start_date.end_of_month).each do |date|
+        @working_hours_for_month[date] = WorkingHour.default_for(current_user.id, date)
+      end
     end
   end
 end

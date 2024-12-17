@@ -1,3 +1,12 @@
-h1 = "#{@year}年#{@month}月の受付設定"
+
+h1.text-2xl.font-bold = "#{@year}年#{@month}月の受付設定"
+
 = month_calendar(start_date: @start_date) do |date|
-  = date.day
+  - wh = @working_hours_for_month[date]
+  .day-cell
+    = date.day
+    br
+    - if wh.present?
+      = "#{wh.start_time.strftime('%H:%M')} ~ #{wh.end_time.strftime('%H:%M')}"
+    - else
+      = " "
