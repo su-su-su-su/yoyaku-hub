@@ -8,7 +8,7 @@ module Stylists
       def create
         limit_params = params.require(:reservation_limit).permit(:max_reservations)
 
-        limit = ReservationLimit.find_or_initialize_by(stylist_id: current_user.id)
+        limit = ReservationLimit.find_or_initialize_by(stylist_id: current_user.id, target_date: nil)
 
         limit.max_reservations = limit_params[:max_reservations].to_i
         limit.save!

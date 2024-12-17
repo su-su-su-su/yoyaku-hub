@@ -81,6 +81,11 @@ module Stylists
         holiday = Holiday.default_for(current_user.id, date)
         @holidays_for_month[date] = holiday.present?
       end
+
+      @reservation_limits_for_month = {}
+      (@start_date..@start_date.end_of_month).each do |date|
+        @reservation_limits_for_month[date] = ReservationLimit.default_for(current_user.id, date)
+      end
     end
   end
 end
