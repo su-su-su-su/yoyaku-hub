@@ -3,8 +3,11 @@ h1.text-2xl.font-bold = "#{@year}年#{@month}月の受付設定"
 
 = month_calendar(start_date: @start_date) do |date|
   - wh = @working_hours_for_month[date]
+  - is_holiday = @holidays_for_month[date]
   .day-cell
     = date.day
+    - if is_holiday
+      p.text-red-500 定休日
     br
     - if wh.present?
       = "#{wh.start_time.strftime('%H:%M')} ~ #{wh.end_time.strftime('%H:%M')}"

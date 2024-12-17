@@ -69,12 +69,17 @@ module Stylists
     def show
       @year = params[:year].to_i
       @month = params[:month].to_i
-
       @start_date = Date.new(@year, @month, 1)
-      @working_hours_for_month = {}
 
+      @working_hours_for_month = {}
       (@start_date..@start_date.end_of_month).each do |date|
         @working_hours_for_month[date] = WorkingHour.default_for(current_user.id, date)
+      end
+
+      @holidays_for_month = {}
+      (@start_date..@start_date.end_of_month).each do |date|
+        holiday = Holiday.default_for(current_user.id, date)
+        @holidays_for_month[date] = holiday.present?
       end
     end
   end
