@@ -69,6 +69,8 @@ module Stylists
     def show
       @year = params[:year].to_i
       @month = params[:month].to_i
+
+      @start_date = Date.new(@year, @month, 1)
     end
   end
 end
