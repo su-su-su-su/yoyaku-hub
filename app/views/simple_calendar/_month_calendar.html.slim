@@ -1,0 +1,48 @@
+.simple-calendar
+
+  = form_with url: create_stylists_shift_settings_path(year: @year, month: @month), method: :patch, local: true do
+    table.table.table-striped
+      thead
+        tr
+          - date_range.slice(0, 7).each do |day|
+            th = t('date.abbr_day_names')[day.wday]
+
+      tbody
+        - date_range.each_slice(7) do |week|
+          tr
+            - week.each do |day|
+              - if day.month != @month
+                td
+              - else
+                - wh = @working_hours_for_month[day]
+                - wh ||= WorkingHour.new(start_time: Time.zone.parse("09:00"), end_time: Time.zone.parse("18:00"))
+                - is_holiday = @holidays_for_month[day]
+                - rl = @reservation_limits_for_month[day] || ReservationLimit.new(max_reservations: 2)
+
+                = content_tag :td, class: calendar.td_classes_for(day) do
+                  .day-cell.border.border-gray-200.p-1
+                    = hidden_field_tag "shift_data[#{day.day}][date]", day
+
+                    p.font-bold.mb-1 = "#{day.day}日"
+
+                    .flex.items-center.mb-1
+                      - checked = is_holiday
+                      = check_box_tag "shift_data[#{day.day}][is_holiday]", "1", checked
+                      label.ml-1 休業日
+
+                    .mb-1
+                      = select_tag "shift_data[#{day.day}][start_time]", 
+                                    options_for_select(@time_options, wh.start_time.strftime("%H:%M")),
+                                    class: 'input input-bordered w-20'
+                      span.mx-1 ~
+                      = select_tag "shift_data[#{day.day}][end_time]",
+                                    options_for_select(@time_options, wh.end_time.strftime("%H:%M")),
+                                    class: 'input input-bordered w-20'
+
+                    .mt-1
+                      label 受付可能数
+                      - options = (0..2).map { |n| [n.to_s, n] }
+                      = select_tag "shift_data[#{day.day}][max_reservations]", options_for_select(options, rl.max_reservations), class: 'input input-bordered w-16'
+
+    .mt-4.flex.justify-center
+      = submit_tag "一括設定", class: "btn btn-primary text-base"
