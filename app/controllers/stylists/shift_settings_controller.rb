@@ -3,6 +3,7 @@
 module Stylists
   class ShiftSettingsController < StylistsController
     before_action :authenticate_user!
+    before_action :set_time_options, only: [:index, :show]
 
     def index
       wday_example = 1
@@ -40,13 +41,6 @@ module Stylists
       else
         @holiday_start_str = '09:00'
         @holiday_end_str = '18:00'
-      end
-
-      @time_options = (0..47).map do |i|
-        hour = i / 2
-        minute = (i % 2) * 30
-        time_str = format('%<hour>02d:%<minute>02d', hour: hour, minute: minute)
-        [time_str, time_str]
       end
 
       @chosen_wdays = Holiday.where(stylist_id: current_user.id).pluck(:day_of_week)
@@ -87,5 +81,16 @@ module Stylists
         @reservation_limits_for_month[date] = ReservationLimit.default_for(current_user.id, date)
       end
     end
+
+    private
+
+      def set_time_options
+        @time_options = (0..47).map do |i|
+          hour = i / 2
+          minute = (i % 2) * 30
+          time_str = format('%<hour>02d:%<minute>02d', hour: hour, minute: minute)
+          [time_str, time_str]
+        end
+      end
   end
 end

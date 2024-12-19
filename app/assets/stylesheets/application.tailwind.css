@@ -121,4 +121,19 @@
       margin-right: 2px;
     }
   }
+  .simple-calendar {
+    .wday-0 {
+      p.font-bold.mb-1 {
+        color: red;
+      }
+    }
+    .wday-6 {
+      p.font-bold.mb-1 {
+        color: blue;
+      }
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f5f5f5;
+    }
+  }
 }
