@@ -122,7 +122,8 @@
     }
   }
   .simple-calendar {
-    .wday-0 {
+    .wday-0,
+    .wday-7 {
       p.font-bold.mb-1 {
         color: red;
       }

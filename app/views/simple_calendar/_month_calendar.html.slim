@@ -18,8 +18,10 @@
                 - wh ||= WorkingHour.new(start_time: Time.zone.parse("09:00"), end_time: Time.zone.parse("18:00"))
                 - is_holiday = @holidays_for_month[day]
                 - rl = @reservation_limits_for_month[day] || ReservationLimit.new(max_reservations: 2)
+                - wday = day.wday
+                - wday = 7 if HolidayJp.holiday?(day)
 
-                = content_tag :td, class: calendar.td_classes_for(day) do
+                = content_tag :td, class: "#{calendar.td_classes_for(day)} wday-#{wday}" do
                   .day-cell.border.border-gray-200.p-1
                     = hidden_field_tag "shift_data[#{day.day}][date]", day
 
