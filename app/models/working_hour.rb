@@ -10,20 +10,16 @@ class WorkingHour < ApplicationRecord
   def self.default_for(stylist_id, date)
     wh = find_by(stylist_id: stylist_id, target_date: date)
     return wh if wh.present?
-  
+
     if HolidayJp.holiday?(date)
       holiday_wh = find_by(stylist_id: stylist_id, day_of_week: 7, target_date: nil)
-      if holiday_wh.present?
-        return holiday_wh
-      end
+      return holiday_wh if holiday_wh.present?
     end
-  
+
     wday = date.wday
     default_wday_wh = find_by(stylist_id: stylist_id, day_of_week: wday, target_date: nil)
-    if default_wday_wh.present?
-      return default_wday_wh
-    end
-  
+    return default_wday_wh if default_wday_wh.present?
+
     new(
       stylist_id: stylist_id,
       target_date: date,
