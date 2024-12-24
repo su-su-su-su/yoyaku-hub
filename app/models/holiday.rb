@@ -7,6 +7,11 @@ class Holiday < ApplicationRecord
     holiday = find_by(stylist_id: stylist_id, target_date: date)
     return holiday if holiday.present?
 
+    if HolidayJp.holiday?(date)
+      holiday_wh = find_by(stylist_id: stylist_id, day_of_week: 7, target_date: nil)
+      return holiday_wh if holiday_wh.present?
+    end
+
     wday = date.wday
     find_by(stylist_id: stylist_id, day_of_week: wday, target_date: nil)
   end

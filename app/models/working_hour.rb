@@ -11,23 +11,21 @@ class WorkingHour < ApplicationRecord
     wh = find_by(stylist_id: stylist_id, target_date: date)
     return wh if wh.present?
 
+    if HolidayJp.holiday?(date)
+      holiday_wh = find_by(stylist_id: stylist_id, day_of_week: 7, target_date: nil)
+      return holiday_wh if holiday_wh.present?
+    end
+
     wday = date.wday
     default_wday_wh = find_by(stylist_id: stylist_id, day_of_week: wday, target_date: nil)
-    if default_wday_wh.present?
-      new(
-        stylist_id: stylist_id,
-        target_date: date,
-        start_time: default_wday_wh.start_time,
-        end_time: default_wday_wh.end_time
-      )
-    else
-      new(
-        stylist_id: stylist_id,
-        target_date: date,
-        start_time: Time.zone.parse('09:00'),
-        end_time: Time.zone.parse('18:00')
-      )
-    end
+    return default_wday_wh if default_wday_wh.present?
+
+    new(
+      stylist_id: stylist_id,
+      target_date: date,
+      start_time: Time.zone.parse('09:00'),
+      end_time: Time.zone.parse('18:00')
+    )
   end
 
   private
