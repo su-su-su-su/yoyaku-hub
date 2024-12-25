@@ -105,11 +105,15 @@ module Stylists
         end_time_obj   = Time.zone.parse(end_str)
     
         if is_holiday
-          Holiday.find_or_create_by!(stylist_id: current_user.id, target_date: date)
+          holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
+          holiday.is_holiday = true
+          holiday.save!
         else
           Holiday.where(stylist_id: current_user.id, target_date: date).destroy_all
+          
+          Holiday.find_or_create_by!(stylist_id: current_user.id, target_date: date, is_holiday: false)
         end
-    
+
         wh = WorkingHour.find_or_initialize_by(
           stylist_id: current_user.id,
           target_date: date

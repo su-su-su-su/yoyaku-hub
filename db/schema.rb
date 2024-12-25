@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_10_071529) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_25_042204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_10_071529) do
     t.integer "day_of_week"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_holiday", default: false, null: false
     t.index ["stylist_id", "target_date"], name: "index_holidays_on_stylist_id_and_target_date", unique: true
     t.index ["stylist_id"], name: "index_holidays_on_stylist_id"
     t.index ["target_date"], name: "index_holidays_on_target_date"

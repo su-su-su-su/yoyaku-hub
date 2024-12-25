@@ -30,7 +30,7 @@
                     div data-controller="holiday-toggle"
                       .flex.items-center.mb-1
                         = check_box_tag "shift_data[#{day.day}][is_holiday]", "1", is_holiday, id: "shift_data_#{day.day}_is_holiday", data: { action: "change->holiday-toggle#toggle", "holiday-toggle-target": "checkbox" }
-                        label.ml-1 for="shift_data_#{day.day}_is_holiday" 休業日                       
+                        label.ml-1 for="shift_data_#{day.day}_is_holiday" 休業日
 
                       .mb-1
                         = select_tag "shift_data[#{day.day}][start_time]", 
