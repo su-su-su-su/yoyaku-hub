@@ -1,5 +1,5 @@
 .simple-calendar
-  = form_with url: create_stylists_shift_settings_path(year: @year, month: @month), method: :patch, local: true do
+  = form_with url: create_stylists_shift_settings_path(year: @year, month: @month), method: :post, local: true do
 
     table.table.table-striped
       thead
