@@ -2,10 +2,11 @@
 
 class WorkingHour < ApplicationRecord
   belongs_to :stylist, class_name: 'User'
+  attr_accessor :holiday_flag
 
   validates :start_time, presence: true
   validates :end_time, presence: true
-  validate :end_time_after_start_time
+  validate :end_time_after_start_time, unless: :holiday_flag?
 
   def self.default_for(stylist_id, date)
     wh = find_by(stylist_id: stylist_id, target_date: date)
@@ -26,6 +27,10 @@ class WorkingHour < ApplicationRecord
       start_time: Time.zone.parse('09:00'),
       end_time: Time.zone.parse('18:00')
     )
+  end
+
+  def holiday_flag?
+    holiday_flag == '1' || holiday_flag == true
   end
 
   private

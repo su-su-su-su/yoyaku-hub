@@ -60,6 +60,7 @@ module Stylists
       @next_next_month = next_next_month_date.month
 
     end
+
     def show
       @year = params[:year].to_i
       @month = params[:month].to_i
@@ -80,6 +81,54 @@ module Stylists
       (@start_date..@start_date.end_of_month).each do |date|
         @reservation_limits_for_month[date] = ReservationLimit.default_for(current_user.id, date)
       end
+    end
+
+    def create
+      shift_data_params = params[:shift_data] || {}
+    
+      shift_data_params.each do |day_key, day_values|
+        date_str = day_values[:date]
+        date = Date.parse(date_str) rescue nil
+        is_holiday = (day_values[:is_holiday] == "1")
+    
+        start_str = day_values[:start_time].presence || "09:00"
+        end_str   = day_values[:end_time].presence   || "18:00"
+        max_res_str = day_values[:max_reservations].presence || "2"
+    
+        if is_holiday
+          start_str = "00:00"
+          end_str   = "00:00"
+          max_res_str = "0"
+        end
+    
+        start_time_obj = Time.zone.parse(start_str)
+        end_time_obj   = Time.zone.parse(end_str)
+    
+        if is_holiday
+          holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
+          holiday.is_holiday = true
+          holiday.save!
+        else
+          Holiday.where(stylist_id: current_user.id, target_date: date).destroy_all
+          
+          Holiday.find_or_create_by!(stylist_id: current_user.id, target_date: date, is_holiday: false)
+        end
+
+        wh = WorkingHour.find_or_initialize_by(
+          stylist_id: current_user.id,
+          target_date: date
+        )
+        wh.start_time = start_time_obj
+        wh.end_time   = end_time_obj
+        wh.holiday_flag = is_holiday ? "1" : "0"
+        wh.save!
+    
+        rl = ReservationLimit.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
+        rl.max_reservations = max_res_str.to_i
+        rl.save!
+      end
+    
+      redirect_to stylists_shift_settings_path, notice: "一括設定しました"
     end
 
     private
