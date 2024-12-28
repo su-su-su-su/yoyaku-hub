@@ -45,7 +45,7 @@ module Stylists
 
       @chosen_wdays = Holiday.where(stylist_id: current_user.id).pluck(:day_of_week)
 
-      @current_limit = ReservationLimit.find_by(stylist_id: current_user.id)
+      @current_limit = ReservationLimit.find_by(stylist_id: current_user.id, target_date: nil)
 
       today = Date.today
       @this_month_year = today.year
