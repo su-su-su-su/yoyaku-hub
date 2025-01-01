@@ -44,6 +44,7 @@ Rails.application.routes.draw do
 
   get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
+  get '/customers/stylists/:stylist_id/menus', to: 'customers/stylists/menus#index'
 
   devise_scope :user do
     get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
