@@ -45,6 +45,16 @@ Rails.application.routes.draw do
   get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
 
+  namespace :customers do
+    resources :stylists, only: [] do
+      resources :menus, only: :index, module: 'stylists' do
+        member do
+          get :weekly
+        end
+      end
+    end
+  end
+  
   devise_scope :user do
     get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
     post 'stylists', to: 'users/registrations#create', as: :stylist_registration

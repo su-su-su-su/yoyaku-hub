@@ -1,0 +1,29 @@
+div class="max-w-lg mx-auto px-4"
+  h1= "#{@stylist.family_name} #{@stylist.given_name} さんのメニュー一覧"
+  .text-sm.text-gray-500.mb-2 メニューを選択してください
+  = form_with(url: customers_stylist_menus_path(@stylist), method: :get, local: true) do
+
+    .menu-list
+      - @menus.each do |menu|
+        = check_box_tag "menu_ids[]", menu.id, false,
+                        class: "menu-checkbox",
+                        id: "menu_#{menu.id}"
+
+        label for="menu_#{menu.id}" class="menu-item block"
+          .menu-inner
+            .menu-header
+               h2.font-bold= menu.name
+
+            .menu-body
+              p.mt-2= "備考: #{menu.description}"
+            hr.my-2.border-1.border-gray-300
+
+            menu-footer.flex.space-x-6
+             span= "¥#{menu.price} (税込み)"
+             span= "#{menu.duration}分"
+
+    .mt-4.text-center
+      = submit_tag "日時を設定", class: "px-4 py-2 bg-blue-500 text-white rounded"
+
+    .mt-2.text-center
+      = link_to "戻る", customers_dashboard_path, class: "underline text-blue-500"

@@ -137,4 +137,22 @@
       background-color: #f5f5f5;
     }
   }
+  .menu-checkbox {
+    display: none;
+  }
+
+  .menu-item {
+    @apply border-2 border-gray-300 rounded-lg mb-2 p-4;
+
+    cursor: pointer;
+    display: block;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .menu-checkbox:checked + .menu-item {
+    background-color: #e7f1ff;
+    border-color: #3a80e8;
+  }
 }
