@@ -1,0 +1,29 @@
+  div class="grid grid-cols-3 items-center mb-4 px-2"
+    div
+      = link_to "前の週へ",
+        weekly_customers_stylist_menus_path(stylist_id: @stylist.id, start_date: @start_date - 7.days, menu_ids: @selected_menu_ids), class: "px-3 py-1 border rounded"
+
+    div class="text-center"
+      p.text-lg.font-bold.mt-1= @start_date.strftime("%Y年")
+      p.whitespace-nowrap= "#{@start_date.strftime("%-m月%-d日")}〜#{(@start_date + 6.days).strftime("%-m月%-d日")}"
+
+    div class="justify-self-end text-right"
+      = link_to "次の週へ",
+        weekly_customers_stylist_menus_path(stylist_id: @stylist.id, start_date: @start_date + 7.days, menu_ids: @selected_menu_ids ), class: "px-3 py-1 border rounded"
+
+  table.border.border-collapse.mt-4
+    thead
+      tr.bg-gray-100
+        th.pl-2.pr-1.py-1 時刻
+        - @dates.each do |date|
+         th.px-2.py-1= "#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})"
+
+    tbody
+      - @time_slots.each do |time_str|
+        tr
+          th.border.pl-1.pr-2.py-1.text-right= time_str
+          - @dates.each do |date|
+            td.border.text-center.px-4.py-2
+              | ◎
+  .mt-2.mb-2.text-center
+    = link_to "戻る", customers_stylist_menus_path(@stylist), class: "btn"
