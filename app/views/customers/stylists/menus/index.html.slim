@@ -1,7 +1,7 @@
 div class="max-w-lg mx-auto px-4"
   h1= "#{@stylist.family_name} #{@stylist.given_name} さんのメニュー一覧"
   .text-sm.text-gray-500.mb-2 メニューを選択してください
-  = form_with(url: customers_stylist_menus_path(@stylist), method: :get, local: true) do
+  = form_with(url: weekly_customers_stylist_menus_path(@stylist), method: :get, local: true) do
 
     .menu-list
       - @menus.each do |menu|

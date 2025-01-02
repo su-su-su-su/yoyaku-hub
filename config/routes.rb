@@ -48,8 +48,8 @@ Rails.application.routes.draw do
   namespace :customers do
     resources :stylists, only: [] do
       resources :menus, only: :index, module: 'stylists' do
-        member do
-          get :weekly
+        collection do
+          get :weekly, to: 'weeklies#index'
         end
       end
     end
