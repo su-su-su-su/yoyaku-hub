@@ -24,6 +24,15 @@
           th.border.pl-1.pr-2.py-1.text-right= time_str
           - @dates.each do |date|
             td.border.text-center.px-4.py-2
-              | ◎
+              - wh = @working_hours_hash[date]
+              - if @holiday_days.include?(date) || wh.blank?
+                | ×
+              - else
+                - start_hm = wh.start_time.strftime("%H:%M")
+                - end_hm   = wh.end_time.strftime("%H:%M")
+                - if (time_str >= start_hm) && (time_str < end_hm)
+                  | ◎
+                - else
+                  | ×
   .mt-2.mb-2.text-center
     = link_to "戻る", customers_stylist_menus_path(@stylist), class: "btn"
