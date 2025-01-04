@@ -19,18 +19,17 @@
          th.px-2.py-1= "#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})"
 
     tbody
+      - total_minutes = @selected_menus.sum(&:duration)
       - @time_slots.each do |time_str|
         tr
           th.border.pl-1.pr-2.py-1.text-right= time_str
           - @dates.each do |date|
             td.border.text-center.px-4.py-2
-              - wh = @working_hours_hash[date]
-              - if @holiday_days.include?(date) || wh.blank?
+              - working_hours = @working_hours_hash[date]
+              - if @holiday_days.include?(date) || working_hours.blank?
                 | ×
               - else
-                - start_hm = wh.start_time.strftime("%H:%M")
-                - end_hm   = wh.end_time.strftime("%H:%M")
-                - if (time_str >= start_hm) && (time_str < end_hm)
+                - if within_working_hours?(working_hours, date, time_str, total_minutes)
                   | ◎
                 - else
                   | ×
