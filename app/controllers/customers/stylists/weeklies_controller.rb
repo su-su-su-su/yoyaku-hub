@@ -3,6 +3,7 @@
 module Customers
   module Stylists
     class WeekliesController < ApplicationController
+      helper_method :total_duration, :within_working_hours?
       def index
         set_stylist
         set_selected_menus
@@ -61,6 +62,20 @@ module Customers
         @wh_list.each do |wh|
           @working_hours_hash[wh.target_date] = wh
         end
+      end
+
+      def total_duration
+        @selected_menus.sum(&:duration)
+      end
+
+      def within_working_hours?(working_hours, date, time_str, total_minutes)
+        day_start_hm = working_hours.start_time.strftime('%H:%M')
+        day_end_hm = working_hours.end_time.strftime('%H:%M')
+
+        start_time = Time.zone.parse("#{date} #{time_str}")
+        end_time   = start_time + total_minutes.minutes
+
+        (time_str >= day_start_hm) && (end_time.strftime('%H:%M') <= day_end_hm)
       end
     end
   end
