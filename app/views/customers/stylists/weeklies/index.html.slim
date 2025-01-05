@@ -1,7 +1,9 @@
+.simple-calendar
   div class="grid grid-cols-3 items-center mb-4 px-2"
     div
-      = link_to "前の週へ",
-        weekly_customers_stylist_menus_path(stylist_id: @stylist.id, start_date: @start_date - 7.days, menu_ids: @selected_menu_ids), class: "px-3 py-1 border rounded"
+      - if @can_go_previous
+        = link_to "前の週へ",
+          weekly_customers_stylist_menus_path(stylist_id: @stylist.id, start_date: @start_date - 7.days, menu_ids: @selected_menu_ids), class: "px-3 py-1 border rounded"
 
     div class="text-center"
       p.text-lg.font-bold.mt-1= @start_date.strftime("%Y年")
@@ -16,8 +18,11 @@
       tr.bg-gray-100
         th.pl-2.pr-1.py-1 時刻
         - @dates.each do |date|
-         th.px-2.py-1= "#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})"
-
+          - wday = date.wday
+          - wday = 7 if HolidayJp.holiday?(date)
+          th.px-2.py-1 class="wday-#{wday}"
+            p.font-bold.mb-1.ml-6
+             |&nbsp;#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})
     tbody
       - total_minutes = @selected_menus.sum(&:duration)
       - @time_slots.each do |time_str|
