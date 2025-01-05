@@ -31,12 +31,12 @@
           - @dates.each do |date|
             td.border.text-center.px-4.py-2
               - working_hours = @working_hours_hash[date]
-              - if @holiday_days.include?(date) || working_hours.blank?
+              - limit_obj = @reservation_limits_hash[date]
+              - if (@holiday_days.include?(date) || working_hours.blank?) || (limit_obj && limit_obj.max_reservations == 0)
                 | ×
+              - elsif within_working_hours?(working_hours, date, time_str, total_minutes)
+                | ◎
               - else
-                - if within_working_hours?(working_hours, date, time_str, total_minutes)
-                  | ◎
-                - else
-                  | ×
+                | ×
   .mt-2.mb-2.text-center
     = link_to "戻る", customers_stylist_menus_path(@stylist), class: "btn"
