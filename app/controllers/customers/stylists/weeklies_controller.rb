@@ -14,6 +14,7 @@ module Customers
         filter_non_holiday_working_hours
         calculate_time_slots
         build_working_hours_hash
+        build_reservation_limits_hash
         set_can_go_previous
       end
 
@@ -69,6 +70,14 @@ module Customers
         @working_hours_hash = {}
         @wh_list.each do |wh|
           @working_hours_hash[wh.target_date] = wh
+        end
+      end
+
+      def build_reservation_limits_hash
+        limits = ReservationLimit.where(stylist_id: @stylist.id, target_date: @dates)
+        @reservation_limits_hash = {}
+        limits.each do |limit|
+          @reservation_limits_hash[limit.target_date] = limit
         end
       end
 
