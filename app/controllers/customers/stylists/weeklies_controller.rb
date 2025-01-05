@@ -14,6 +14,7 @@ module Customers
         filter_non_holiday_working_hours
         calculate_time_slots
         build_working_hours_hash
+        set_can_go_previous
       end
 
       private
@@ -28,7 +29,14 @@ module Customers
       end
 
       def set_dates_and_time_slots
-        @start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current
+        if params[:start_date].present?
+          parsed_date = Date.parse(params[:start_date])
+          parsed_start_date = parsed_date.beginning_of_week
+          current_week_start = Date.current.beginning_of_week
+          @start_date = [parsed_start_date, current_week_start].max
+        else
+          @start_date = Date.current.beginning_of_week
+        end
         @dates = (@start_date..(@start_date + 6.days)).to_a
       end
 
@@ -64,11 +72,24 @@ module Customers
         end
       end
 
+      def set_can_go_previous
+        current_week_start = Date.current.beginning_of_week
+        @can_go_previous = @start_date > current_week_start
+      end
+
       def total_duration
         @selected_menus.sum(&:duration)
       end
 
       def within_working_hours?(working_hours, date, time_str, total_minutes)
+        if date < Date.current
+          return false
+        elsif date == Date.current
+          cutoff_time = 1.hour.from_now
+          slot_time = Time.zone.parse("#{date} #{time_str}")
+          return false if slot_time < cutoff_time
+        end
+
         day_start_hm = working_hours.start_time.strftime('%H:%M')
         day_end_hm = working_hours.end_time.strftime('%H:%M')
 
