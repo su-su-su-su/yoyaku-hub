@@ -1,2 +1,36 @@
- - if @start_time_obj
-  p= I18n.l(@start_time_obj, format: :wday_short)
+.container.mx-auto.p-4
+  h1.text-2xl.font-bold 予約内容の確認
+
+  p.mt-4.text-sm.text-red-500 ※まだ予約は確定していません！
+  p.text-sm.text-red-500 予約を確定するには下記の「予約を確定」をクリックしてください。
+
+  .border.border-gray-300.rounded-md.bg-white.mt-4
+    table.w-full.border-collapse
+      tbody
+        tr.border-b.border-gray-300
+          th.px-4.py-2.text-left.align-top.bg-gray-50 スタイリスト名
+          td.px-4.py-2= "#{@stylist.family_name} #{@stylist.given_name}"
+
+        tr.border-b.border-gray-300
+          th.px-4.py-2.text-left.align-top.bg-gray-50 来店日時
+          td.px-4.py-2
+            - if @start_time_obj
+              = I18n.l(@start_time_obj, format: :wday_short)
+
+        tr.border-b.border-gray-300
+          th.px-4.py-2.text-left.align-top.bg-gray-50 メニュー
+          td.px-4.py-2
+            - @menus.each do |m|
+              p= m.name
+
+        tr.border-b.border-gray-300
+          th.px-4.py-2.text-left.align-top.bg-gray-50 施術時間
+          td.px-4.py-2= "#{@total_duration} 分"
+
+        tr
+          th.px-4.py-2.text-left.align-top.bg-gray-50 合計金額
+          td.px-4.py-2= "¥#{@total_price} (税込み)"
+
+  .mt-4.flex.space-x-4
+    = link_to "予約を確定", "#", class: "px-4 py-2 bg-blue-500 text-white rounded"
+    = link_to "戻る", weekly_customers_stylist_menus_path(@stylist, menu_ids: @menu_ids), class: "px-4 py-2 bg-gray-400 text-white rounded"
