@@ -179,6 +179,7 @@ ja:
       default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
       long: "%Y/%m/%d %H:%M"
       short: "%m/%d %H:%M"
+      wday_short: "%Y年%-m月%-d日(%a) %H時%M分"
     pm: 午後
   alerts:
     no_permission: "アクセス権限がありません"

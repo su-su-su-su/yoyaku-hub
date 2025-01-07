@@ -46,12 +46,19 @@ Rails.application.routes.draw do
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
 
   namespace :customers do
+    get "reservations/show"
+    get "reservations/create"
     resources :stylists, only: [] do
       resources :menus, only: :index, module: 'stylists' do
         collection do
           get :weekly, to: 'weeklies#index'
         end
       end
+    end
+  end
+
+  namespace :customers do
+    resources :reservations, only: [:show, :create] do
     end
   end
   
