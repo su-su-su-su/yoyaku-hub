@@ -35,7 +35,8 @@
               - if (@holiday_days.include?(date) || working_hours.blank?) || (limit_obj && limit_obj.max_reservations == 0)
                 | ×
               - elsif within_working_hours?(working_hours, date, time_str, total_minutes)
-                | ◎
+                  = link_to "◎",
+                  customers_reservations_show_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
               - else
                 | ×
   .mt-2.mb-2.text-center
