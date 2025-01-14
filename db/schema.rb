@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_25_042204) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_11_143057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -44,10 +44,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_25_042204) do
   create_table "reservation_limits", force: :cascade do |t|
     t.bigint "stylist_id", null: false
     t.date "target_date"
-    t.time "time_slot"
     t.integer "max_reservations"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "time_slot"
     t.index ["stylist_id"], name: "index_reservation_limits_on_stylist_id"
     t.index ["target_date"], name: "index_reservation_limits_on_target_date"
   end
