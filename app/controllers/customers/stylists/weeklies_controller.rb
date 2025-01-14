@@ -76,8 +76,15 @@ module Customers
       def build_reservation_limits_hash
         limits = ReservationLimit.where(stylist_id: @stylist.id, target_date: @dates)
         @reservation_limits_hash = {}
+
+        @dates.each do |date|
+          @reservation_limits_hash[date] = {}
+        end
+
         limits.each do |limit|
-          @reservation_limits_hash[limit.target_date] = limit
+          next if limit.time_slot.nil?
+
+          @reservation_limits_hash[limit.target_date][limit.time_slot] = limit
         end
       end
 
