@@ -85,32 +85,32 @@ module Stylists
 
     def create
       shift_data_params = params[:shift_data] || {}
-    
+
       shift_data_params.each do |day_key, day_values|
         date_str = day_values[:date]
         date = Date.parse(date_str) rescue nil
         is_holiday = (day_values[:is_holiday] == "1")
-    
+
         start_str = day_values[:start_time].presence || "09:00"
         end_str   = day_values[:end_time].presence   || "18:00"
         max_res_str = day_values[:max_reservations].presence || "2"
-    
+
         if is_holiday
           start_str = "00:00"
           end_str   = "00:00"
           max_res_str = "0"
         end
-    
+
         start_time_obj = Time.zone.parse(start_str)
         end_time_obj   = Time.zone.parse(end_str)
-    
+
         if is_holiday
           holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
           holiday.is_holiday = true
           holiday.save!
         else
           Holiday.where(stylist_id: current_user.id, target_date: date).destroy_all
-          
+
           Holiday.find_or_create_by!(stylist_id: current_user.id, target_date: date, is_holiday: false)
         end
 
@@ -122,12 +122,29 @@ module Stylists
         wh.end_time   = end_time_obj
         wh.holiday_flag = is_holiday ? "1" : "0"
         wh.save!
+
+        rl_day = ReservationLimit.find_or_initialize_by(
+          stylist_id: current_user.id,
+          target_date: date,
+          time_slot: nil
+        )
+        rl_day.max_reservations = max_res_str.to_i
+        rl_day.save!
     
-        rl = ReservationLimit.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
-        rl.max_reservations = max_res_str.to_i
-        rl.save!
+        start_slot = (start_time_obj.hour * 2) + (start_time_obj.min >= 30 ? 1 : 0)
+        end_slot = (end_time_obj.hour * 2) + (end_time_obj.min >= 30 ? 1 : 0)
+
+        (start_slot...end_slot).each do |slot|
+          rl_slot = ReservationLimit.find_or_initialize_by(
+            stylist_id: current_user.id,
+            target_date: date,
+            time_slot: slot
+          )
+          rl_slot.max_reservations = max_res_str.to_i
+          rl_slot.save!
+        end
       end
-    
+
       redirect_to stylists_shift_settings_path, notice: "一括設定しました"
     end
 
