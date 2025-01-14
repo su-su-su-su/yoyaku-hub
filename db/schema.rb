@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_25_042204) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_11_143057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,30 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_25_042204) do
     t.index ["target_date"], name: "index_reservation_limits_on_target_date"
   end
 
+  create_table "reservation_menu_selections", force: :cascade do |t|
+    t.bigint "menu_id", null: false
+    t.bigint "reservation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["menu_id", "reservation_id"], name: "idx_on_menu_id_reservation_id_cff1c01803", unique: true
+    t.index ["menu_id"], name: "index_reservation_menu_selections_on_menu_id"
+    t.index ["reservation_id"], name: "index_reservation_menu_selections_on_reservation_id"
+  end
+
+  create_table "reservations", force: :cascade do |t|
+    t.bigint "stylist_id", null: false
+    t.bigint "customer_id", null: false
+    t.datetime "start_at"
+    t.datetime "end_at"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_reservations_on_customer_id"
+    t.index ["end_at"], name: "index_reservations_on_end_at"
+    t.index ["start_at"], name: "index_reservations_on_start_at"
+    t.index ["stylist_id"], name: "index_reservations_on_stylist_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -89,5 +113,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_25_042204) do
   add_foreign_key "holidays", "users", column: "stylist_id"
   add_foreign_key "menus", "users", column: "stylist_id"
   add_foreign_key "reservation_limits", "users", column: "stylist_id"
+  add_foreign_key "reservation_menu_selections", "menus"
+  add_foreign_key "reservation_menu_selections", "reservations"
+  add_foreign_key "reservations", "users", column: "customer_id"
+  add_foreign_key "reservations", "users", column: "stylist_id"
   add_foreign_key "working_hours", "users", column: "stylist_id"
 end
