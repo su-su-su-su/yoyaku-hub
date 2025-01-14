@@ -28,10 +28,12 @@
       - @time_slots.each do |time_str|
         tr
           th.border.pl-1.pr-2.py-1.text-right= time_str
+          - hour, minute = time_str.split(':').map(&:to_i)
+          - slot = (hour * 2) + (minute >= 30 ? 1 : 0)
           - @dates.each do |date|
             td.border.text-center.px-4.py-2
               - working_hours = @working_hours_hash[date]
-              - limit_obj = @reservation_limits_hash[date]
+              - limit_obj = @reservation_limits_hash[date][slot] 
               - if (@holiday_days.include?(date) || working_hours.blank?) || (limit_obj && limit_obj.max_reservations == 0)
                 | ×
               - elsif within_working_hours?(working_hours, date, time_str, total_minutes)
