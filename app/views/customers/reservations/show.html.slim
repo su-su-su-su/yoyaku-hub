@@ -35,8 +35,12 @@ table.border.border-collapse.mx-auto.p-4
     tr
       th.bg-gray-100.px-4.py-2.text-left 合計金額
       td.px-4.py-2= "¥#{@total_price} (税込み)"
-  
-.mt-6.flex.space-x-4.mx-auto.p-4
 
-  = link_to "戻る", customers_reservations_path, class: "btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-  = link_to "ユーザートップページへ", customers_dashboard_path,  class: "btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+
+.mt-6.flex.justify-center.space-x-6.mt-8
+  - if @reservation.start_at > Time.current
+    = button_to "キャンセル", customers_reservation_path(@reservation), method: :delete, data: { confirm: "本当に予約をキャンセルしますか？" }, class: "btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded", form_class: "inline"
+  
+.mt-6.flex.justify-center.space-x-6.mt-8
+  = link_to "戻る", customers_reservations_path, class: "btn bg-gray-100 font-bold py-2 px-4 rounded"
+  = link_to "ユーザートップページへ", customers_dashboard_path,  class: "btn bg-gray-100 font-bold py-2 px-4 rounded"
