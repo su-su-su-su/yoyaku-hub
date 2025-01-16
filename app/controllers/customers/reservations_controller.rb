@@ -2,6 +2,7 @@
 
 module Customers
   class ReservationsController < ApplicationController
+    before_action :set_reservation, only: [:show, :destroy]
 
     def index
       user = current_user
@@ -33,8 +34,6 @@ module Customers
     end
 
     def show
-      @reservation = Reservation.find(params[:id])
-
       @stylist = @reservation.stylist
       @menus   = @reservation.menus
 
@@ -88,6 +87,22 @@ module Customers
         flash.now[:alert] = '予約の保存に失敗しました。'
         render :show
       end
+    end
+
+    def destroy
+      if @reservation.destroy
+        redirect_to customers_reservations_path, notice: "予約がキャンセルされました。"
+      else
+        redirect_to customer_reservation_path(@reservation), alert: "予約のキャンセルに失敗しました。"
+      end
+    end
+
+    private
+
+    def set_reservation
+      @reservation = current_user.reservations.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to customers_reservations_path, alert: "予約が見つかりません。"
     end
   end
 end
