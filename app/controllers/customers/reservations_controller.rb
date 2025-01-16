@@ -91,6 +91,17 @@ module Customers
 
     def destroy
       if @reservation.destroy
+        date = @reservation.start_at.to_date
+        start_slot = (@reservation.start_at.hour * 2) + (@reservation.start_at.min >= 30 ? 1 : 0)
+        end_slot = (@reservation.end_at.hour * 2) + (@reservation.end_at.min >= 30 ? 1 : 0)
+
+        (start_slot...end_slot).each do |slot|
+          limit = ReservationLimit.find_by(stylist_id: @reservation.stylist_id, target_date: date, time_slot: slot)
+          if limit
+            limit.increment!(:max_reservations)
+          end
+        end
+
         redirect_to customers_reservations_path, notice: "予約がキャンセルされました。"
       else
         redirect_to customer_reservation_path(@reservation), alert: "予約のキャンセルに失敗しました。"
