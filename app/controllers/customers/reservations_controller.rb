@@ -9,7 +9,7 @@ module Customers
       @past_reservations = user.reservations.where("start_at < ?", Time.zone.now).order(start_at: :desc)
     end
 
-    def show
+    def new
       @stylist_id = params[:stylist_id]
       @date = params[:date]
       @time_str = params[:time_str]

@@ -46,8 +46,8 @@ Rails.application.routes.draw do
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
 
   namespace :customers do
-    get "reservations/show"
-    get "reservations/create"
+    resources :reservations, only: [:index, :show, :create, :new]
+  
     resources :stylists, only: [] do
       resources :menus, only: :index, module: 'stylists' do
         collection do
@@ -56,11 +56,7 @@ Rails.application.routes.draw do
       end
     end
   end
-
-  namespace :customers do
-    resources :reservations, only: [:index, :show, :create] do
-    end
-  end
+  
   
   devise_scope :user do
     get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
