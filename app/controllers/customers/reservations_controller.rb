@@ -2,7 +2,14 @@
 
 module Customers
   class ReservationsController < ApplicationController
-    def show
+
+    def index
+      user = current_user
+      @upcoming_reservations = user.reservations.where("start_at >= ?", Time.zone.now).order(:start_at)
+      @past_reservations = user.reservations.where("start_at < ?", Time.zone.now).order(start_at: :desc)
+    end
+
+    def new
       @stylist_id = params[:stylist_id]
       @date = params[:date]
       @time_str = params[:time_str]
