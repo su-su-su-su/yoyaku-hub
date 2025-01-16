@@ -32,6 +32,16 @@ module Customers
       end
     end
 
+    def show
+      @reservation = Reservation.find(params[:id])
+
+      @stylist = @reservation.stylist
+      @menus   = @reservation.menus
+
+      @total_duration = @menus.sum(&:duration)
+      @total_price    = @menus.sum(&:price)
+    end
+
     def create
       stylist_id = params[:stylist_id]
       date = params[:date]
