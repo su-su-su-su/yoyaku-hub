@@ -1,0 +1,42 @@
+h1.text-2xl.font-bold.mb-6 予約詳細
+
+table.border.border-collapse.mx-auto.p-4
+
+  thead.hidden
+    tr
+      th スタイリスト名
+      th 来店日時
+      th メニュー
+      th 施術時間
+      th 合計金額
+  tbody
+    tr
+      th.bg-gray-100.px-4.py-2.text-left スタイリスト名
+      td.px-4.py-2= "#{@stylist.family_name} #{@stylist.given_name}"
+    
+    tr
+      th.bg-gray-100.px-4.py-2.text-left 来店日時
+      td.px-4.py-2
+        - if @reservation.start_at
+          = I18n.l(@reservation.start_at, format: :wday_short)
+    
+    tr
+      th.bg-gray-100.px-4.py-2.text-left メニュー
+      td.px-4.py-2
+        - if @menus.any?
+          = @menus.map(&:name).join(", ")
+        - else
+          | なし
+    
+    tr
+      th.bg-gray-100.px-4.py-2.text-left 施術時間
+      td.px-4.py-2= "#{@total_duration} 分"
+    
+    tr
+      th.bg-gray-100.px-4.py-2.text-left 合計金額
+      td.px-4.py-2= "¥#{@total_price} (税込み)"
+  
+.mt-6.flex.space-x-4.mx-auto.p-4
+
+  = link_to "戻る", customers_reservations_path, class: "btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+  = link_to "ユーザートップページへ", customers_dashboard_path,  class: "btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
