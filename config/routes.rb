@@ -58,7 +58,7 @@ Rails.application.routes.draw do
   end
 
   namespace :customers do
-    resources :reservations, only: [:show, :create] do
+    resources :reservations, only: [:index, :show, :create] do
     end
   end
   
