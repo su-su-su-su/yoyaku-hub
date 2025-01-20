@@ -22,6 +22,7 @@ AllCops:
     - app/controllers/stylists/shift_settings_controller.rb
     - app/controllers/stylists/shift_settings/working_hours_controller.rb
     - app/controllers/customers/reservations_controller.rb
+    - app/controllers/customers/stylists/weeklies_controller.rb
 
 Style/Documentation:
   Enabled: false

@@ -29,4 +29,8 @@ class User < ApplicationRecord
     user.save
     user
   end
+
+  def min_active_menu_duration
+    menus.where(is_active: true).minimum(:duration) || 0
+  end
 end
