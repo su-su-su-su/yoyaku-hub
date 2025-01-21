@@ -29,6 +29,10 @@ class WorkingHour < ApplicationRecord
     )
   end
 
+  def self.date_only_for(stylist_id, date)
+    find_by(stylist_id: stylist_id, target_date: date)
+  end
+
   def holiday_flag?
     holiday_flag == '1' || holiday_flag == true
   end
