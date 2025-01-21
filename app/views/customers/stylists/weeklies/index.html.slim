@@ -70,5 +70,7 @@
                         - else
                           = link_to "◎",
                             new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
-  .mt-2.mb-2.text-center
-    = link_to "戻る", customers_stylist_menus_path(@stylist), class: "btn"
+  .mt-4.text-center
+    = link_to "戻る", customers_stylist_menus_path, class: "underline text-blue-500"
+  .mt-4.text-center
+    = link_to 'ユーザートップページへ',customers_dashboard_path,class: 'underline text-blue-500'

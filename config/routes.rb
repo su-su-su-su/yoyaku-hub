@@ -46,6 +46,7 @@ Rails.application.routes.draw do
   get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
 
   namespace :customers do
+    get "stylists/index"
     resources :reservations, only: [:index, :show, :create, :new, :destroy]
   
     resources :stylists, only: [] do
