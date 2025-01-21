@@ -3,15 +3,28 @@
 module Stylists
   class SchedulesController < ApplicationController
     def show
-      date_param = params[:date]
       @date = begin
-        Date.parse(date_param)
-      rescue ArgumentError, TypeError
+        Date.parse(params[:date])
+      rescue StandardError
         Date.current
       end
 
-      @time_slots = generate_time_slots('10:00', '18:00', 30)
       @stylist = current_user
+      @is_holiday = Holiday.default_for(@stylist.id, @date)
+
+      if @is_holiday
+        @time_slots = []
+        @working_hour = nil
+      else
+        @working_hour = WorkingHour.date_only_for(@stylist.id, @date)
+        if @working_hour.nil?
+          @time_slots = []
+        else
+          start_str = @working_hour.start_time.strftime('%H:%M')
+          end_str   = @working_hour.end_time.strftime('%H:%M')
+          @time_slots = generate_time_slots(start_str, end_str, 30)
+        end
+      end
     end
 
     private

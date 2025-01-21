@@ -6,24 +6,29 @@ h1.px-2.text-2xl.font-bold 予約表
   = link_to '後の日へ', stylists_schedules_path(date: (@date + 1.day).to_s),   class: 'px-3 py-1 border rounded'
 
 .overflow-x-auto.whitespace-nowrap.mt-4
-  table.border-collapse
-    thead
-      tr
-        th.bg-gray-100.border.border-gray-400
-        - @time_slots.each do |time_slot|
-          th.border.border-gray-400.bg-gray-200.text-center
-            = time_slot
-    tbody
-      tr
-        th.border.bg-gray-100.text-center 予約数
-        - @time_slots.each do |time_slot|
-          td.border.text-center 0
-      tr
-        th.border.bg-gray-100.text-center 残り受付可能数
-        - @time_slots.each do |time_slot|
-          td.border.text-center 1
-      tr
-        th.border.bg-gray-100.text-center
-          = "#{@stylist.family_name} #{@stylist.given_name}"
-        - @time_slots.each do |time_slot|
-          td.border
+  - if @is_holiday
+    p.text-center 休業日です
+  - elsif @working_hour.nil?
+    p.text-center 営業時間が設定されていません
+  - else
+    table.border-collapse
+      thead
+        tr
+          th.bg-gray-100.border.border-gray-400
+          - @time_slots.each do |time_slot|
+            th.border.border-gray-400.bg-gray-200.text-center
+              = time_slot
+      tbody
+        tr
+          th.border.bg-gray-100.text-center 予約数
+          - @time_slots.each do |time_slot|
+            td.border.text-center 0
+        tr
+          th.border.bg-gray-100.text-center 残り受付可能数
+          - @time_slots.each do |time_slot|
+            td.border.text-center 1
+        tr
+          th.border.bg-gray-100.text-center
+            = "#{@stylist.family_name} #{@stylist.given_name}"
+          - @time_slots.each do |time_slot|
+            td.border
