@@ -47,6 +47,7 @@ h1.text-2xl.font-bold 予約履歴
             | (メニュー情報なし)
 
         = link_to "詳細", customers_reservation_path(res), class: "text-gray-400 underline mr-4 cursor-not-allowed", aria: { disabled: true }
-
-.mt-4.flex.space-x-4
-  = link_to "ユーザートップページへ", customers_dashboard_path, class: "btn btn-primary"
+  - else 
+    p 過去の予約は存在しません。
+.mt-4.mb-4.text-center
+  = link_to '戻る', customers_dashboard_path, class: 'underline text-blue-500'
