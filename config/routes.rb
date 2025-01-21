@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   end
 
   namespace :stylists do
+    get 'schedules/:date', to: 'schedules#show', as: :schedules
     resources :shift_settings, only: [:index] do
       collection do
         post 'working_hours', to: 'shift_settings/working_hours#create'
