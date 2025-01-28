@@ -3,7 +3,7 @@
 module Customers
   module Stylists
     class WeekliesController < ApplicationController
-      helper_method :total_duration, :within_working_hours?, :time_range_occupied?
+      helper_method :within_reservation_limits?, :total_duration, :within_working_hours?, :time_range_occupied?
 
       def index
         set_stylist
@@ -15,6 +15,7 @@ module Customers
         filter_non_holiday_working_hours
         build_working_hours_hash
         build_reservation_limits_hash
+        build_reservation_counts
         set_can_go_previous
         prepare_occupied_slots
         @time_slots = build_time_slots_for_week(@dates)
@@ -49,7 +50,7 @@ module Customers
 
       def fetch_holidays
         holiday_records = Holiday.where(stylist_id: @stylist.id, target_date: @dates, is_holiday: true)
-        @holiday_days = holiday_records.to_set(&:target_date)
+        @holiday_days = holiday_records.pluck(:target_date).to_set
       end
 
       def filter_non_holiday_working_hours
@@ -73,8 +74,29 @@ module Customers
 
         limits.each do |limit|
           next if limit.time_slot.nil?
-
           @reservation_limits_hash[limit.target_date][limit.time_slot] = limit
+        end
+      end
+
+      def build_reservation_counts
+        @reservation_counts = {}
+
+        @dates.each do |date|
+          @reservation_counts[date] = {}
+          reservations = Reservation.where(
+            stylist_id: @stylist.id,
+            start_at: date.beginning_of_day..date.end_of_day
+          )
+
+          reservations.each do |res|
+            start_slot = slot_for_time(res.start_at)
+            end_slot = slot_for_time(res.end_at)
+
+            (start_slot...end_slot).each do |s|
+              @reservation_counts[date][s] ||= 0
+              @reservation_counts[date][s] += 1
+            end
+          end
         end
       end
 
@@ -149,6 +171,17 @@ module Customers
       def time_range_occupied?(date, start_slot, needed_slots)
         (start_slot...(start_slot + needed_slots)).any? do |s|
           @occupied_slots_hash[date][s] == true
+        end
+      end
+      def within_reservation_limits?(limit_obj, date, slot, needed_slots)
+        return false unless limit_obj
+        (0...needed_slots).all? do |i|
+          current_slot = slot + i
+          current_limit = @reservation_limits_hash[date][current_slot]
+          next false unless current_limit
+
+          current_count = @reservation_counts[date][current_slot].to_i
+          (current_count + 1) <= current_limit.max_reservations
         end
       end
     end
