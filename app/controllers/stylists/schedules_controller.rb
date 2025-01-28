@@ -46,11 +46,14 @@ module Stylists
     end
 
     def parse_date(date_str)
-      Date.parse(date_str) rescue nil
+      Date.parse(date_str)
+    rescue StandardError
+      nil
     end
 
     def slotwise_reservation_counts(stylist_id, date)
-      reservations = Reservation.where(stylist_id: stylist_id).where("start_at >= ? AND end_at <= ?", date.beginning_of_day, date.end_of_day)
+      reservations = Reservation.where(stylist_id: stylist_id).where('start_at >= ? AND end_at <= ?',
+                                                                     date.beginning_of_day, date.end_of_day)
       counts = Hash.new(0)
       reservations.each do |res|
         start_slot = to_slot_index(res.start_at)
@@ -82,7 +85,7 @@ module Stylists
       else
         raise ArgumentError, "Unsupported type: #{time_or_str.class}"
       end
-      h * 2 + (m >= 30 ? 1 : 0)
+      (h * 2) + (m >= 30 ? 1 : 0)
     end
   end
 end
