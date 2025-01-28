@@ -13,26 +13,67 @@ module Stylists
 
       @stylist = current_user
       @is_holiday = Holiday.default_for(@stylist.id, @date)
-
-      if @is_holiday
-        @time_slots = []
-        @working_hour = nil
-      else
-        @working_hour = WorkingHour.date_only_for(@stylist.id, @date)
-        if @working_hour.nil?
-          @time_slots = []
-        else
-          start_str = @working_hour.start_time.strftime('%H:%M')
-          end_str   = @working_hour.end_time.strftime('%H:%M')
-          @time_slots = generate_time_slots(start_str, end_str, 30)
-        end
-      end
-
+      set_working_hour_and_time_slots(@stylist.id, @date)
       @reservation_counts = slotwise_reservation_counts(@stylist.id, @date)
       @reservation_limits = slotwise_reservation_limits(@stylist.id, @date)
     end
 
+    def reservation_limits
+      date_str   = params[:date]
+      slot_str   = params[:slot]
+      direction  = params[:direction]
+      
+      @date = Date.parse(date_str) rescue Date.current 
+      slot_idx = slot_str.to_i
+    
+      set_working_hour_and_time_slots(current_user.id, @date)
+
+      limit = ReservationLimit.find_or_initialize_by(
+        stylist_id: current_user.id,
+        target_date: @date,
+        time_slot: slot_idx
+      )
+      limit.max_reservations ||= 0
+    
+      if direction == "up"
+        limit.max_reservations += 1
+      elsif direction == "down" && limit.max_reservations > 0
+        limit.max_reservations -= 1
+      end
+      limit.save!
+ 
+      @reservation_counts = slotwise_reservation_counts(current_user.id, @date)
+      @reservation_limits = slotwise_reservation_limits(current_user.id, @date)
+    
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.replace("slot-limit-#{slot_idx}", partial: 'slot_limit', locals: { slot_idx: slot_idx })
+        }
+        format.html {
+          render partial: 'slot_limit', locals: { slot_idx: slot_idx }
+        }
+      end
+    end
+
     private
+
+    def set_working_hour_and_time_slots(stylist_id, date)
+      @is_holiday = Holiday.default_for(stylist_id, date)
+      if @is_holiday
+        @time_slots = []
+        @working_hour = nil
+        return
+      end
+    
+      @working_hour = WorkingHour.date_only_for(stylist_id, date)
+      if @working_hour.nil?
+        @time_slots = []
+      else
+        start_str = @working_hour.start_time.strftime('%H:%M')
+        end_str   = @working_hour.end_time.strftime('%H:%M')
+        @time_slots = generate_time_slots(start_str, end_str, 30)
+      end
+    end
 
     def generate_time_slots(start_str, end_str, step)
       start_time = Time.zone.parse(start_str)
