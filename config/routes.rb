@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
   namespace :stylists do
     get 'schedules/:date', to: 'schedules#show', as: :schedules
+    patch 'schedules/:date/reservation_limits', to: 'schedules#reservation_limits', as: :reservation_limits
     resources :shift_settings, only: [:index] do
       collection do
         post 'working_hours', to: 'shift_settings/working_hours#create'
@@ -38,7 +39,7 @@ Rails.application.routes.draw do
         patch ':year/:month', to: 'shift_settings#update', as: 'update'
       end
     end
-  end
+  end 
 
   get 'customers' => redirect('/customers/sign_up')
   get 'login_with_google/:role', to: 'sessions#set_role', as: :set_role_and_auth

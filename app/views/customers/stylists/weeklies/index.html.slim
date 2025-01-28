@@ -38,6 +38,8 @@
               - limit_obj     = @reservation_limits_hash[date][slot]
               - if @holiday_days.include?(date)
                 | ×
+              - elsif limit_obj && limit_obj.max_reservations <= 0
+                | ×
               - else
                 - wh = @wh_list.find { |rec| rec.target_date == date }
                 - if wh.blank?
@@ -54,23 +56,28 @@
                       - if time_range_occupied?(date, slot, needed_slots)
                         | ×
                       - else
-                        - next_slot = Reservation.find_next_reservation_start_slot(@stylist.id, date, slot + needed_slots)
-                        - prev_slot = Reservation.find_previous_reservation_end_slot(@stylist.id, date, slot)
-                        - gap_from_prev = (slot - prev_slot) * 30
-                        - gap_to_next   = (next_slot - (slot + needed_slots)) * 30
-                        - if gap_from_prev == 0 || gap_to_next == 0
-                          = link_to "◎",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
-                        - elsif  gap_from_prev < min_time && gap_to_next < min_time
-                          = link_to "◎",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
-                        - elsif gap_from_prev < min_time || gap_to_next < min_time
-                          = link_to "△",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+                        - if !within_reservation_limits?(limit_obj, date, slot, needed_slots)
+                          | ×
                         - else
-                          = link_to "◎",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+                          - next_slot = Reservation.find_next_reservation_start_slot(@stylist.id, date, slot + needed_slots)
+                          - prev_slot = Reservation.find_previous_reservation_end_slot(@stylist.id, date, slot)
+                          - gap_from_prev = (slot - prev_slot) * 30
+                          - gap_to_next   = (next_slot - (slot + needed_slots)) * 30
+                          - if gap_from_prev == 0 || gap_to_next == 0
+                            = link_to "◎",
+                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+                          - elsif gap_from_prev < min_time && gap_to_next < min_time
+                            = link_to "◎",
+                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+                          - elsif gap_from_prev < min_time || gap_to_next < min_time
+                            = link_to "△",
+                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+                          - else
+                            = link_to "◎",
+                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+ 
+
   .mt-4.text-center
     = link_to "戻る", customers_stylist_menus_path, class: "underline text-blue-500"
   .mt-4.text-center
-    = link_to 'ユーザートップページへ',customers_dashboard_path,class: 'underline text-blue-500'
+    = link_to 'ユーザートップページへ', customers_dashboard_path, class: 'underline text-blue-500'
