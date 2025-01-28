@@ -20,13 +20,19 @@ h1.px-2.text-2xl.font-bold 予約表
               = time_slot
       tbody
         tr
-          th.border.bg-gray-100.text-center 予約数
-          - @time_slots.each do |time_slot|
-            td.border.text-center 0
+          th.text-center 予約数
+          - @time_slots.each do |time_str|
+            - slot_idx = to_slot_index(time_str)
+            td.text-center
+              = @reservation_counts[slot_idx].to_i
         tr
-          th.border.bg-gray-100.text-center 残り受付可能数
-          - @time_slots.each do |time_slot|
-            td.border.text-center 1
+          th.text-center 残り受付可能数
+          - @time_slots.each do |time_str|
+            - slot_idx = to_slot_index(time_str)
+            td.text-center
+              - max_res = @reservation_limits[slot_idx].to_i
+              - current_count = @reservation_counts[slot_idx].to_i
+              = (max_res - current_count).clamp(0, 2)
         tr
           th.border.bg-gray-100.text-center
             = "#{@stylist.family_name} #{@stylist.given_name}"
