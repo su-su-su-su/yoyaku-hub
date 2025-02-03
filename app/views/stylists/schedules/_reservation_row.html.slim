@@ -1,0 +1,15 @@
+- reservations_here = @slotwise_reservations[slot_idx]
+- if reservations_here.present?
+  - res = reservations_here.first
+  - start_slot = to_slot_index(res.start_at)
+  - end_slot   = to_slot_index(res.end_at)
+  - if slot_idx == start_slot
+    - col_span = end_slot - start_slot
+    td.border(colspan=col_span)
+      .reservation-card
+        - menu_names = res.menus.map(&:name).join(", ")
+        p メニュー: #{menu_names}
+        p 予約 太郎 様
+  - else
+- else
+  td.border
