@@ -192,6 +192,8 @@ ja:
         create_success: "休業日が設定されました。"
       reservation_limits:
         create_success: "受付可能数が設定されました。"
+    profiles:
+      updated: "カスタマー情報を更新しました"
   customers:
     profiles:
       updated: "カスタマー情報を更新しました"
