@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   namespace :stylists do
     get 'schedules/:date', to: 'schedules#show', as: :schedules
     patch 'schedules/:date/reservation_limits', to: 'schedules#reservation_limits', as: :reservation_limits
+    resource :profile, only: [:edit, :update]
     resources :shift_settings, only: [:index] do
       collection do
         post 'working_hours', to: 'shift_settings/working_hours#create'
@@ -59,7 +60,7 @@ Rails.application.routes.draw do
       end
     end
   end
-  
+
   devise_scope :user do
     get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
     post 'stylists', to: 'users/registrations#create', as: :stylist_registration
