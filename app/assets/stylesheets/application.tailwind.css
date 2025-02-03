@@ -155,4 +155,32 @@
     background-color: #e7f1ff;
     border-color: #3a80e8;
   }
+
+  table.fixed-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  table.fixed-table th,
+  table.fixed-table td {
+    min-width: 80px;
+    word-wrap: break-word;
+    border: 1px solid #ccc;
+  }
+
+  table.fixed-table tr {
+    height: 88px;
+  }
+
+  .reservation-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+  }
+
+  .reservation-card p {
+    margin-bottom: 5px;
+  }
 }

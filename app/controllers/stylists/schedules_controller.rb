@@ -10,13 +10,17 @@ module Stylists
       rescue StandardError
         Date.current
       end
-
+    
       @stylist = current_user
       @is_holiday = Holiday.default_for(@stylist.id, @date)
       set_working_hour_and_time_slots(@stylist.id, @date)
       @reservation_counts = slotwise_reservation_counts(@stylist.id, @date)
       @reservation_limits = slotwise_reservation_limits(@stylist.id, @date)
+      
+      @slotwise_reservations = slotwise_reservations_map(@stylist.id, @date)
     end
+    
+    
 
     def reservation_limits
       date_str   = params[:date]
@@ -115,7 +119,6 @@ module Stylists
       end
       limits
     end
-
     def to_slot_index(time_or_str)
       case time_or_str
       when String
@@ -126,7 +129,28 @@ module Stylists
       else
         raise ArgumentError, "Unsupported type: #{time_or_str.class}"
       end
-      (h * 2) + (m >= 30 ? 1 : 0)
+      slot_idx = (h * 2) + (m >= 30 ? 1 : 0)
+      slot_idx
     end
-  end
+    
+
+    def slotwise_reservations_map(stylist_id, date)
+      reservations = Reservation.where(stylist_id: stylist_id)
+                              .where("start_at >= ? AND end_at <= ?",
+                                     date.beginning_of_day.in_time_zone, date.end_of_day.in_time_zone)
+                              .where.not(start_at: nil, end_at: nil)
+                              .includes(:menus, :customer)
+    
+      map = Hash.new { |h, k| h[k] = [] }
+    
+      reservations.each do |res|
+        start_idx = to_slot_index(res.start_at)
+        end_idx = to_slot_index(res.end_at)    
+        (start_idx...end_idx).each do |slot_idx|
+          map[slot_idx] << res
+        end
+      end
+      map
+    end
+  end    
 end
