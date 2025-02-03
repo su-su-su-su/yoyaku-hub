@@ -9,7 +9,7 @@
       .reservation-card
         - menu_names = res.menus.map(&:name).join(", ")
         p メニュー: #{menu_names}
-        p 予約 太郎 様
+        p #{res.customer.family_name} #{res.customer.given_name} 様
   - else
 - else
   td.border
