@@ -50,7 +50,7 @@ Rails.application.routes.draw do
   namespace :customers do
     get "stylists/index"
     resources :reservations, only: [:index, :show, :create, :new, :destroy]
-  
+    resource :profile, only: [:edit, :update]
     resources :stylists, only: [] do
       resources :menus, only: :index, module: 'stylists' do
         collection do
@@ -59,7 +59,6 @@ Rails.application.routes.draw do
       end
     end
   end
-  
   
   devise_scope :user do
     get 'stylists/sign_up', to: 'users/registrations#new', as: :new_stylist_registration
