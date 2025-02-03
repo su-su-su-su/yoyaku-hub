@@ -24,6 +24,7 @@ Rails.application.routes.draw do
     get 'schedules/:date', to: 'schedules#show', as: :schedules
     patch 'schedules/:date/reservation_limits', to: 'schedules#reservation_limits', as: :reservation_limits
     resource :profile, only: [:edit, :update]
+    resources :reservations, only: [:show, :index, :new, :create, :edit, :update, :destroy]
     resources :shift_settings, only: [:index] do
       collection do
         post 'working_hours', to: 'shift_settings/working_hours#create'
