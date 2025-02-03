@@ -75,6 +75,15 @@ module Users
       devise_parameter_sanitizer.permit(:sign_up, keys: [:role])
     end
 
+    def after_sign_up_path_for(resource)
+      if resource.role == 'stylist'
+        edit_stylists_profile_path
+      else
+        edit_customers_profile_path
+
+      end
+    end
+
     private
 
     def handle_successful_signup

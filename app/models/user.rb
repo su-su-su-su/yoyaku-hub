@@ -12,6 +12,18 @@ class User < ApplicationRecord
   has_many :stylist_reservations, class_name: 'Reservation', foreign_key: :stylist_id, inverse_of: :stylist,
                                   dependent: :destroy
 
+  KATAKANA_REGEX = /\A[ァ-ヶー]+\z/
+
+  validates :family_name_kana, format: {
+    with: KATAKANA_REGEX,
+    message: I18n.t('errors.messages.only_katakana')
+  }, allow_blank: true
+
+  validates :given_name_kana, format: {
+    with: KATAKANA_REGEX,
+    message: I18n.t('errors.messages.only_katakana')
+  }, allow_blank: true
+
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
