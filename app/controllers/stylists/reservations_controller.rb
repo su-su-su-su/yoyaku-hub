@@ -10,7 +10,7 @@ module Stylists
       @reservation = Reservation.find(params[:id])
       @reservation.canceled!
       redirect_to stylists_schedules_path(date: @reservation.start_at.to_date),
-                  notice: "予約をキャンセルしました。"
-    end    
+                  notice: I18n.t('flash.reservation_cancelled')
+    end
   end
 end

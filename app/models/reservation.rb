@@ -8,7 +8,7 @@ class Reservation < ApplicationRecord
   has_many :reservation_menu_selections, dependent: :destroy
   has_many :menus, through: :reservation_menu_selections
 
-  enum status: {before_visit: 0, paid: 1, canceled: 2, no_show: 3}
+  enum :status, { before_visit: 0, paid: 1, canceled: 2, no_show: 3 }
 
   def self.find_next_reservation_start_slot(stylist_id, date, from_slot)
     day_start = date.beginning_of_day
