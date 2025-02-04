@@ -96,19 +96,21 @@ module Stylists
       nil
     end
 
-    def slotwise_reservation_counts(stylist_id, date)
-      reservations = Reservation.where(stylist_id: stylist_id).where('start_at >= ? AND end_at <= ?',
-                                                                     date.beginning_of_day, date.end_of_day)
-      counts = Hash.new(0)
-      reservations.each do |res|
-        start_slot = to_slot_index(res.start_at)
-        end_slot   = to_slot_index(res.end_at)
-        (start_slot...end_slot).each do |slot_idx|
-          counts[slot_idx] += 1
-        end
-      end
-      counts
-    end
+   def slotwise_reservation_counts(stylist_id, date)
+     reservations = Reservation.where(stylist_id: stylist_id)
+       .where(start_at: date.beginning_of_day..date.end_of_day)
+       .where.not(status: [:canceled, :no_show])
+     counts = Hash.new(0)
+     reservations.each do |res|
+       start_slot = to_slot_index(res.start_at)
+       end_slot   = to_slot_index(res.end_at)
+       (start_slot...end_slot).each do |slot_idx|
+         counts[slot_idx] += 1
+       end
+     end
+     counts
+   end
+
 
     def slotwise_reservation_limits(stylist_id, date)
       limits = Hash.new(0)

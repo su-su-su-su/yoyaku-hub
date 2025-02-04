@@ -71,17 +71,6 @@ module Customers
       if @reservation.save
         @reservation.menus << menus
 
-        start_slot = (start_time_obj.hour * 2) + (start_time_obj.min >= 30 ? 1 : 0)
-        end_slot = (end_time_obj.hour * 2) + (end_time_obj.min >= 30 ? 1 : 0)
-
-        (start_slot...end_slot).each do |slot|
-          limit = ReservationLimit.find_by(stylist_id: stylist.id, target_date: date, time_slot: slot)
-          if limit&.max_reservations&.positive?
-            limit.max_reservations -= 1
-            limit.save!
-          end
-        end
-
         redirect_to customers_dashboard_path, notice: '予約を確定しました。'
       else
         flash.now[:alert] = '予約の保存に失敗しました。'
@@ -92,15 +81,6 @@ module Customers
     def destroy
       if @reservation.destroy
         date = @reservation.start_at.to_date
-        start_slot = (@reservation.start_at.hour * 2) + (@reservation.start_at.min >= 30 ? 1 : 0)
-        end_slot = (@reservation.end_at.hour * 2) + (@reservation.end_at.min >= 30 ? 1 : 0)
-
-        (start_slot...end_slot).each do |slot|
-          limit = ReservationLimit.find_by(stylist_id: @reservation.stylist_id, target_date: date, time_slot: slot)
-          if limit
-            limit.increment!(:max_reservations)
-          end
-        end
 
         redirect_to customers_reservations_path, notice: "予約がキャンセルされました。"
       else

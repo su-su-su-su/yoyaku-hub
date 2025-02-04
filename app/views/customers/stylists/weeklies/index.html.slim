@@ -53,7 +53,7 @@
                     - if slot < day_start_slot || (slot + needed_slots) > day_end_slot
                       | ×
                     - else
-                      - if time_range_occupied?(date, slot, needed_slots)
+                      - if @occupied_slots_hash[date][slot]
                         | ×
                       - else
                         - if !within_reservation_limits?(limit_obj, date, slot, needed_slots)
