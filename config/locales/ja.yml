@@ -1,4 +1,6 @@
 ja:
+  flash:
+    reservation_cancelled: "予約をキャンセルしました。"
   activerecord:
     errors:
       messages:

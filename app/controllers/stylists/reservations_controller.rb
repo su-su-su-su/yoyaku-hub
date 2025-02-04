@@ -5,5 +5,12 @@ module Stylists
     def show
       @reservation = Reservation.find(params[:id])
     end
+
+    def cancel
+      @reservation = Reservation.find(params[:id])
+      @reservation.canceled!
+      redirect_to stylists_schedules_path(date: @reservation.start_at.to_date),
+                  notice: I18n.t('flash.reservation_cancelled')
+    end
   end
 end
