@@ -136,6 +136,7 @@ module Stylists
 
     def slotwise_reservations_map(stylist_id, date)
       reservations = Reservation.where(stylist_id: stylist_id)
+                              .where(status: [:before_visit, :paid])
                               .where("start_at >= ? AND end_at <= ?",
                                      date.beginning_of_day.in_time_zone, date.end_of_day.in_time_zone)
                               .where.not(start_at: nil, end_at: nil)
