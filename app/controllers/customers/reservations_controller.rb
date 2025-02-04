@@ -2,7 +2,7 @@
 
 module Customers
   class ReservationsController < ApplicationController
-    before_action :set_reservation, only: [:show, :destroy]
+    before_action :set_reservation, only: [:show]
 
     def index
       user = current_user
@@ -78,14 +78,11 @@ module Customers
       end
     end
 
-    def destroy
-      if @reservation.destroy
-        date = @reservation.start_at.to_date
-
-        redirect_to customers_reservations_path, notice: "予約がキャンセルされました。"
-      else
-        redirect_to customer_reservation_path(@reservation), alert: "予約のキャンセルに失敗しました。"
-      end
+    def cancel
+      @reservation = Reservation.find(params[:id])
+      @reservation.canceled!
+      redirect_to customers_reservations_path(date: @reservation.start_at.to_date),
+                  notice: I18n.t('flash.reservation_cancelled')
     end
 
     private

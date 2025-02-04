@@ -24,7 +24,7 @@ Rails.application.routes.draw do
     get 'schedules/:date', to: 'schedules#show', as: :schedules
     patch 'schedules/:date/reservation_limits', to: 'schedules#reservation_limits', as: :reservation_limits
     resource :profile, only: [:edit, :update]
-    resources :reservations, only: [:show, :index, :new, :create, :edit, :update, :destroy] do
+    resources :reservations, only: [:show, :index, :new, :create, :edit, :update] do
       member do
         patch :cancel
       end
@@ -56,7 +56,11 @@ Rails.application.routes.draw do
 
   namespace :customers do
     get "stylists/index"
-    resources :reservations, only: [:index, :show, :create, :new, :destroy]
+    resources :reservations, only: [:index, :show, :create, :new] do
+      member do
+        patch :cancel
+      end
+    end
     resource :profile, only: [:edit, :update]
     resources :stylists, only: [] do
       resources :menus, only: :index, module: 'stylists' do
