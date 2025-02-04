@@ -3,7 +3,7 @@
 module Customers
   module Stylists
     class WeekliesController < ApplicationController
-      helper_method :within_reservation_limits?, :total_duration, :within_working_hours?, :time_range_occupied?
+      helper_method :within_reservation_limits?, :total_duration, :within_working_hours?
 
       def index
         set_stylist
@@ -86,7 +86,8 @@ module Customers
           reservations = Reservation.where(
             stylist_id: @stylist.id,
             start_at: date.beginning_of_day..date.end_of_day
-          )
+          ).where(status: [:before_visit, :paid])
+
 
           reservations.each do |res|
             start_slot = slot_for_time(res.start_at)
@@ -134,7 +135,7 @@ module Customers
         @reservations_for_week = Reservation.where(
           stylist_id: @stylist.id,
           start_at: @dates.first.beginning_of_day..@dates.last.end_of_day
-        )
+        ).where(status: [:before_visit, :paid])
 
         @reservations_for_week.each do |res|
           date = res.start_at.to_date
@@ -168,11 +169,6 @@ module Customers
         (time.hour * 2) + (time.min >= 30 ? 1 : 0)
       end
 
-      def time_range_occupied?(date, start_slot, needed_slots)
-        (start_slot...(start_slot + needed_slots)).any? do |s|
-          @occupied_slots_hash[date][s] == true
-        end
-      end
       def within_reservation_limits?(limit_obj, date, slot, needed_slots)
         return false unless limit_obj
         (0...needed_slots).all? do |i|

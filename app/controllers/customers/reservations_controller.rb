@@ -2,12 +2,12 @@
 
 module Customers
   class ReservationsController < ApplicationController
-    before_action :set_reservation, only: [:show, :destroy]
+    before_action :set_reservation, only: [:show]
 
     def index
       user = current_user
-      @upcoming_reservations = user.reservations.where("start_at >= ?", Time.zone.now).order(:start_at)
-      @past_reservations = user.reservations.where("start_at < ?", Time.zone.now).order(start_at: :desc)
+      @upcoming_reservations = user.reservations.where("start_at >= ?", Time.zone.now).where.not(status: [:canceled, :no_show]).order(:start_at)
+      @past_reservations = user.reservations.where("(start_at < :now) OR (status = :canceled)",now: Time.zone.now, canceled: Reservation.statuses[:canceled]).order(start_at: :desc)
     end
 
     def new
@@ -71,17 +71,6 @@ module Customers
       if @reservation.save
         @reservation.menus << menus
 
-        start_slot = (start_time_obj.hour * 2) + (start_time_obj.min >= 30 ? 1 : 0)
-        end_slot = (end_time_obj.hour * 2) + (end_time_obj.min >= 30 ? 1 : 0)
-
-        (start_slot...end_slot).each do |slot|
-          limit = ReservationLimit.find_by(stylist_id: stylist.id, target_date: date, time_slot: slot)
-          if limit&.max_reservations&.positive?
-            limit.max_reservations -= 1
-            limit.save!
-          end
-        end
-
         redirect_to customers_dashboard_path, notice: '予約を確定しました。'
       else
         flash.now[:alert] = '予約の保存に失敗しました。'
@@ -89,23 +78,11 @@ module Customers
       end
     end
 
-    def destroy
-      if @reservation.destroy
-        date = @reservation.start_at.to_date
-        start_slot = (@reservation.start_at.hour * 2) + (@reservation.start_at.min >= 30 ? 1 : 0)
-        end_slot = (@reservation.end_at.hour * 2) + (@reservation.end_at.min >= 30 ? 1 : 0)
-
-        (start_slot...end_slot).each do |slot|
-          limit = ReservationLimit.find_by(stylist_id: @reservation.stylist_id, target_date: date, time_slot: slot)
-          if limit
-            limit.increment!(:max_reservations)
-          end
-        end
-
-        redirect_to customers_reservations_path, notice: "予約がキャンセルされました。"
-      else
-        redirect_to customer_reservation_path(@reservation), alert: "予約のキャンセルに失敗しました。"
-      end
+    def cancel
+      @reservation = Reservation.find(params[:id])
+      @reservation.canceled!
+      redirect_to customers_reservations_path(date: @reservation.start_at.to_date),
+                  notice: I18n.t('flash.reservation_cancelled')
     end
 
     private
