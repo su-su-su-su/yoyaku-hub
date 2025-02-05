@@ -42,7 +42,7 @@ div.shadow-lg.rounded-lg.bg-white.p-4
           = "¥#{total_price} (税込み)"
 
   .mt-4
-    = link_to "変更", "#",
+    = link_to "変更", edit_stylists_reservation_path(@reservation),
       class: "px-3 py-1 border rounded mr-4",method: :get
 
     = link_to "キャンセル",

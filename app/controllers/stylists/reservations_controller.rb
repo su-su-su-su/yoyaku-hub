@@ -12,5 +12,13 @@ module Stylists
       redirect_to stylists_schedules_path(date: @reservation.start_at.to_date),
                   notice: I18n.t('flash.reservation_cancelled')
     end
+
+    def edit
+      @reservation = Reservation.find(params[:id])
+    end
+
+    def update
+      @reservation = Reservation.find(params[:id])
+    end
   end
 end
