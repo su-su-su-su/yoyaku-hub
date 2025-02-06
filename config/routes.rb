@@ -28,6 +28,9 @@ Rails.application.routes.draw do
       member do
         patch :cancel
       end
+      collection do
+        get :update_time_options
+      end
     end
 
     resources :shift_settings, only: [:index] do

@@ -1,0 +1,4 @@
+- if f.present?
+  = f.select :start_time_str, options_for_select(time_options, selected_time), class: "border rounded p-1 w-full"
+- else
+  = select_tag "reservation[start_time_str]", options_for_select(time_options, selected_time), class: "border rounded p-1 w-full"
