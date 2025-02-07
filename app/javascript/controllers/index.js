@@ -1,6 +1,8 @@
 import { application } from "../controllers/application";
 import HelloController from "./hello_controller.js";
-import HolidayToggleController from "./holiday_toggle_controller.js"; // 正しいファイル名を使用
+import HolidayToggleController from "./holiday_toggle_controller.js";
+import TimeOptionsController from "./time_options_controller";
 
 application.register("hello", HelloController);
-application.register("holiday-toggle", HolidayToggleController); // ハイフンを使用
+application.register("holiday-toggle", HolidayToggleController);
+application.register("time-options", TimeOptionsController);

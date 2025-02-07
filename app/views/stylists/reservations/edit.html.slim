@@ -1,0 +1,54 @@
+h1.text-2xl.font-bold 予約の変更
+
+.div.shadow-lg.rounded-lg.bg-white.p-4
+  = form_with(model: @reservation, url: stylists_reservation_path(@reservation), method: :patch, local: true) do |f|
+    = hidden_field_tag :stylist_id, @reservation.stylist_id, id: "stylist_id"
+    table.table-fixed.w-full.border-collapse
+      tbody
+        tr.border-b
+          th.w-1/3.py-2.px-2.bg-gray-100 来店日
+          td.py-2.px-2
+            = f.date_field :start_date_str, 
+              value: @reservation.start_at&.strftime("%Y-%m-%d"), 
+              class: "border rounded p-1", 
+              id: "reservation_date",
+              data: { controller: "time-options", action: "change->time-options#update" }
+        tr.border-b
+          th.w-1/3.py-2.px-2.bg-gray-100 来店時刻
+          td.py-2.px-2
+            turbo-frame#time_select_frame
+              = render partial: "time_select", locals: { f: f, time_options: @time_options, selected_time: @reservation.start_at&.strftime("%H:%M") }
+
+        tr.border-b
+          th.w-1/3.py-2.px-2.bg-gray-100 お客様の名前
+          td.py-2.px-2
+            - if @reservation.customer.present?
+              = "#{@reservation.customer.family_name} #{@reservation.customer.given_name} 様"
+            - else
+              | 不明
+
+        tr.border-b
+          th.w-1/3.py-2.px-2.bg-gray-100 メニュー
+          td.py-2.px-2
+            = f.collection_select :menu_id, 
+              Menu.all, :id, :name, 
+              prompt: "メニューを選択", 
+              selected: @reservation.menus.first&.id, 
+              class: "border rounded p-1"
+
+        tr.border-b
+          th.w-1/3.py-2.px-2.bg-gray-100 施術時間
+          td.py-2.px-2
+            - total_duration = @reservation.menus.sum(&:duration)
+            = "#{total_duration} 分"
+
+        tr
+          th.w-1/3.py-2.px-2.bg-gray-100 合計金額
+          td.py-2.px-2
+            - total_price = @reservation.menus.sum(&:price)
+            = "¥#{total_price} (税込み)"
+
+    .mt-4.flex.space-x-4
+      = f.submit "変更を確定", class: "px-4 py-2 rounded bg-blue-500 text-white"
+
+      = link_to "戻る", stylists_reservation_path(@reservation), class: "px-4 py-2 border rounded"

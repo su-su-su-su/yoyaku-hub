@@ -24,6 +24,7 @@ AllCops:
     - app/controllers/customers/reservations_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
     - app/controllers/stylists/schedules_controller.rb
+    - app/controllers/stylists/reservations_controller.rb
 
 Style/Documentation:
   Enabled: false
