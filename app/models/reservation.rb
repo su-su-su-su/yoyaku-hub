@@ -2,13 +2,14 @@
 
 class Reservation < ApplicationRecord
   belongs_to :customer, class_name: 'User', inverse_of: :reservations
-
   belongs_to :stylist, class_name: 'User', inverse_of: :stylist_reservations
-
   has_many :reservation_menu_selections, dependent: :destroy
   has_many :menus, through: :reservation_menu_selections
 
   enum :status, { before_visit: 0, paid: 1, canceled: 2, no_show: 3 }
+
+  attr_accessor :start_date_str, :start_time_str
+  before_validation :combine_date_and_time
 
   def self.find_next_reservation_start_slot(stylist_id, date, from_slot)
     working_hr = WorkingHour.date_only_for(stylist_id, date)
@@ -60,5 +61,17 @@ class Reservation < ApplicationRecord
 
   def self.to_slot_index(time)
     (time.hour * 2) + (time.min >= 30 ? 1 : 0)
+  end
+
+  private
+
+  def combine_date_and_time
+    if start_date_str.present? && start_time_str.present?
+      new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
+      self.start_at = new_start_at
+
+      total_duration = menus.sum(&:duration)
+      self.end_at = new_start_at + total_duration.minutes
+    end
   end
 end
