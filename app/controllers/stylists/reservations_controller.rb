@@ -21,7 +21,7 @@ module Stylists
       if @reservation.update(reservation_params)
         redirect_to stylists_reservation_path(date: @reservation.start_at.to_date), notice: '予約が正常に更新されました。'
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 
@@ -56,7 +56,7 @@ module Stylists
     end
 
     def reservation_params
-      params.require(:reservation).permit(:start_date_str, :start_time_str)
+      params.require(:reservation).permit(:start_date_str, :start_time_str, menu_ids: [])
     end
 
     def prepare_time_options
