@@ -44,7 +44,7 @@ module Stylists
       elsif direction == "down" && limit.max_reservations > 0
         limit.max_reservations -= 1
       end
-      limit.save!
+      limit.save
  
       @reservation_counts = slotwise_reservation_counts(current_user.id, @date)
       @reservation_limits = slotwise_reservation_limits(current_user.id, @date)
