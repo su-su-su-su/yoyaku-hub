@@ -11,6 +11,7 @@ class Reservation < ApplicationRecord
   validate :validate_not_holiday
   validate :validate_within_operating_hours
   validate :validate_slotwise_capacity
+  validate :menu_selection_presence
   before_validation :combine_date_and_time
 
   attr_accessor :start_date_str, :start_time_str
@@ -125,6 +126,11 @@ class Reservation < ApplicationRecord
         errors.add(:base, 'この時間帯は既に受付上限を超えています。')
         break
       end
+    end
+  end
+  def menu_selection_presence
+    if menu_ids.blank? || menu_ids.reject(&:blank?).empty?
+      errors.add(:menus, 'は1つ以上選択してください')
     end
   end
 end

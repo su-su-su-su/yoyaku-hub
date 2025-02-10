@@ -7,6 +7,7 @@ h1.text-2xl.font-bold 予約の変更
 
 .div.shadow-lg.rounded-lg.bg-white.p-4
   = form_with(model: @reservation, url: stylists_reservation_path(@reservation), method: :patch, local: true) do |f|
+    = hidden_field_tag "reservation[menu_ids][]", ""
     = hidden_field_tag :stylist_id, @reservation.stylist_id, id: "stylist_id"
     table.table-fixed.w-full.border-collapse
       tbody
