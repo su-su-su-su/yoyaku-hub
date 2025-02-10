@@ -56,7 +56,7 @@ module Stylists
     end
 
     def reservation_params
-      params.require(:reservation).permit(:start_date_str, :start_time_str, menu_ids: [])
+      params.require(:reservation).permit(:start_date_str, :start_time_str, :custom_duration, menu_ids: [])
     end
 
     def prepare_time_options
