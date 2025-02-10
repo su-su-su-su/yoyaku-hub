@@ -75,8 +75,8 @@ class Reservation < ApplicationRecord
     new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
     self.start_at = new_start_at
 
-    total_duration = menus.sum(&:duration)
-    self.end_at = new_start_at + total_duration.minutes
+    used_duration = custom_duration.presence || menus.sum(&:duration)
+    self.end_at = new_start_at + used_duration.minutes
   end
 
   def validate_not_holiday
