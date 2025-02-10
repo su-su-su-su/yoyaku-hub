@@ -13,21 +13,24 @@
             = "#{@this_month_year}"
             br
             = "#{@this_month}月"
-          a.btn.btn-secondary.mt-2 href=show_stylists_shift_settings_path(year: @this_month_year, month: @this_month)
-              = "未設定"
+          - button_label = @is_this_month_configured ? "設定済み" : "未設定"
+          = link_to show_stylists_shift_settings_path(year: @this_month_year, month: @this_month), class: "btn btn-secondary mt-2 px-4 min-w-[80px] whitespace-nowrap" do
+            = button_label
       .card.bg-base-100.shadow
         .card-body.flex.flex-col.items-center
           p.text-lg.font-bold
             = "#{@next_month_year}"
             br
             = "#{@next_month}月"
-          a.btn.btn-secondary.mt-2 href=show_stylists_shift_settings_path(year: @next_month_year, month: @next_month)
-              = "未設定"
+          - button_label = @is_next_month_configured ? "設定済み" : "未設定"
+          = link_to show_stylists_shift_settings_path(year: @next_month_year, month: @next_month), class: "btn btn-secondary mt-2 px-4 min-w-[80px] whitespace-nowrap" do
+            = button_label
       .card.bg-base-100.shadow
         .card-body.flex.flex-col.items-center
           p.text-lg.font-bold
             = "#{@next_next_month_year}"
             br
             = "#{@next_next_month}月"
-          a.btn.btn-secondary.mt-2 href=show_stylists_shift_settings_path(year: @next_next_month_year, month: @next_next_month)
-              = "未設定"
+          - button_label = @is_next_next_month_configured ? "設定済み" : "未設定"
+          = link_to show_stylists_shift_settings_path(year: @next_next_month_year, month: @next_next_month), class: "btn btn-secondary mt-2 px-4 min-w-[80px] whitespace-nowrap" do
+            = button_label

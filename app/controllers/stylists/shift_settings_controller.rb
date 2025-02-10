@@ -59,6 +59,9 @@ module Stylists
       @next_next_month_year = next_next_month_date.year
       @next_next_month = next_next_month_date.month
 
+      @is_this_month_configured = month_configured?(@this_month_year, @this_month)
+      @is_next_month_configured = month_configured?(@next_month_year, @next_month)
+      @is_next_next_month_configured = month_configured?(@next_next_month_year, @next_next_month)
     end
 
     def show
@@ -157,6 +160,16 @@ module Stylists
           time_str = format('%<hour>02d:%<minute>02d', hour: hour, minute: minute)
           [time_str, time_str]
         end
+      end
+
+      def month_configured?(year, month)
+        start_date = Date.new(year, month, 1)
+        end_date = start_date.end_of_month
+
+        working_hour_exists = WorkingHour.where(stylist_id: current_user.id, target_date: start_date..end_date).exists?
+        holiday_exists = Holiday.where(stylist_id: current_user.id, target_date: start_date..end_date).exists?
+        reservation_limit_exist = ReservationLimit.where(stylist_id: current_user.id, target_date: start_date..end_date).exists?
+        working_hour_exists || holiday_exists || reservation_limit_exist
       end
   end
 end
