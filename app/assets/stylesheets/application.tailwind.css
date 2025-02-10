@@ -183,4 +183,10 @@
   .reservation-card p {
     margin-bottom: 5px;
   }
+
+  .trim-magic {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }

@@ -9,8 +9,8 @@
       = link_to stylists_reservation_path(res) do
         .reservation-card
           - menu_names = res.menus.map(&:name).join(", ")
-          p メニュー: #{menu_names}
-          p #{res.customer.family_name} #{res.customer.given_name} 様
+          p.trim-magic メニュー: #{menu_names}
+          p.trim-magic #{res.customer.family_name} #{res.customer.given_name} 様
   - else
 - else
   td.border
