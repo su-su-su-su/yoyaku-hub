@@ -9,9 +9,17 @@ ja:
         restrict_dependent_destroy:
           has_one: "%{record}が存在しているので削除できません"
           has_many: "%{record}が存在しているので削除できません"
+      format: "%{attribute}%{message}"
+      messages:
+        blank: "を入力してください"
+        not_a_number: "は数値で入力してください"
     attributes:
       reservation:
         menus: "メニュー"
+      menu:
+        name: "名前"
+        price: "価格"
+        duration: "施術時間"
 
   date:
     abbr_day_names:
@@ -199,6 +207,10 @@ ja:
         create_success: "休業日が設定されました。"
       reservation_limits:
         create_success: "受付可能数が設定されました。"
+      menus:
+        name: "メニュー名"
+        price: "価格"
+        Duration: "施術時間"
     profiles:
       updated: "カスタマー情報を更新しました"
   customers:
