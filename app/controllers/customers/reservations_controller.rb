@@ -68,13 +68,21 @@ module Customers
         end_at: end_time_obj
       )
 
+      @reservation.menu_ids = menu_ids
       if @reservation.save
-        @reservation.menus << menus
 
-        redirect_to customers_dashboard_path, notice: '予約を確定しました。'
+        redirect_to customers_reservation_path(@reservation), notice: '予約を確定しました。'
       else
+        @stylist = stylist
+        @menus = menus
+        @date = date
+        @time_str = time_str
+        @menu_ids = menu_ids
+        @total_duration = total_duration
+        @total_price = menus.sum(&:price)
+        @start_time_obj = start_time_obj
         flash.now[:alert] = '予約の保存に失敗しました。'
-        render :show
+        render :new
       end
     end
 
