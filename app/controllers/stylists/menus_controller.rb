@@ -27,10 +27,7 @@ module Stylists
           format.html { redirect_to menus_settings_path }
         end
       else
-        respond_to do |format|
-          format.turbo_stream { redirect_to menus_settings_path, status: :unprocessable_entity } # 失敗時
-          format.html { render :new }
-        end
+        render :new, status: :unprocessable_entity
       end
     end
 

@@ -1,3 +1,8 @@
 = turbo_frame_tag 'new_menu'
   h2 新規登録
+  - if @menu.errors.any?
+    .alert.alert-danger
+      ul
+        - @menu.errors.full_messages.each do |message|
+          li = message
   = render 'form', menu: @menu
