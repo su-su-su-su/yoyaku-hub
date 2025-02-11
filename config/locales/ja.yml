@@ -1,6 +1,7 @@
 ja:
   flash:
     reservation_cancelled: "予約をキャンセルしました。"
+    menu_not_selected: "メニューを1つ以上選択してください"
   activerecord:
     errors:
       messages:

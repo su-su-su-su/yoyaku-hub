@@ -67,6 +67,7 @@ Rails.application.routes.draw do
     resource :profile, only: [:edit, :update]
     resources :stylists, only: [] do
       resources :menus, only: :index, module: 'stylists' do
+        post :select_menus, on: :collection
         collection do
           get :weekly, to: 'weeklies#index'
         end
