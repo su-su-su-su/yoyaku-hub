@@ -5,10 +5,9 @@ div.max-w-lg.mx-auto.px-4
       | 過去3年以内に予約したことがあるスタイリストを表示しています。
     .stylist-list
       - @stylists.each do |stylist|
-        .stylist-item.block.border.border-gray-300.rounded.p-4.mb-4
+        = link_to customers_stylist_menus_path(stylist_id: stylist.id), class: "stylist-item block border border-gray-300 rounded p-4 mb-4 hover:bg-gray-50" do
           .stylist-header.mb-2.flex.justify-between.items-center
             h2.font-bold= "#{stylist.family_name} #{stylist.given_name}"
-            = link_to '選択', customers_stylist_menus_path(stylist_id: stylist.id), class: "px-4 py-2 bg-blue-500 text-white rounded"
   - else
     p.text-gray-600
       | 過去3年以内に予約したスタイリストはまだいません。
