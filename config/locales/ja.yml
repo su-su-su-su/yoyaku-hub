@@ -2,6 +2,8 @@ ja:
   flash:
     reservation_cancelled: "予約をキャンセルしました。"
     menu_not_selected: "メニューを1つ以上選択してください"
+    reservation_confirmed: "予約を確定しました。"
+    batch_setting_success: "シフトを設定しました"
   activerecord:
     errors:
       messages:

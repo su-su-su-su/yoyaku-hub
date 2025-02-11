@@ -95,17 +95,17 @@ module Stylists
         is_holiday = (day_values[:is_holiday] == "1")
 
         start_str = day_values[:start_time].presence || "09:00"
-        end_str   = day_values[:end_time].presence   || "18:00"
+        end_str = day_values[:end_time].presence || "18:00"
         max_res_str = day_values[:max_reservations].presence || "2"
 
         if is_holiday
           start_str = "00:00"
-          end_str   = "00:00"
+          end_str = "00:00"
           max_res_str = "0"
         end
 
         start_time_obj = Time.zone.parse(start_str)
-        end_time_obj   = Time.zone.parse(end_str)
+        end_time_obj = Time.zone.parse(end_str)
 
         if is_holiday
           holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
@@ -122,7 +122,7 @@ module Stylists
           target_date: date
         )
         wh.start_time = start_time_obj
-        wh.end_time   = end_time_obj
+        wh.end_time = end_time_obj
         wh.holiday_flag = is_holiday ? "1" : "0"
         wh.save!
 
@@ -148,7 +148,7 @@ module Stylists
         end
       end
 
-      redirect_to stylists_shift_settings_path, notice: "一括設定しました"
+      redirect_to stylists_shift_settings_path, notice: I18n.t('flash.batch_setting_success')
     end
 
     private
