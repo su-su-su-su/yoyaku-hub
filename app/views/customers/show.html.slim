@@ -1,4 +1,6 @@
 - if user_signed_in?
+- if notice
+  .alert.alert-info.flash-notice(data-controller="flash")= notice
   p ログイン中: = current_user.email
 .link-item
   a href="/customers/stylists/index"

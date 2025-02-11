@@ -1,4 +1,7 @@
 h1.text-2xl.font-bold 予約履歴
+- if notice
+  .alert.alert-info.flash-notice(data-controller="flash")= notice
+
 .section.bg-gray-100.p-4.mb-4
   h2.text-xl.font-bold 現在の予約
 

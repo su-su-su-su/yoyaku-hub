@@ -189,4 +189,9 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
+  .flash-notice {
+    background-color: #81a9e6b9;
+    color: #ffffff;
+  }
 }

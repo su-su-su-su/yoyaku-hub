@@ -1,5 +1,6 @@
 h1.text-xl.font-bold.mb-4 予約詳細
-
+- if notice
+  .alert.alert-info.flash-notice(data-controller="flash")= notice
 div.shadow-lg.rounded-lg.bg-white.p-4
 
   table.table-fixed.w-full.border-collapse
