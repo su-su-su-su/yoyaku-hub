@@ -71,7 +71,7 @@ module Customers
       @reservation.menu_ids = menu_ids
       if @reservation.save
 
-        redirect_to customers_reservation_path(@reservation), notice: '予約を確定しました。'
+        redirect_to customers_reservation_path(@reservation), notice: I18n.t('flash.reservation_confirmed')
       else
         @stylist = stylist
         @menus = menus

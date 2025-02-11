@@ -1,4 +1,6 @@
 - if user_signed_in?
+- if notice
+  .alert.alert-info.flash-notice(data-controller="flash")= notice
   p ログイン中: = current_user.email
 .buttons.grid.grid-cols-2.gap-4.md:grid-cols-4.mt-4
   div

@@ -1,6 +1,8 @@
 .container.mx-auto.mt-10.max-w-md
   .bg-white.shadow-md.rounded-lg.p-6
     h2.text-2xl.font-semibold.mb-4 スタイリスト情報
+    - if notice
+      .alert.alert-info.flash-notice(data-controller="flash")= notice
 
     = form_for @user, url: stylists_profile_path, method: :patch, html: { class: 'space-y-4' } do |f|
       .flex.flex-col
