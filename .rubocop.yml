@@ -26,6 +26,7 @@ AllCops:
     - app/controllers/stylists/schedules_controller.rb
     - app/controllers/stylists/reservations_controller.rb
     - app/models/reservation.rb
+    - app/models/menu.rb
 
 Style/Documentation:
   Enabled: false

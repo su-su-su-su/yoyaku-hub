@@ -1,2 +1,3 @@
-= turbo_stream.replace @menu do
-  = render 'menu', menu: @menu
+= turbo_stream.replace 'menus' do
+  = render partial: 'menus', locals: { menus: @menus }
+= turbo_stream.remove 'menu'
