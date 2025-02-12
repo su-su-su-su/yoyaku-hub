@@ -11,4 +11,4 @@
       - if @menus.empty?
             p.text-center.text-red-600 メニューが登録されていません。
       - else
-        = render 'menus', menus: @menus
+         = render partial: 'menus', locals: { menus: @menus }

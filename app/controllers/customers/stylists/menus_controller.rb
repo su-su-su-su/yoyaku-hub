@@ -5,7 +5,7 @@ module Customers
     class MenusController < ApplicationController
       def index
         @stylist = User.find(params[:stylist_id])
-        @menus = @stylist.menus.where(is_active: true)
+        @menus = @stylist.menus.where(is_active: true).order(:sort_order)
       end
 
       def select_menus

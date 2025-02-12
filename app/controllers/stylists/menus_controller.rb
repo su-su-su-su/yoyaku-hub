@@ -3,7 +3,7 @@
 module Stylists
   class MenusController < ApplicationController
     def index
-      @menus = current_user.menus || []
+      @menus = current_user.menus.order(:sort_order) || []
     end
 
     def new
@@ -20,7 +20,7 @@ module Stylists
 
     def create
       @menu = current_user.menus.new(menu_params)
-      @menus = current_user.menus
+      @menus = current_user.menus.order(:sort_order)
       if @menu.save
         respond_to do |format|
           format.turbo_stream
@@ -33,10 +33,15 @@ module Stylists
 
     def update
       @menu = current_user.menus.find(params[:id])
-      if @menu.update(menu_params)
-        redirect_to menus_settings_path
-      else
-        render :edit
+      @menus = current_user.menus.order(:sort_order)
+
+      respond_to do |format|
+        if @menu.update(menu_params)
+          format.turbo_stream
+          format.html { redirect_to menus_settings_path }
+        else
+          format.html { render :edit, status: :unprocessable_entity }
+        end
       end
     end
 
