@@ -6,3 +6,6 @@ load Rails.root.join('db', 'seeds', 'users.rb')
 puts "Seeding menus..."
 load Rails.root.join('db', 'seeds', 'menus.rb')
 
+puts "Seeding working_hours..."
+load Rails.root.join('db', 'seeds', 'working_hours.rb')
+
