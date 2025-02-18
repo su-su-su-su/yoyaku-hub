@@ -25,7 +25,7 @@ menu_data.each do |stylist_email, menus|
   stylist = User.find_by(email: stylist_email)
 
   menus.each do |menu_name, attrs|
-    Menu.create!(
+    Menu.create(
       stylist_id: stylist.id,
       sort_order: attrs[:sort_order],
       name: menu_name,
