@@ -9,21 +9,21 @@ h1.text-2xl.font-bold 予約履歴
     - @upcoming_reservations.each do |res|
       .border.rounded.bg-white.p-4.mb-4
         p
-          | 来店日時: 
+          | 来店日時:
           = I18n.l(res.start_at, format: :wday_short)
 
         p
-          | スタイリスト: 
+          | スタイリスト:
           = "#{res.stylist.family_name} #{res.stylist.given_name}"
 
         p
-          | メニュー: 
+          | メニュー:
           - if res.menus.any?
             = res.menus.map(&:name).join(", ")
           - else
             | (メニュー情報なし)
 
-        = link_to "詳細", customers_reservation_path(res), class: "text-gray-400 underline mr-4 cursor-not-allowed", aria: { disabled: true }
+        = link_to "詳細", customers_reservation_path(res), class: "text-blue-500 underline mr-4 cursor-not-allowed", aria: { disabled: true }
 
   - else
     p 現在の予約はありません。
@@ -35,22 +35,22 @@ h1.text-2xl.font-bold 予約履歴
     - @past_reservations.each do |res|
       .border.rounded.bg-white.p-4.mb-4
         p
-          | 来店日時: 
+          | 来店日時:
           = I18n.l(res.start_at, format: :wday_short)
 
         p
-          | スタイリスト: 
+          | スタイリスト:
           = "#{res.stylist.family_name} #{res.stylist.given_name}"
 
         p
-          | メニュー: 
+          | メニュー:
           - if res.menus.any?
             = res.menus.map(&:name).join(", ")
           - else
             | (メニュー情報なし)
 
-        = link_to "詳細", customers_reservation_path(res), class: "text-gray-400 underline mr-4 cursor-not-allowed", aria: { disabled: true }
-  - else 
+        = link_to "詳細", customers_reservation_path(res), class: "text-blue-500 underline mr-4 cursor-not-allowed", aria: { disabled: true }
+  - else
     p 過去の予約は存在しません。
 .mt-4.mb-4.text-center
-  = link_to '戻る', customers_dashboard_path, class: 'underline text-blue-500'
+  = link_to '戻る', customers_dashboard_path, class: "text-blue-500 underline"

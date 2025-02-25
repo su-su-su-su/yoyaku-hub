@@ -8,29 +8,32 @@
     table.w-full.border-collapse
       tbody
         tr.border-b.border-gray-300
-          th.px-4.py-2.text-left.align-top.bg-gray-50 スタイリスト名
+          th.px-4.py-2.text-left.align-top.bg-gray-100 スタイリスト名
           td.px-4.py-2= "#{@stylist.family_name} #{@stylist.given_name}"
 
         tr.border-b.border-gray-300
-          th.px-4.py-2.text-left.align-top.bg-gray-50 来店日時
+          th.px-4.py-2.text-left.align-top.bg-gray-100 来店日時
           td.px-4.py-2
             - if @start_time_obj
               = I18n.l(@start_time_obj, format: :wday_short)
 
         tr.border-b.border-gray-300
-          th.px-4.py-2.text-left.align-top.bg-gray-50 メニュー
+          th.px-4.py-2.text-left.align-top.bg-gray-100 メニュー
           td.px-4.py-2
             - @menus.each do |m|
               p= m.name
 
         tr.border-b.border-gray-300
-          th.px-4.py-2.text-left.align-top.bg-gray-50 施術時間
+          th.px-4.py-2.text-left.align-top.bg-gray-100 施術時間
           td.px-4.py-2= "#{@total_duration} 分"
 
         tr
-          th.px-4.py-2.text-left.align-top.bg-gray-50 合計金額
+          th.px-4.py-2.text-left.align-top.bg-gray-100 合計金額
           td.px-4.py-2= "¥#{@total_price} (税込み)"
 
-  .mt-4.flex.space-x-4
+  .mt-4.text-center
     = button_to "予約を確定", customers_reservations_path, params: {stylist_id: @stylist_id, date: @date, time_str: @time_str, menu_ids: @menu_ids}, class: "btn-primary"
-    = link_to "戻る", weekly_customers_stylist_menus_path(@stylist, menu_ids: @menu_ids), class: "px-4 py-2 bg-gray-400 text-white rounded"
+  .mt-4.text-center
+    = link_to "戻る", weekly_customers_stylist_menus_path(@stylist, menu_ids: @menu_ids), class: "text-blue-500 underline"
+  .mt-4.text-center
+    = link_to "ユーザートップページへ", customers_dashboard_path, class: "text-blue-500 underline"

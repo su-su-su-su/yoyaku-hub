@@ -39,12 +39,13 @@ table.border.border-collapse.mx-auto.p-4
       td.px-4.py-2= "¥#{@total_price} (税込み)"
 
 
-.mt-6.flex.justify-center.space-x-6.mt-8
+.mt-4.flex.justify-center.space-x-6.mt-8
   - if @reservation.before_visit? && @reservation.start_at > Time.current
     = link_to "キャンセル", cancel_customers_reservation_path(@reservation),
-      data: {turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？"},
-    　class: "btn-primary", form_class: "inline"
+      class: "btn-primary", form_class: "inline",
+      data: {turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？"}
 
-.mt-6.flex.justify-center.space-x-6.mt-8
-  = link_to "戻る", customers_reservations_path, class: "btn bg-gray-100 font-bold py-2 px-4 rounded"
-  = link_to "ユーザートップページへ", customers_dashboard_path,  class: "btn bg-gray-100 font-bold py-2 px-4 rounded"
+.mt-6.text-center
+  = link_to "戻る", customers_reservations_path, class:"underline text-blue-500"
+  .mt-4.text-center
+    = link_to 'ユーザートップページへ',customers_dashboard_path, class: "underline text-blue-500"
