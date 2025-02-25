@@ -12,7 +12,7 @@ menu2 = stylist.menus.second
 menu_ids = [menu1.id, menu2.id]
 total_duration = menu1.duration + menu2.duration
 
-upcoming_date = Date.today + 4.days
+upcoming_date = Time.zone.today + 2.days
 upcoming_start_time = Time.zone.parse("#{upcoming_date} 13:00")
 upcoming_reservation = Reservation.create!(
   customer_id: customer.id,
@@ -25,7 +25,7 @@ upcoming_reservation = Reservation.create!(
 upcoming_reservation.menu_ids = menu_ids
 upcoming_reservation.save!
 
-past_date = Date.today - 3.days
+past_date = Time.zone.today - 3.days
 past_start_time = Time.zone.parse("#{past_date} 11:00")
 past_reservation = Reservation.create!(
   customer_id: customer.id,
