@@ -17,3 +17,6 @@ load Rails.root.join('db', 'seeds', 'reservation_limits.rb')
 
 puts "Seeding shift_settings_date_based..."
 load Rails.root.join('db', 'seeds', 'shift_settings_date_based.rb')
+
+puts "Seeding reservations..."
+load Rails.root.join('db', 'seeds', 'reservations.rb')
