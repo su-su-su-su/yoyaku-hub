@@ -32,5 +32,5 @@
           td.px-4.py-2= "¥#{@total_price} (税込み)"
 
   .mt-4.flex.space-x-4
-    = button_to "予約を確定", customers_reservations_path, params: {stylist_id: @stylist_id, date: @date, time_str: @time_str, menu_ids: @menu_ids}, class: "px-4 py-2 bg-blue-500 text-white rounded"
+    = button_to "予約を確定", customers_reservations_path, params: {stylist_id: @stylist_id, date: @date, time_str: @time_str, menu_ids: @menu_ids}, class: "btn-primary"
     = link_to "戻る", weekly_customers_stylist_menus_path(@stylist, menu_ids: @menu_ids), class: "px-4 py-2 bg-gray-400 text-white rounded"
