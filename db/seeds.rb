@@ -1,11 +1,22 @@
 # frozen_string_literal: true
 
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+Rails.logger.debug 'Seeding users...'
+load Rails.root.join('db/seeds/users.rb')
+
+Rails.logger.debug 'Seeding menus...'
+load Rails.root.join('db/seeds/menus.rb')
+
+Rails.logger.debug 'Seeding holidays...'
+load Rails.root.join('db/seeds/holidays.rb')
+
+Rails.logger.debug 'Seeding working_hours...'
+load Rails.root.join('db/seeds/working_hours.rb')
+
+Rails.logger.debug 'Seeding reservation_limits...'
+load Rails.root.join('db/seeds/reservation_limits.rb')
+
+Rails.logger.debug 'Seeding shift_settings_date_based...'
+load Rails.root.join('db/seeds/shift_settings_date_based.rb')
+
+Rails.logger.debug 'Seeding reservations...'
+load Rails.root.join('db/seeds/reservations.rb')
