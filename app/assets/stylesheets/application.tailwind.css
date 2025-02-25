@@ -199,4 +199,7 @@
     @apply px-4 py-3 rounded font-bold text-white inline-block text-center;
     background-color: #3e5cd7;
   }
+  .btn-gray {
+    @apply bg-gray-400 text-white py-2 px-4 rounded font-bold text-center;
+  }
 }

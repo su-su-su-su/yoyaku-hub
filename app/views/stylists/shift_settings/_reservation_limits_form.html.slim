@@ -1,7 +1,7 @@
-h2 受付可能数
+h2.text-l.font-bold 受付可能数
 
 = form_with model: ReservationLimit.new, url: reservation_limits_stylists_shift_settings_path, method: :post, local: true do |f|
-  p.text-sm.text-gray-500.mb-2 "1日に受付可能な予約数を選択してください"
+  p.text-sm.text-gray-500.mb-2 同時間に受付可能な予約数を選択してください
 
   - options = (0..2).map { |n| [n.to_s, n] }
 
@@ -9,5 +9,5 @@ h2 受付可能数
     = f.label :max_reservations, "最大予約枠数", class: 'w-1/3 font-bold text-sm mr-2'
     = f.select :max_reservations, options, { selected: @current_limit&.max_reservations }, class: 'input input-bordered w-32'
 
-  .mt-4
+  .flex.justify-center.space-x-6.mt-4
     = f.submit "設定", class: "btn btn-primary text-base"
