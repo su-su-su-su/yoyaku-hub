@@ -10,7 +10,13 @@ reservation_limit_settings = {
 
 reservation_limit_settings.each do |email, max_limit|
   stylist = User.find_by(email: email)
-  reservation_limit = ReservationLimit.find_or_initialize_by(stylist_id: stylist.id, target_date: nil)
-  reservation_limit.max_reservations = max_limit
-  reservation_limit.save
+  next unless stylist
+
+  default_rl = ReservationLimit.find_or_initialize_by(
+    stylist_id: stylist.id,
+    target_date: nil,
+    time_slot: nil
+  )
+  default_rl.max_reservations = max_limit
+  default_rl.save!
 end
