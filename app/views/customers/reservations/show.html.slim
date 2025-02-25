@@ -15,13 +15,13 @@ table.border.border-collapse.mx-auto.p-4
     tr
       th.bg-gray-100.px-4.py-2.text-left スタイリスト名
       td.px-4.py-2= "#{@stylist.family_name} #{@stylist.given_name}"
-    
+
     tr
       th.bg-gray-100.px-4.py-2.text-left 来店日時
       td.px-4.py-2
         - if @reservation.start_at
           = I18n.l(@reservation.start_at, format: :wday_short)
-    
+
     tr
       th.bg-gray-100.px-4.py-2.text-left メニュー
       td.px-4.py-2
@@ -29,22 +29,23 @@ table.border.border-collapse.mx-auto.p-4
           = @menus.map(&:name).join(", ")
         - else
           | なし
-    
+
     tr
       th.bg-gray-100.px-4.py-2.text-left 施術時間
       td.px-4.py-2= "#{@total_duration} 分"
-    
+
     tr
       th.bg-gray-100.px-4.py-2.text-left 合計金額
       td.px-4.py-2= "¥#{@total_price} (税込み)"
 
 
-.mt-6.flex.justify-center.space-x-6.mt-8
+.mt-4.flex.justify-center.space-x-6.mt-8
   - if @reservation.before_visit? && @reservation.start_at > Time.current
     = link_to "キャンセル", cancel_customers_reservation_path(@reservation),
-      data: {turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？"},
-    　class: "btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded", form_class: "inline"
-  
-.mt-6.flex.justify-center.space-x-6.mt-8
-  = link_to "戻る", customers_reservations_path, class: "btn bg-gray-100 font-bold py-2 px-4 rounded"
-  = link_to "ユーザートップページへ", customers_dashboard_path,  class: "btn bg-gray-100 font-bold py-2 px-4 rounded"
+      class: "btn-primary", form_class: "inline",
+      data: {turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？"}
+
+.mt-6.text-center
+  = link_to "戻る", customers_reservations_path, class:"underline text-blue-500"
+  .mt-4.text-center
+    = link_to 'ユーザートップページへ',customers_dashboard_path, class: "underline text-blue-500"

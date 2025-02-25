@@ -21,7 +21,7 @@
           - wday = date.wday
           - wday = 7 if HolidayJp.holiday?(date)
           th.px-2.py-1 class="wday-#{wday}"
-            p.font-bold.mb-1.ml-6
+            p.font-bold.mb-1
               |&nbsp;#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})
     tbody
       - total_minutes = total_duration
@@ -71,11 +71,11 @@
                               new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
                           - elsif gap_from_prev < min_time || gap_to_next < min_time
                             = link_to "△",
-                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
+                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "text-green-400"
                           - else
                             = link_to "◎",
                               new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str), class: "font-bold text-green-500"
- 
+
 
   .mt-4.text-center
     = link_to "戻る", customers_stylist_menus_path, class: "underline text-blue-500"

@@ -153,7 +153,7 @@
 
   .menu-checkbox:checked + .menu-item {
     background-color: #e7f1ff;
-    border-color: #3a80e8;
+    border-color: #3e5cd7;
   }
 
   table.fixed-table {
@@ -193,5 +193,10 @@
   .flash-notice {
     background-color: #81a9e6b9;
     color: #ffffff;
+  }
+
+  .btn-primary {
+    @apply px-4 py-3 rounded font-bold text-white inline-block text-center;
+    background-color: #3e5cd7;
   }
 }
