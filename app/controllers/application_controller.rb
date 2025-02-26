@@ -3,8 +3,8 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: { safari: 16.4, firefox: 121, ie: false }
-  before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
   protected
 
@@ -26,8 +26,14 @@ class ApplicationController < ActionController::Base
   private
 
   def ensure_role(role)
-    return if current_user&.public_send("#{role}?")
+    allowed_roles = %w[customer stylist]
+    return unless allowed_roles.include?(role.to_s)
+    return if current_user&.role == role.to_s
 
     redirect_to root_path, alert: t('alerts.no_permission')
+  end
+
+  def render_not_found
+    render file: Rails.public_path.join('404.html'), status: :not_found, layout: false
   end
 end

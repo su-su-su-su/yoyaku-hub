@@ -2,8 +2,11 @@
 
 module Stylists
   class ReservationsController < ApplicationController
+    before_action :authenticate_user!
+    before_action -> { ensure_role(:stylist) }
     before_action :set_reservation, only: %i[edit update]
     before_action :prepare_time_options, only: %i[edit update]
+
     def show
       @reservation = Reservation.find(params[:id])
     end

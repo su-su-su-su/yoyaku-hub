@@ -3,7 +3,7 @@
 module Stylists
   module ShiftSettings
     class WorkingHoursController < StylistsController
-      before_action :authenticate_user!
+      before_action -> { ensure_role(:stylist) }
 
       def create
         wh_params = params.require(:working_hour).permit(

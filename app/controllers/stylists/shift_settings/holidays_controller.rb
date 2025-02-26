@@ -3,7 +3,7 @@
 module Stylists
   module ShiftSettings
     class HolidaysController < StylistsController
-      before_action :authenticate_user!
+      before_action -> { ensure_role(:stylist) }
 
       def create
         holiday_params = params.require(:holiday).permit(day_of_weeks: [])

@@ -2,6 +2,8 @@
 
 module Stylists
   class SchedulesController < ApplicationController
+    before_action :authenticate_user!
+    before_action -> { ensure_role(:stylist) }
     helper_method :to_slot_index
 
     def show
@@ -10,26 +12,26 @@ module Stylists
       rescue StandardError
         Date.current
       end
-    
+
       @stylist = current_user
       @is_holiday = Holiday.default_for(@stylist.id, @date)
       set_working_hour_and_time_slots(@stylist.id, @date)
       @reservation_counts = slotwise_reservation_counts(@stylist.id, @date)
       @reservation_limits = slotwise_reservation_limits(@stylist.id, @date)
-      
+
       @slotwise_reservations = slotwise_reservations_map(@stylist.id, @date)
     end
-    
-    
+
+
 
     def reservation_limits
       date_str   = params[:date]
       slot_str   = params[:slot]
       direction  = params[:direction]
-      
-      @date = Date.parse(date_str) rescue Date.current 
+
+      @date = Date.parse(date_str) rescue Date.current
       slot_idx = slot_str.to_i
-    
+
       set_working_hour_and_time_slots(current_user.id, @date)
 
       limit = ReservationLimit.find_or_initialize_by(
@@ -38,17 +40,17 @@ module Stylists
         time_slot: slot_idx
       )
       limit.max_reservations ||= 0
-    
+
       if direction == "up"
         limit.max_reservations += 1
       elsif direction == "down" && limit.max_reservations > 0
         limit.max_reservations -= 1
       end
       limit.save
- 
+
       @reservation_counts = slotwise_reservation_counts(current_user.id, @date)
       @reservation_limits = slotwise_reservation_limits(current_user.id, @date)
-    
+
       respond_to do |format|
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace("slot-limit-#{slot_idx}", partial: 'slot_limit', locals: { slot_idx: slot_idx })
@@ -68,7 +70,7 @@ module Stylists
         @working_hour = nil
         return
       end
-    
+
       @working_hour = WorkingHour.date_only_for(stylist_id, date)
       if @working_hour.nil?
         @time_slots = []
@@ -134,7 +136,7 @@ module Stylists
       slot_idx = (h * 2) + (m >= 30 ? 1 : 0)
       slot_idx
     end
-    
+
 
     def slotwise_reservations_map(stylist_id, date)
       reservations = Reservation.where(stylist_id: stylist_id)
@@ -143,17 +145,17 @@ module Stylists
                                      date.beginning_of_day.in_time_zone, date.end_of_day.in_time_zone)
                               .where.not(start_at: nil, end_at: nil)
                               .includes(:menus, :customer)
-    
+
       map = Hash.new { |h, k| h[k] = [] }
-    
+
       reservations.each do |res|
         start_idx = to_slot_index(res.start_at)
-        end_idx = to_slot_index(res.end_at)    
+        end_idx = to_slot_index(res.end_at)
         (start_idx...end_idx).each do |slot_idx|
           map[slot_idx] << res
         end
       end
       map
     end
-  end    
+  end
 end

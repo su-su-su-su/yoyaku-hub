@@ -3,6 +3,7 @@
 module Stylists
   class ShiftSettingsController < StylistsController
     before_action :authenticate_user!
+    before_action -> { ensure_role(:stylist) }
     before_action :set_time_options, only: [:index, :show]
 
     def index
@@ -133,7 +134,7 @@ module Stylists
         )
         rl_day.max_reservations = max_res_str.to_i
         rl_day.save!
-    
+
         start_slot = (start_time_obj.hour * 2) + (start_time_obj.min >= 30 ? 1 : 0)
         end_slot = (end_time_obj.hour * 2) + (end_time_obj.min >= 30 ? 1 : 0)
 

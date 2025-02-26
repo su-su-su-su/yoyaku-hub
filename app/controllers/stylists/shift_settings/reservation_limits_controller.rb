@@ -3,7 +3,7 @@
 module Stylists
   module ShiftSettings
     class ReservationLimitsController < StylistsController
-      before_action :authenticate_user!
+      before_action -> { ensure_role(:stylist) }
 
       def create
         limit_params = params.require(:reservation_limit).permit(:max_reservations)
