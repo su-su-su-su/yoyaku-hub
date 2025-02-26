@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Menu < ApplicationRecord
+  MAX_MENUS_PER_STYLIST = 30
+
   belongs_to :stylist, class_name: 'User'
   has_many :reservation_menu_selections, dependent: :destroy
   has_many :reservations, through: :reservation_menu_selections
@@ -8,24 +10,28 @@ class Menu < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :stylist_id }
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :duration, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validate :validate_stylist_menu_limit, on: :create
+
   scope :by_stylist, ->(stylist) { where(stylist_id: stylist.id) }
 
   before_validation :assign_sort_order_if_blank
-
   before_save :shift_others, if: :will_save_change_to_sort_order?
 
   private
 
+  def validate_stylist_menu_limit
+    if stylist && stylist.menus.count >= MAX_MENUS_PER_STYLIST
+      errors.add(:base, "メニューは最大#{MAX_MENUS_PER_STYLIST}件までです")
+    end
+  end
+
   def assign_sort_order_if_blank
     return if sort_order.present?
 
-    used = stylist.menus.where.not(id: id).pluck(:sort_order)
-    n = (1..30).find { |number| used.exclude?(number) }
-    if n
-      self.sort_order = n
-    else
-      errors.add(:base, 'メニューは最大30件までです')
-    end
+    used_orders = stylist.menus.where.not(id: id).pluck(:sort_order)
+    available_order = (1..MAX_MENUS_PER_STYLIST).find { |num| used_orders.exclude?(num) }
+
+    self.sort_order = available_order if available_order
   end
 
   def shift_others

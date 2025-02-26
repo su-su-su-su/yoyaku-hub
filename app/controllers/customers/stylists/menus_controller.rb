@@ -6,15 +6,13 @@ module Customers
       before_action :authenticate_user!
       before_action -> { ensure_role(:customer) }
       before_action :ensure_stylist_resource
+      before_action :set_stylist
 
       def index
-        @stylist = User.find(params[:stylist_id])
         @menus = @stylist.menus.where(is_active: true).order(:sort_order)
       end
 
       def select_menus
-        @stylist = User.find(params[:stylist_id])
-
         if params[:menu_ids].blank?
           flash[:alert] = I18n.t('flash.menu_not_selected')
           redirect_to customers_stylist_menus_path(@stylist)
@@ -25,6 +23,11 @@ module Customers
       end
 
       private
+
+      def set_stylist
+        @stylist = User.find(params[:stylist_id])
+        redirect_to customers_dashboard_path unless @stylist.stylist?
+      end
 
       def ensure_stylist_resource
         @stylist = User.find(params[:stylist_id])

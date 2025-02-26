@@ -4,10 +4,10 @@ module Stylists
   class MenusController < ApplicationController
     before_action :authenticate_user!
     before_action -> { ensure_role(:stylist) }
+    before_action :set_menu, only: %i[edit update]
+    before_action :load_menus, only: %i[index create update]
 
-    def index
-      @menus = current_user.menus.order(:sort_order) || []
-    end
+    def index; end
 
     def new
       @menu = Menu.new
@@ -17,13 +17,10 @@ module Stylists
       end
     end
 
-    def edit
-      @menu = current_user.menus.find(params[:id])
-    end
+    def edit; end
 
     def create
       @menu = current_user.menus.new(menu_params)
-      @menus = current_user.menus.order(:sort_order)
       if @menu.save
         respond_to do |format|
           format.turbo_stream
@@ -35,20 +32,25 @@ module Stylists
     end
 
     def update
-      @menu = current_user.menus.find(params[:id])
-      @menus = current_user.menus.order(:sort_order)
-
-      respond_to do |format|
-        if @menu.update(menu_params)
+      if @menu.update(menu_params)
+        respond_to do |format|
           format.turbo_stream
           format.html { redirect_to menus_settings_path }
-        else
-          format.html { render :edit, status: :unprocessable_entity }
         end
+      else
+        render :edit, status: :unprocessable_entity
       end
     end
 
     private
+
+    def set_menu
+      @menu = current_user.menus.find(params[:id])
+    end
+
+    def load_menus
+      @menus = current_user.menus.order(:sort_order)
+    end
 
     def menu_params
       params.require(:menu).permit(:sort_order, :name, :price, :duration, :description, :is_active, category: [])
