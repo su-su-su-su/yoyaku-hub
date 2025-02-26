@@ -1,4 +1,4 @@
-h2.text-2xl.font-bold.mt-4.px-4 ログイン
+h2.text-xl.font-bold.mt-4.px-4 ログイン
 = render 'devise/shared/google_login_link_customer'
 = render 'devise/shared/google_login_link_stylist'
 .form-container.px-4
@@ -25,5 +25,5 @@ h2.text-2xl.font-bold.mt-4.px-4 ログイン
         = f.check_box :remember_me
         = f.label :remember_me
     .actions
-      button.btn = t('devise.registrations.new.sign_up')
+      button.btn.btn-primary = t('devise.registrations.new.sign_up')
   = render "devise/shared/links"
