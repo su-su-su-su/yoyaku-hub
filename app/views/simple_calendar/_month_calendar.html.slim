@@ -15,7 +15,7 @@
                 td
               - else
                 - wh = @working_hours_for_month[day]
-                - wh ||= WorkingHour.new(start_time: Time.zone.parse("09:00"), end_time: Time.zone.parse("18:00"))
+                - wh ||= WorkingHour.new(start_time: Time.zone.parse(WorkingHour::DEFAULT_START_TIME), end_time: Time.zone.parse(WorkingHour::DEFAULT_END_TIME))
                 - is_holiday = @holidays_for_month[day]
                 - rl = @reservation_limits_for_month[day] || ReservationLimit.new(max_reservations: 2)
                 - wday = day.wday
@@ -33,7 +33,7 @@
                         label.ml-1 for="shift_data_#{day.day}_is_holiday" 休業日
 
                       .mb-1
-                        = select_tag "shift_data[#{day.day}][start_time]", 
+                        = select_tag "shift_data[#{day.day}][start_time]",
                           options_for_select(@time_options, wh.start_time.strftime("%H:%M")),
                           data: { "holiday-toggle-target": "startTime" },
                           class: 'input input-bordered w-20'
@@ -41,7 +41,7 @@
                         = select_tag "shift_data[#{day.day}][end_time]",
                           options_for_select(@time_options, wh.end_time.strftime("%H:%M")),
                           data: { "holiday-toggle-target": "endTime" },
-                          class: 'input input-bordered w-20'                       
+                          class: 'input input-bordered w-20'
 
                       .mt-1
                         label 受付可能数
