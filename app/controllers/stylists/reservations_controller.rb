@@ -15,7 +15,10 @@ module Stylists
                   notice: I18n.t('flash.reservation_cancelled')
     end
 
-    def edit; end
+    def edit
+      stylist = current_user
+      @active_menus = stylist.menus.where(is_active: true)
+    end
 
     def update
       if @reservation.update(reservation_params)

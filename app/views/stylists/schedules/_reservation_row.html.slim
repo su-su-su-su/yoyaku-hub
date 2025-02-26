@@ -2,7 +2,7 @@
 - if reservations_here.present?
   - res = reservations_here.first
   - start_slot = to_slot_index(res.start_at)
-  - end_slot   = to_slot_index(res.end_at)
+  - end_slot = to_slot_index(res.end_at)
   - if slot_idx == start_slot
     - col_span = end_slot - start_slot
     td.border(colspan=col_span)

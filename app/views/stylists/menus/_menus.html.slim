@@ -1,9 +1,9 @@
   - menus.each do |menu|
     = turbo_frame_tag menu do
       .col-span-1.mt-6
-        .card.bg-gray-50.shadow-xl.w-full.p-8
+        .card.bg-white.w-full.p-8
           .card-body
-            h2.text-xl.font-bold= menu.sort_order
+            p.text-gray-600 No.#{menu.sort_order}
             h2.text-xl.font-bold= menu.name
             p.text-gray-600 価格: ￥#{menu.price}（税込み）
             p.text-gray-600 施術時間: #{menu.duration}分
