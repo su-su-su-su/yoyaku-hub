@@ -3,7 +3,7 @@
 module Stylists
   class ProfilesController < ApplicationController
     before_action :authenticate_user!
-    before_action :ensure_stylist
+    before_action -> { ensure_role(:stylist) }
 
     def edit
       @user = current_user
@@ -19,10 +19,6 @@ module Stylists
     end
 
     private
-
-    def ensure_stylist
-      redirect_to root_path unless current_user&.role == 'stylist'
-    end
 
     def stylist_params
       params.require(:user).permit(

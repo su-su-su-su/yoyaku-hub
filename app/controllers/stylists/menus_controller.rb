@@ -2,6 +2,9 @@
 
 module Stylists
   class MenusController < ApplicationController
+    before_action :authenticate_user!
+    before_action -> { ensure_role(:stylist) }
+
     def index
       @menus = current_user.menus.order(:sort_order) || []
     end

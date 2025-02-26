@@ -2,6 +2,8 @@
 
 module Customers
   class ReservationsController < ApplicationController
+    before_action :authenticate_user!
+    before_action -> { ensure_role(:customer) }
     before_action :set_reservation, only: [:show]
 
     def index

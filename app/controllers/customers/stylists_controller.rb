@@ -2,6 +2,9 @@
 
 module Customers
   class StylistsController < ApplicationController
+    before_action :authenticate_user!
+    before_action -> { ensure_role(:customer) }
+
     def index
       @stylists = User.where(role: :stylist)
                       .joins(:stylist_reservations).where(stylist_reservations: { customer_id: current_user.id })

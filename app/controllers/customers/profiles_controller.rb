@@ -3,7 +3,7 @@
 module Customers
   class ProfilesController < ApplicationController
     before_action :authenticate_user!
-    before_action :ensure_customer
+    before_action -> { ensure_role(:customer) }
 
     def edit
       @user = current_user

@@ -3,6 +3,9 @@
 module Customers
   module Stylists
     class WeekliesController < ApplicationController
+      before_action :authenticate_user!
+      before_action -> { ensure_role(:customer) }
+
       helper_method :within_reservation_limits?, :total_duration, :within_working_hours?
 
       def index
