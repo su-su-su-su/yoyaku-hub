@@ -6,6 +6,7 @@ module Stylists
     before_action -> { ensure_role(:stylist) }
     before_action :set_reservation, only: %i[edit update]
     before_action :prepare_time_options, only: %i[edit update]
+    before_action :set_active_menus, only: %i[edit update]
 
     def show
       @reservation = Reservation.find(params[:id])
@@ -18,8 +19,6 @@ module Stylists
     end
 
     def edit
-      stylist = current_user
-      @active_menus = stylist.menus.where(is_active: true)
     end
 
     def update
@@ -51,15 +50,19 @@ module Stylists
 
     def prepare_time_options
       reservation_date = if params.dig(:reservation, :start_date_str).present?
-                          Date.parse(params[:reservation][:start_date_str])
-                        elsif @reservation.start_at.present?
-                          @reservation.start_at.to_date
-                        else
-                          Time.zone.today
-                        end
+                           Date.parse(params[:reservation][:start_date_str])
+                         elsif @reservation.start_at.present?
+                           @reservation.start_at.to_date
+                         else
+                           Time.zone.today
+                         end
 
       stylist_id = @reservation.stylist_id
       @time_options = WorkingHour.time_options_for(stylist_id, reservation_date)
+    end
+
+    def set_active_menus
+      @active_menus = current_user.menus.where(is_active: true)
     end
   end
 end

@@ -2,7 +2,7 @@
 
 class Reservation < ApplicationRecord
   belongs_to :customer, class_name: 'User', inverse_of: :reservations
-  belongs_to :stylist, class_name: 'User', inverse_of: :stylist_reservations
+  belongs_to :stylist,  class_name: 'User', inverse_of: :stylist_reservations
   has_many :reservation_menu_selections, dependent: :destroy
   has_many :menus, through: :reservation_menu_selections
 
@@ -15,6 +15,16 @@ class Reservation < ApplicationRecord
   before_validation :combine_date_and_time
 
   attr_accessor :start_date_str, :start_time_str
+
+  def combine_date_and_time
+    return unless start_date_str.present? && start_time_str.present?
+
+    new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
+    self.start_at = new_start_at
+
+    used_duration = custom_duration.presence || menus.sum(&:duration)
+    self.end_at = new_start_at + used_duration.minutes
+  end
 
   def self.find_next_reservation_start_slot(stylist_id, date, from_slot)
     working_hr = WorkingHour.date_only_for(stylist_id, date)
@@ -70,16 +80,6 @@ class Reservation < ApplicationRecord
 
   private
 
-  def combine_date_and_time
-    return unless start_date_str.present? && start_time_str.present?
-
-    new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
-    self.start_at = new_start_at
-
-    used_duration = custom_duration.presence || menus.sum(&:duration)
-    self.end_at = new_start_at + used_duration.minutes
-  end
-
   def validate_not_holiday
     return if start_at.blank?
 
@@ -128,6 +128,7 @@ class Reservation < ApplicationRecord
       end
     end
   end
+
   def menu_selection_presence
     if menu_ids.blank? || menu_ids.reject(&:blank?).empty?
       errors.add(:menus, 'は1つ以上選択してください')
