@@ -2,14 +2,49 @@
 
 FactoryBot.define do
   factory :user do
-    email { 'test@example.com' }
+    sequence(:email) { |n| "user#{n}@example.com" }
     password { 'testtest' }
-    family_name { '予約' }
+    password_confirmation { 'testtest' }
+
+    family_name { '美容師' }
     given_name { '太郎' }
-    family_name_kana { 'ヨヤク' }
+
+    family_name_kana { 'ビヨウシ' }
     given_name_kana { 'タロウ' }
+
     gender { '男' }
-    date_of_birth { Date.new(1987, 5, 3) }
+    date_of_birth { Date.new(2000, 4, 10) }
+
     role { :stylist }
+
+    trait :with_kana do
+      family_name_kana { 'ビヨウシ' }
+      given_name_kana { 'タロウ' }
+    end
+
+    trait :with_invalid_kana do
+      family_name_kana { 'biyoshi' }
+      given_name_kana { 'taro' }
+    end
+
+    trait :customer do
+      role { :customer }
+    end
+
+    trait :stylist do
+      role { :stylist }
+    end
+
+    trait :with_oauth do
+      provider { 'google_oauth2' }
+      sequence(:uid) { |n| "12345#{n}" }
+    end
+
+    trait :female do
+      gender { '女' }
+    end
+
+    factory :customer, traits: [:customer]
+    factory :stylist, traits: [:stylist]
   end
 end
