@@ -64,6 +64,20 @@ RSpec.describe User do
     end
   end
 
+  describe 'アソシエーション' do
+    let(:stylist) { create(:user, :stylist) }
+
+    it 'has many menus' do
+      expect(stylist).to respond_to(:menus)
+    end
+
+    it 'can have multiple menus' do
+      create(:menu, stylist: stylist, name: 'メニュー1')
+      create(:menu, stylist: stylist, name: 'メニュー2')
+      expect(stylist.menus.count).to eq(2)
+    end
+  end
+
   describe 'OAuthログイン (.from_omniauth)' do
     let(:auth) do
       OmniAuth::AuthHash.new({
@@ -171,6 +185,38 @@ RSpec.describe User do
           user.reset_password_sent_at = 3.days.ago
           expect(user).not_to be_reset_password_period_valid
         end
+      end
+    end
+  end
+
+  describe '#min_active_menu_duration' do
+    let(:stylist) { create(:user, :stylist) }
+
+    context 'when stylist has no menus' do
+      it 'returns 0' do
+        expect(stylist.min_active_menu_duration).to eq(0)
+      end
+    end
+
+    context 'when stylist has active menus' do
+      before do
+        create(:menu, stylist: stylist, name: 'メニュー1', duration: 60, is_active: true)
+        create(:menu, stylist: stylist, name: 'メニュー2', duration: 30, is_active: true)
+        create(:menu, stylist: stylist, name: 'メニュー3', duration: 90, is_active: false)
+      end
+
+      it 'returns the minimum duration of active menus' do
+        expect(stylist.min_active_menu_duration).to eq(30)
+      end
+    end
+
+    context 'when stylist has only inactive menus' do
+      before do
+        create(:menu, stylist: stylist, name: '非アクティブメニュー', duration: 90, is_active: false)
+      end
+
+      it 'returns 0' do
+        expect(stylist.min_active_menu_duration).to eq(0)
       end
     end
   end
