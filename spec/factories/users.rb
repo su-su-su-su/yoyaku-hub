@@ -17,6 +17,16 @@ FactoryBot.define do
 
     role { :stylist }
 
+    trait :with_kana do
+      family_name_kana { 'ビヨウシ' }
+      given_name_kana { 'タロウ' }
+    end
+
+    trait :with_invalid_kana do
+      family_name_kana { 'biyoshi' }
+      given_name_kana { 'taro' }
+    end
+
     trait :customer do
       role { :customer }
     end

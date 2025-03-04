@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe User do
-  describe 'ログイン関連のバリデーション' do
+  describe 'バリデーション' do
     context 'when it has basic validations' do
       it 'is valid with valid attributes' do
         user = build(:customer)
@@ -21,6 +21,28 @@ RSpec.describe User do
         user = build(:customer, email: 'duplicate@example.com')
         expect(user).not_to be_valid
         expect(user.errors[:email]).to include(I18n.t('errors.messages.taken'))
+      end
+
+      it 'is valid with katakana in name_kana fields' do
+        user = build(:user, :with_kana)
+        expect(user).to be_valid
+      end
+
+      it 'is invalid with non-katakana in family_name_kana' do
+        user = build(:user, family_name_kana: 'biyoshi')
+        expect(user).not_to be_valid
+        expect(user.errors[:family_name_kana]).to include(I18n.t('errors.messages.only_katakana'))
+      end
+
+      it 'is invalid with non-katakana in given_name_kana' do
+        user = build(:user, given_name_kana: 'taro')
+        expect(user).not_to be_valid
+        expect(user.errors[:given_name_kana]).to include(I18n.t('errors.messages.only_katakana'))
+      end
+
+      it 'allows blank values for kana fields' do
+        user = build(:user, family_name_kana: '', given_name_kana: '')
+        expect(user).to be_valid
       end
     end
 
