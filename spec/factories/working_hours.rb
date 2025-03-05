@@ -2,9 +2,10 @@
 
 FactoryBot.define do
   factory :working_hour do
-    stylist { nil }
-    target_date { '2024-12-07' }
-    start_time { '2024-12-07 22:18:24' }
-    end_time { '2024-12-07 22:18:24' }
+    association :stylist, factory: :user, role: :stylist
+    start_time { Time.zone.parse('09:00') }
+    end_time { Time.zone.parse('18:00') }
+    target_date { nil }
+    day_of_week { nil }
   end
 end
