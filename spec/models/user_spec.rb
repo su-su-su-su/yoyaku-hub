@@ -76,6 +76,36 @@ RSpec.describe User do
       create(:menu, stylist: stylist, name: 'メニュー2')
       expect(stylist.menus.count).to eq(2)
     end
+
+    it 'has many working_hours' do
+      expect(stylist).to respond_to(:working_hours)
+    end
+
+    it 'can have multiple working_hours' do
+      create(:working_hour, stylist: stylist, target_date: Time.zone.today)
+      create(:working_hour, stylist: stylist, target_date: Date.tomorrow)
+      expect(stylist.working_hours.count).to eq(2)
+    end
+
+    it 'can have day_of_week working hours' do
+      create(:working_hour, stylist: stylist, day_of_week: 1, target_date: nil)
+      create(:working_hour, stylist: stylist, day_of_week: 6, target_date: nil)
+      expect(stylist.working_hours.where(target_date: nil).count).to eq(2)
+    end
+
+    it 'can have holiday working hours' do
+      create(:working_hour,
+             stylist: stylist,
+             day_of_week: 7,
+             target_date: nil,
+             start_time: Time.zone.parse('10:00'),
+             end_time: Time.zone.parse('15:00'))
+
+      holiday_wh = stylist.working_hours.find_by(day_of_week: 7)
+      expect(holiday_wh).to be_present
+      expect(holiday_wh.start_time.strftime('%H:%M')).to eq('10:00')
+      expect(holiday_wh.end_time.strftime('%H:%M')).to eq('15:00')
+    end
   end
 
   describe 'OAuthログイン (.from_omniauth)' do
