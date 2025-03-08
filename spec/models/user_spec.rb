@@ -106,6 +106,34 @@ RSpec.describe User do
       expect(holiday_wh.start_time.strftime('%H:%M')).to eq('10:00')
       expect(holiday_wh.end_time.strftime('%H:%M')).to eq('15:00')
     end
+
+    it 'has many holidays' do
+      expect(stylist).to respond_to(:holidays)
+    end
+
+    it 'can have multiple holidays' do
+      create(:holiday, stylist: stylist, target_date: Time.zone.today)
+      create(:holiday, stylist: stylist, target_date: 1.week.from_now.to_date)
+      expect(stylist.holidays.count).to eq(2)
+    end
+
+    it 'can have day_of_week holidays' do
+      create(:holiday, stylist: stylist, day_of_week: 0, target_date: nil)  # 日曜日
+      create(:holiday, stylist: stylist, day_of_week: 6, target_date: nil)  # 土曜日
+      expect(stylist.holidays.where(target_date: nil).count).to eq(2)
+    end
+
+    it 'can have holiday settings for Japanese holidays' do
+      create(:holiday,
+             stylist: stylist,
+             day_of_week: 7,
+             target_date: nil,
+             is_holiday: true)
+
+      jp_holiday = stylist.holidays.find_by(day_of_week: 7)
+      expect(jp_holiday).to be_present
+      expect(jp_holiday.is_holiday).to be true
+    end
   end
 
   describe 'OAuthログイン (.from_omniauth)' do
