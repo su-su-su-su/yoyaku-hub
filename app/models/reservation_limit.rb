@@ -16,7 +16,8 @@ class ReservationLimit < ApplicationRecord
 
     global_rl = find_by(stylist_id: stylist_id, target_date: nil)
     if global_rl.present?
-      return new(stylist_id: stylist_id, target_date: date, max_reservations: global_rl.max_reservations)
+      return new(stylist_id: stylist_id, target_date: date, max_reservations: global_rl.max_reservations,
+                 time_slot: global_rl.time_slot)
     end
 
     new(stylist_id: stylist_id, target_date: date, max_reservations: 1)
