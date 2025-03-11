@@ -115,10 +115,25 @@ RSpec.describe Menu do
 
   describe 'アソシエーション' do
     let(:stylist) { create(:user, :stylist) }
+    let(:customer) { create(:user, :customer) }
     let(:menu) { create(:menu, stylist: stylist) }
 
     it 'belongs to a stylist' do
       expect(menu.stylist).to eq(stylist)
+    end
+
+    it 'has many reservation_menu_selections' do
+      reservation = create(:reservation, customer: customer, stylist: stylist,
+                                         start_date_str: Date.current.to_s, start_time_str: '10:00')
+      selection = create(:reservation_menu_selection, reservation: reservation, menu: menu)
+      expect(menu.reservation_menu_selections).to include(selection)
+    end
+
+    it 'has many reservations through reservation_menu_selections' do
+      reservation = create(:reservation, customer: customer, stylist: stylist,
+                                         start_date_str: Date.current.to_s, start_time_str: '10:00')
+      create(:reservation_menu_selection, reservation: reservation, menu: menu)
+      expect(menu.reservations).to include(reservation)
     end
   end
 
