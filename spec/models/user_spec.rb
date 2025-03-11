@@ -65,7 +65,9 @@ RSpec.describe User do
   end
 
   describe 'アソシエーション' do
-    let(:stylist) { create(:user, :stylist) }
+    let(:customer) { create(:user, role: :customer) }
+    let(:stylist) { create(:user, role: :stylist) }
+    let(:menu) { create(:menu, stylist: stylist) }
 
     it 'has many menus' do
       expect(stylist).to respond_to(:menus)
@@ -118,8 +120,8 @@ RSpec.describe User do
     end
 
     it 'can have day_of_week holidays' do
-      create(:holiday, stylist: stylist, day_of_week: 0, target_date: nil)  # 日曜日
-      create(:holiday, stylist: stylist, day_of_week: 6, target_date: nil)  # 土曜日
+      create(:holiday, stylist: stylist, day_of_week: 0, target_date: nil)
+      create(:holiday, stylist: stylist, day_of_week: 6, target_date: nil)
       expect(stylist.holidays.where(target_date: nil).count).to eq(2)
     end
 
@@ -133,6 +135,48 @@ RSpec.describe User do
       jp_holiday = stylist.holidays.find_by(day_of_week: 7)
       expect(jp_holiday).to be_present
       expect(jp_holiday.is_holiday).to be true
+    end
+
+    it 'has many reservations' do
+      expect(customer).to respond_to(:reservations)
+    end
+
+    it 'can have multiple reservations' do
+      create(:reservation, customer: customer, stylist: stylist, menu_ids: [menu.id])
+      create(:reservation, customer: customer, stylist: stylist, menu_ids: [menu.id])
+      expect(customer.reservations.count).to eq(2)
+    end
+
+    it 'has many stylist_reservations' do
+      expect(stylist).to respond_to(:stylist_reservations)
+    end
+
+    it 'can have multiple stylist_reservations' do
+      create(:reservation, customer: customer, stylist: stylist, menu_ids: [menu.id])
+      create(:reservation, customer: create(:user, role: :customer), stylist: stylist, menu_ids: [menu.id])
+      expect(stylist.stylist_reservations.count).to eq(2)
+    end
+
+    it 'can find reservations for a specific date' do
+      today = Date.current
+      tomorrow = Date.current.tomorrow
+
+      create(:reservation,
+             customer: customer,
+             stylist: stylist,
+             menu_ids: [menu.id],
+             start_date_str: today.to_s,
+             start_time_str: '10:00')
+
+      create(:reservation,
+             customer: customer,
+             stylist: stylist,
+             menu_ids: [menu.id],
+             start_date_str: tomorrow.to_s,
+             start_time_str: '11:00')
+
+      expect(stylist.stylist_reservations.where(start_at: today.all_day).count).to eq(1)
+      expect(stylist.stylist_reservations.where(start_at: tomorrow.all_day).count).to eq(1)
     end
   end
 
