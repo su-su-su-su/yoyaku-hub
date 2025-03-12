@@ -100,11 +100,9 @@ RSpec.describe 'Stylist Holiday Settings' do
 
     visit stylists_shift_settings_path
     form = find('form[action$="/stylists/shift_settings/holidays"]')
-    # rubocop:disable Rails/FindEach
     form.all('input[type="checkbox"]').each do |checkbox|
       expect(checkbox).not_to be_checked
     end
-    # rubocop:enable Rails/FindEa
   end
 
   it 'can set holidays for national holidays' do
@@ -124,5 +122,16 @@ RSpec.describe 'Stylist Holiday Settings' do
     visit stylists_shift_settings_path
     form = find('form[action$="/stylists/shift_settings/holidays"]')
     expect(form.find('label', text: '祝祭日').find('input[type="checkbox"]')).to be_checked
+  end
+
+  describe 'Access restrictions' do
+    it 'non-stylist users cannot access the settings page' do
+      customer = create(:user, role: :customer)
+      sign_in customer
+
+      visit stylists_shift_settings_path
+
+      expect(page).to have_no_current_path stylists_shift_settings_path, ignore_query: true
+    end
   end
 end
