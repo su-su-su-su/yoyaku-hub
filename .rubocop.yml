@@ -28,9 +28,9 @@ AllCops:
     - app/models/reservation.rb
     - app/models/menu.rb
     - db/seeds/shift_settings_date_based.rb
-    - spec/system/shift_settings/working_hours_spec.rb
-    - spec/system/shift_settings/holidays_spec.rb
-    - spec/system/shift_settings/shift_settings_spec.rb
+    - spec/system/stylists/shift_settings/working_hours_spec.rb
+    - spec/system/stylists/shift_settings/holidays_spec.rb
+    - spec/system/stylists/shift_settings/shift_settings_spec.rb
     - spec/system/stylists/schedules_spec.rb
 
 Style/Documentation:
