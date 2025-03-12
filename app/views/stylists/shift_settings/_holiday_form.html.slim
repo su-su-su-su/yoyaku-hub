@@ -3,6 +3,8 @@ h2.text-l.font-bold 休業日
 = form_with model: Holiday.new, url: holidays_stylists_shift_settings_path, method: :post, local: true do |f|
   p.text-sm.text-gray-500.mb-2 休業日にしたい曜日にチェックを入れてください
 
+  = hidden_field_tag "holiday[day_of_weeks][]", ""
+
   - weekdays = {1 => "月曜日",2 => "火曜日",3 => "水曜日",4 => "木曜日",5 => "金曜日",6 => "土曜日", 0 => "日曜日", 7 => "祝祭日"}
 
   .grid.grid-cols-3.gap-4
