@@ -6,14 +6,6 @@ RSpec.describe 'Stylist Menu Management' do
   let(:stylist) { create(:user, :stylist) }
   let(:customer) { create(:user, :customer) }
 
-  before do
-    if RSpec.current_example.metadata[:js]
-      driven_by(:selenium_chrome_headless)
-    else
-      driven_by(:rack_test)
-    end
-  end
-
   describe 'Access restrictions' do
     it 'redirects to login page when not logged in' do
       visit menus_settings_path
