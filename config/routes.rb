@@ -37,19 +37,19 @@ Rails.application.routes.draw do
       collection do
         post 'working_hours', to: 'shift_settings/working_hours#create'
         patch 'working_hours/:id', to: 'shift_settings/working_hours#update'
-  
+
         post 'holidays', to: 'shift_settings/holidays#create'
         patch 'holidays/:id', to: 'shift_settings/holidays#update'
-  
+
         post 'reservation_limits', to: 'shift_settings/reservation_limits#create'
         patch 'reservation_limits/:id', to: 'shift_settings/reservation_limits#update'
-  
+
         get ':year/:month', to: 'shift_settings#show', as: 'show'
         post ':year/:month', to: 'shift_settings#create', as: 'create'
         patch ':year/:month', to: 'shift_settings#update', as: 'update'
       end
     end
-  end 
+  end
 
   get 'customers' => redirect('/customers/sign_up')
   get 'login_with_google/:role', to: 'sessions#set_role', as: :set_role_and_auth
