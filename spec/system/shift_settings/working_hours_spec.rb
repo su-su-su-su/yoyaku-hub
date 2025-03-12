@@ -114,4 +114,15 @@ RSpec.describe 'Stylist working hours settings' do
       expect(wh_holiday.end_time.strftime('%H:%M')).to eq '17:30'
     end
   end
+
+  describe 'Access restrictions' do
+    it 'non-stylist users cannot access the settings page' do
+      customer = create(:user, role: :customer)
+      sign_in customer
+
+      visit stylists_shift_settings_path
+
+      expect(page).to have_no_current_path stylists_shift_settings_path, ignore_query: true
+    end
+  end
 end
