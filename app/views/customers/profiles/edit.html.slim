@@ -3,18 +3,24 @@
     h2.text-2xl.font-semibold.mb-4 カスタマー情報
     - if notice
       .alert.alert-info.flash-notice(data-controller="flash")= notice
+    - if alert
+      .alert.alert-danger.flash-alert(data-controller="flash")= alert
+
+    - if @user.errors.any?
+      .bg-red-100.border.border-red-400.text-red-700.px-4.py-3.rounded.mb-4
+        ul.list-disc.pl-5
+          - @user.errors.full_messages.each do |message|
+            li = message
 
     = form_for @user, url: customers_profile_path, method: :patch, html: { class: 'space-y-4' } do |f|
       .flex.flex-col
         = f.label :family_name, '性', class: 'mb-1 font-semibold'
         = f.text_field :family_name,
             class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-
       .flex.flex-col
         = f.label :given_name, '名', class: 'mb-1 font-semibold'
         = f.text_field :given_name,
             class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-
       .flex.flex-col
         = f.label :family_name_kana, 'セイ', class: 'mb-1 font-semibold'
         = f.text_field :family_name_kana,
@@ -22,7 +28,6 @@
             pattern: '[ァ-ヶー]+',
             title: '全角カタカナのみを入力してください',
             class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-
       .flex.flex-col
         = f.label :given_name_kana, 'メイ', class: 'mb-1 font-semibold'
         = f.text_field :given_name_kana,
@@ -30,29 +35,22 @@
             pattern: '[ァ-ヶー]+',
             title: '全角カタカナのみを入力してください',
             class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-
       .flex.flex-col
         = f.label :gender, '性別', class: 'mb-1 font-semibold'
         .flex.space-x-4
           label.flex.items-center
             = f.radio_button :gender, 'male', class: 'mr-1'
             span 男性
-
           label.flex.items-center
             = f.radio_button :gender, 'female', class: 'mr-1'
             span 女性
-
           label.flex.items-center
             = f.radio_button :gender, 'no_answer', class: 'mr-1'
             span 答えない
-
       .flex.flex-col
         = f.label :date_of_birth, '生年月日', class: 'mb-1 font-semibold'
-        / flex + space-x-2 で複数のselectを横に並べる
         .flex.space-x-2
           = f.date_select :date_of_birth,
             {start_year: 1930,end_year: Time.current.year, use_month_numbers: true,order: [:year, :month, :day]},
             {class: 'border border-gray-300 rounded px-2 py-1 inline-block w-auto focus:outline-none focus:ring-2 focus:ring-blue-500'}
-
-      button.mt-4.bg-blue-500.text-white.py-2.px-4.rounded.hover:bg-blue-600
-        = f.submit '登録'
+      = f.submit '登録', class: "btn-primary"
