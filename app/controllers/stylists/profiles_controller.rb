@@ -11,10 +11,11 @@ module Stylists
 
     def update
       @user = current_user
+      @user.validating_profile = true
       if @user.update(stylist_params)
-        redirect_to stylists_dashboard_path, otice: t('stylists.profiles.updated')
+        redirect_to stylists_dashboard_path, notice: t('stylists.profiles.updated')
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 

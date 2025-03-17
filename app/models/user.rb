@@ -24,6 +24,11 @@ class User < ApplicationRecord
     message: I18n.t('errors.messages.only_katakana')
   }, allow_blank: true
 
+  validates :family_name, :given_name, presence: true, if: :profile_validation_required?
+  validates :family_name_kana, :given_name_kana, presence: true, if: :profile_validation_required?
+  validates :gender, :date_of_birth, presence: true, if: :profile_validation_required?
+  attr_accessor :validating_profile
+
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
@@ -44,5 +49,19 @@ class User < ApplicationRecord
 
   def min_active_menu_duration
     menus.where(is_active: true).minimum(:duration) || 0
+  end
+
+  def profile_validation_required?
+    persisted? || validating_profile == true
+  end
+
+  def profile_complete?
+    family_name.present? && given_name.present? &&
+    family_name_kana.present? && given_name_kana.present? &&
+    gender.present? && date_of_birth.present?
+  end
+
+  def trying_to_complete_profile?
+    validating_profile == true
   end
 end
