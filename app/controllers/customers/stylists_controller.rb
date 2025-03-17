@@ -6,7 +6,6 @@ module Customers
     before_action -> { ensure_role(:customer) }
     before_action :ensure_profile_complete
 
-
     def index
       @stylists = User.where(role: :stylist)
                       .joins(:stylist_reservations).where(stylist_reservations: { customer_id: current_user.id })
@@ -14,10 +13,10 @@ module Customers
     end
 
     def ensure_profile_complete
-      unless current_user.profile_complete?
-        redirect_to edit_customers_profile_path,
-        alert: I18n.t('customers.profiles.incomplete_profile')
-      end
+      return if current_user.profile_complete?
+
+      redirect_to edit_customers_profile_path,
+                  alert: I18n.t('customers.profiles.incomplete_profile')
     end
   end
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
-
   def set_role
     role = params[:role]
     if %w[stylist customer].include?(role)

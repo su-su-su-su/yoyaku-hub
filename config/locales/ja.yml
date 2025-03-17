@@ -208,6 +208,8 @@ ja:
     pm: 午後
   alerts:
     no_permission: "アクセス権限がありません"
+    authentication_failed: "認証に失敗しました。再度お試しください。"
+    login_failed: "認証に失敗しました。別の方法でログインをお試しください。"
   stylists:
     shift_settings:
       working_hours:

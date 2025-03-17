@@ -57,8 +57,8 @@ class User < ApplicationRecord
 
   def profile_complete?
     family_name.present? && given_name.present? &&
-    family_name_kana.present? && given_name_kana.present? &&
-    gender.present? && date_of_birth.present?
+      family_name_kana.present? && given_name_kana.present? &&
+      gender.present? && date_of_birth.present?
   end
 
   def trying_to_complete_profile?
