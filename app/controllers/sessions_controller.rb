@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:set_role]
-
   def set_role
     role = params[:role]
     if %w[stylist customer].include?(role)

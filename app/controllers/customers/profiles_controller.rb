@@ -11,10 +11,12 @@ module Customers
 
     def update
       @user = current_user
+      @user.validating_profile = true
+
       if @user.update(customer_params)
-        redirect_to customers_dashboard_path, otice: t('customers.profiles.updated')
+        redirect_to customers_dashboard_path, notice: t('customers.profiles.updated')
       else
-        render :edit
+        render :edit, status: :unprocessable_entity
       end
     end
 

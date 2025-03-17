@@ -22,6 +22,13 @@ ja:
         name: "名前"
         price: "価格"
         duration: "施術時間"
+      user:
+        family_name: "性"
+        given_name: "名"
+        family_name_kana: "セイ"
+        given_name_kana: "メイ"
+        gender: "性別"
+        date_of_birth: "生年月日"
 
   date:
     abbr_day_names:
@@ -201,6 +208,8 @@ ja:
     pm: 午後
   alerts:
     no_permission: "アクセス権限がありません"
+    authentication_failed: "認証に失敗しました。再度お試しください。"
+    login_failed: "認証に失敗しました。別の方法でログインをお試しください。"
   stylists:
     shift_settings:
       working_hours:
@@ -215,6 +224,9 @@ ja:
         Duration: "施術時間"
     profiles:
       updated: "カスタマー情報を更新しました"
+      incomplete_profile: "サービスを利用する前にプロフィールを入力してください"
+
   customers:
     profiles:
       updated: "カスタマー情報を更新しました"
+      incomplete_profile: "サービスを利用する前にプロフィールを入力してください"

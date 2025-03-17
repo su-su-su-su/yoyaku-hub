@@ -5,6 +5,8 @@ module Stylists
     before_action :authenticate_user!
     before_action -> { ensure_role(:stylist) }
     before_action :set_date_info, only: [:index]
+    before_action :ensure_profile_complete
+
 
     def index
       @weekday_hours = WorkingHour.formatted_hours(WorkingHour.find_by(stylist_id: current_user.id, day_of_week: 1))
@@ -146,6 +148,13 @@ module Stylists
       holiday_exists = Holiday.where(stylist_id: current_user.id, target_date: start_date..end_date).exists?
       reservation_limit_exist = ReservationLimit.where(stylist_id: current_user.id, target_date: start_date..end_date).exists?
       working_hour_exists || holiday_exists || reservation_limit_exist
+    end
+
+    def ensure_profile_complete
+      unless current_user.profile_complete?
+        redirect_to edit_stylists_profile_path,
+        alert: I18n.t('stylists.profiles.incomplete_profile')
+      end
     end
   end
 end

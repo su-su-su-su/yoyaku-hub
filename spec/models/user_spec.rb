@@ -3,6 +3,18 @@
 require 'rails_helper'
 
 RSpec.describe User do
+  def setup_working_hour(stylist, day: Date.current.wday, start_time: '09:00', end_time: '17:00')
+    create(:working_hour,
+           stylist: stylist,
+           day_of_week: day,
+           target_date: nil,
+           start_time: Time.zone.parse(start_time),
+           end_time: Time.zone.parse(end_time))
+  end
+
+  let(:customer) { create(:user, role: :customer) }
+  let(:stylist) { create(:user, role: :stylist) }
+
   describe 'バリデーション' do
     context 'when it has basic validations' do
       it 'is valid with valid attributes' do
@@ -65,118 +77,130 @@ RSpec.describe User do
   end
 
   describe 'アソシエーション' do
-    let(:customer) { create(:user, role: :customer) }
-    let(:stylist) { create(:user, role: :stylist) }
-    let(:menu) { create(:menu, stylist: stylist) }
+    context 'when menu tests' do
+      it 'has many menus' do
+        expect(stylist).to respond_to(:menus)
+      end
 
-    it 'has many menus' do
-      expect(stylist).to respond_to(:menus)
+      it 'can have multiple menus' do
+        create(:menu, stylist: stylist, name: 'メニュー1')
+        create(:menu, stylist: stylist, name: 'メニュー2')
+        expect(stylist.menus.count).to eq(2)
+      end
     end
 
-    it 'can have multiple menus' do
-      create(:menu, stylist: stylist, name: 'メニュー1')
-      create(:menu, stylist: stylist, name: 'メニュー2')
-      expect(stylist.menus.count).to eq(2)
+    context 'when working hour tests' do
+      it 'has many working_hours' do
+        expect(stylist).to respond_to(:working_hours)
+      end
+
+      it 'can have multiple working_hours' do
+        create(:working_hour, stylist: stylist, target_date: Time.zone.today)
+        create(:working_hour, stylist: stylist, target_date: Date.tomorrow)
+        expect(stylist.working_hours.count).to eq(2)
+      end
+
+      it 'can have day_of_week working hours' do
+        create(:working_hour, stylist: stylist, day_of_week: 1, target_date: nil)
+        create(:working_hour, stylist: stylist, day_of_week: 6, target_date: nil)
+        expect(stylist.working_hours.where(target_date: nil).count).to eq(2)
+      end
+
+      it 'can have holiday working hours' do
+        setup_working_hour(stylist, day: 7, start_time: '10:00', end_time: '15:00')
+        holiday_wh = stylist.working_hours.find_by(day_of_week: 7)
+        expect(holiday_wh).to be_present
+        expect(holiday_wh.start_time.strftime('%H:%M')).to eq('10:00')
+        expect(holiday_wh.end_time.strftime('%H:%M')).to eq('15:00')
+      end
     end
 
-    it 'has many working_hours' do
-      expect(stylist).to respond_to(:working_hours)
+    context 'when holiday tests' do
+      it 'has many holidays' do
+        expect(stylist).to respond_to(:holidays)
+      end
+
+      it 'can have multiple holidays' do
+        create(:holiday, stylist: stylist, target_date: Time.zone.today)
+        create(:holiday, stylist: stylist, target_date: 1.week.from_now.to_date)
+        expect(stylist.holidays.count).to eq(2)
+      end
+
+      it 'can have day_of_week holidays' do
+        create(:holiday, stylist: stylist, day_of_week: 0, target_date: nil)
+        create(:holiday, stylist: stylist, day_of_week: 6, target_date: nil)
+        expect(stylist.holidays.where(target_date: nil).count).to eq(2)
+      end
+
+      it 'can have holiday settings for Japanese holidays' do
+        create(:holiday,
+               stylist: stylist,
+               day_of_week: 7,
+               target_date: nil,
+               is_holiday: true)
+
+        jp_holiday = stylist.holidays.find_by(day_of_week: 7)
+        expect(jp_holiday).to be_present
+        expect(jp_holiday.is_holiday).to be true
+      end
     end
 
-    it 'can have multiple working_hours' do
-      create(:working_hour, stylist: stylist, target_date: Time.zone.today)
-      create(:working_hour, stylist: stylist, target_date: Date.tomorrow)
-      expect(stylist.working_hours.count).to eq(2)
-    end
+    context 'when reservation tests' do
+      let(:menu) { create(:menu, stylist: stylist) }
 
-    it 'can have day_of_week working hours' do
-      create(:working_hour, stylist: stylist, day_of_week: 1, target_date: nil)
-      create(:working_hour, stylist: stylist, day_of_week: 6, target_date: nil)
-      expect(stylist.working_hours.where(target_date: nil).count).to eq(2)
-    end
+      before do
+        working_hour = setup_working_hour(stylist)
+        allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
+        allow(ReservationLimit).to receive(:find_by).and_return(
+          instance_double(ReservationLimit, max_reservations: 2)
+        )
+      end
 
-    it 'can have holiday working hours' do
-      create(:working_hour,
-             stylist: stylist,
-             day_of_week: 7,
-             target_date: nil,
-             start_time: Time.zone.parse('10:00'),
-             end_time: Time.zone.parse('15:00'))
+      it 'has many reservations' do
+        expect(customer).to respond_to(:reservations)
+      end
 
-      holiday_wh = stylist.working_hours.find_by(day_of_week: 7)
-      expect(holiday_wh).to be_present
-      expect(holiday_wh.start_time.strftime('%H:%M')).to eq('10:00')
-      expect(holiday_wh.end_time.strftime('%H:%M')).to eq('15:00')
-    end
+      it 'can have multiple reservations' do
+        create(:reservation, customer: customer, stylist: stylist,
+                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
+        create(:reservation, customer: customer, stylist: stylist,
+                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
+        expect(customer.reservations.count).to eq(2)
+      end
 
-    it 'has many holidays' do
-      expect(stylist).to respond_to(:holidays)
-    end
+      it 'has many stylist_reservations' do
+        expect(stylist).to respond_to(:stylist_reservations)
+      end
 
-    it 'can have multiple holidays' do
-      create(:holiday, stylist: stylist, target_date: Time.zone.today)
-      create(:holiday, stylist: stylist, target_date: 1.week.from_now.to_date)
-      expect(stylist.holidays.count).to eq(2)
-    end
+      it 'can have multiple stylist_reservations' do
+        create(:reservation, customer: customer, stylist: stylist,
+                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
+        create(:reservation, customer: create(:user, role: :customer), stylist: stylist,
+                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
+        expect(stylist.stylist_reservations.count).to eq(2)
+      end
 
-    it 'can have day_of_week holidays' do
-      create(:holiday, stylist: stylist, day_of_week: 0, target_date: nil)
-      create(:holiday, stylist: stylist, day_of_week: 6, target_date: nil)
-      expect(stylist.holidays.where(target_date: nil).count).to eq(2)
-    end
+      it 'can find reservations for a specific date' do
+        today = Date.current
+        tomorrow = Date.current.tomorrow
 
-    it 'can have holiday settings for Japanese holidays' do
-      create(:holiday,
-             stylist: stylist,
-             day_of_week: 7,
-             target_date: nil,
-             is_holiday: true)
+        create(:reservation,
+               customer: customer,
+               stylist: stylist,
+               menu_ids: [menu.id],
+               start_date_str: today.to_s,
+               start_time_str: '10:00')
 
-      jp_holiday = stylist.holidays.find_by(day_of_week: 7)
-      expect(jp_holiday).to be_present
-      expect(jp_holiday.is_holiday).to be true
-    end
+        create(:reservation,
+               customer: customer,
+               stylist: stylist,
+               menu_ids: [menu.id],
+               start_date_str: tomorrow.to_s,
+               start_time_str: '11:00')
 
-    it 'has many reservations' do
-      expect(customer).to respond_to(:reservations)
-    end
-
-    it 'can have multiple reservations' do
-      create(:reservation, customer: customer, stylist: stylist, menu_ids: [menu.id])
-      create(:reservation, customer: customer, stylist: stylist, menu_ids: [menu.id])
-      expect(customer.reservations.count).to eq(2)
-    end
-
-    it 'has many stylist_reservations' do
-      expect(stylist).to respond_to(:stylist_reservations)
-    end
-
-    it 'can have multiple stylist_reservations' do
-      create(:reservation, customer: customer, stylist: stylist, menu_ids: [menu.id])
-      create(:reservation, customer: create(:user, role: :customer), stylist: stylist, menu_ids: [menu.id])
-      expect(stylist.stylist_reservations.count).to eq(2)
-    end
-
-    it 'can find reservations for a specific date' do
-      today = Date.current
-      tomorrow = Date.current.tomorrow
-
-      create(:reservation,
-             customer: customer,
-             stylist: stylist,
-             menu_ids: [menu.id],
-             start_date_str: today.to_s,
-             start_time_str: '10:00')
-
-      create(:reservation,
-             customer: customer,
-             stylist: stylist,
-             menu_ids: [menu.id],
-             start_date_str: tomorrow.to_s,
-             start_time_str: '11:00')
-
-      expect(stylist.stylist_reservations.where(start_at: today.all_day).count).to eq(1)
-      expect(stylist.stylist_reservations.where(start_at: tomorrow.all_day).count).to eq(1)
+        expect(stylist.stylist_reservations.where(start_at: today.all_day).count).to eq(1)
+        expect(stylist.stylist_reservations.where(start_at: tomorrow.all_day).count).to eq(1)
+      end
     end
   end
 

@@ -3,6 +3,25 @@
 require 'rails_helper'
 
 RSpec.describe Menu do
+  let(:stylist) { create(:user, :stylist) }
+  let(:customer) { create(:user, :customer) }
+
+  def setup_working_hour(start_time: '09:00', end_time: '17:00')
+    create(:working_hour,
+           stylist: stylist,
+           day_of_week: Date.current.wday,
+           start_time: Time.zone.parse(start_time),
+           end_time: Time.zone.parse(end_time))
+  end
+
+  before do
+    working_hour = setup_working_hour
+    allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
+    allow(ReservationLimit).to receive(:find_by).and_return(
+      instance_double(ReservationLimit, max_reservations: 1)
+    )
+  end
+
   describe '定数' do
     it 'has MAX_MENUS_PER_STYLIST constant' do
       expect(described_class::MAX_MENUS_PER_STYLIST).to eq(30)
@@ -78,8 +97,6 @@ RSpec.describe Menu do
     end
 
     context 'when validating name uniqueness' do
-      let(:stylist) { create(:user, :stylist) }
-
       it 'is invalid with duplicate name for the same stylist' do
         create(:menu, stylist: stylist, name: 'カット')
         duplicate_menu = build(:menu, stylist: stylist, name: 'カット')
@@ -96,8 +113,6 @@ RSpec.describe Menu do
     end
 
     context 'when validating menu limit per stylist' do
-      let(:stylist) { create(:user, :stylist) }
-
       it 'is valid when stylist has less than MAX_MENUS_PER_STYLIST menus' do
         create_list(:menu, described_class::MAX_MENUS_PER_STYLIST - 1, stylist: stylist)
         menu = build(:menu, stylist: stylist)
@@ -114,8 +129,6 @@ RSpec.describe Menu do
   end
 
   describe 'アソシエーション' do
-    let(:stylist) { create(:user, :stylist) }
-    let(:customer) { create(:user, :customer) }
     let(:menu) { create(:menu, stylist: stylist) }
 
     it 'belongs to a stylist' do
@@ -138,7 +151,6 @@ RSpec.describe Menu do
   end
 
   describe 'スコープ' do
-    let(:stylist) { create(:user, :stylist) }
     let(:stylist2) { create(:user, :stylist) }
     let!(:stylist_menu) { create(:menu, stylist: stylist, name: 'メニューA') }
     let!(:other_stylist_menu) { create(:menu, stylist: stylist2, name: 'メニューB') }
@@ -152,8 +164,6 @@ RSpec.describe Menu do
   end
 
   describe 'コールバック' do
-    let(:stylist) { create(:user, :stylist) }
-
     context 'when assign_sort_order_if_blank is triggered' do
       it 'assigns sort_order automatically if not specified' do
         menu = create(:menu, stylist: stylist, sort_order: nil)
@@ -196,8 +206,6 @@ RSpec.describe Menu do
   end
 
   describe 'ソート' do
-    let(:stylist) { create(:user, :stylist) }
-
     before do
       create(:menu, stylist: stylist, name: 'Cメニュー', sort_order: 3)
       create(:menu, stylist: stylist, name: 'Aメニュー', sort_order: 1)
