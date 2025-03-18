@@ -65,7 +65,7 @@ jobs:
         ports: [5432:5432]
 
     env:
-      YOYAKU_HUB_DATABASE_HOST: db
+      YOYAKU_HUB_DATABASE_HOST: localhost
       APP_DATABASE_USER: postgres
       YOYAKU_HUB_DATABASE_PASSWORD: postgres
 
@@ -86,4 +86,5 @@ jobs:
 
       - name: Run RSpec tests
         run: |
+          bundle binstubs rspec-core
           bin/rspec
