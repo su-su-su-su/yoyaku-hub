@@ -1,19 +1,7 @@
-  - menus.each do |menu|
-    = turbo_frame_tag menu do
-      .col-span-1.mt-6
-        .card.bg-white.w-full.p-8
-          .card-body
-            p.text-gray-600 No.#{menu.sort_order}
-            h2.text-xl.font-bold= menu.name
-            p.text-gray-600 価格: ￥#{menu.price}（税込み）
-            p.text-gray-600 施術時間: #{menu.duration}分
-            p.text-gray-600 備考: #{menu.description}
-            p.text-gray-600 カテゴリー: #{menu.category.join(', ')}
-            p.text-gray-600
-            | 掲載の有無:
-            - if menu.is_active
-              |  掲載中
-            - else
-              |  非掲載
-            .flex.justify-end.mt-4
-            = link_to '編集', edit_menus_setting_path(menu), class: 'btn btn-primary', data: { turbo_frame: 'menu' }
+- if menus.empty?
+  p.text-center.text-red-600 メニューが登録されていません。
+- else
+  .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3
+    - menus.each do |menu|
+      = turbo_frame_tag dom_id(menu) do
+        = render partial: 'menu_item', locals: { menu: menu }

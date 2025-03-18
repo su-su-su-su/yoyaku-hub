@@ -1,3 +1,7 @@
-= turbo_stream.replace 'menus' do
+
+= turbo_stream.replace dom_id(@menu) do
+  = turbo_frame_tag dom_id(@menu) do
+    = render partial: 'menu_item', locals: { menu: @menu }
+
+= turbo_stream.update 'menu-list' do
   = render partial: 'menus', locals: { menus: @menus }
-= turbo_stream.remove 'menu'

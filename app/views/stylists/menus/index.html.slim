@@ -5,10 +5,7 @@
     = link_to '新規登録', new_menus_setting_path, class: 'btn btn-primary', data: { turbo_frame: 'new_menu' }
 
   = turbo_frame_tag 'new_menu'
+
 .section.bg-gray-100.p-4.mb-4
-  = turbo_frame_tag 'menus_list' do
-    .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3#menus
-      - if @menus.empty?
-            p.text-center.text-red-600 メニューが登録されていません。
-      - else
-         = render partial: 'menus', locals: { menus: @menus }
+  #menu-list
+    = render partial: 'menus', locals: { menus: @menus }
