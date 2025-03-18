@@ -94,13 +94,19 @@ jobs:
       - name: Install JavaScript dependencies
         run: yarn install
 
-      - name: Precompile assets
-        run: bin/rails assets:precompile
+      - name: Create assets initializer
+        run: |
+          mkdir -p config/initializers
+          echo 'Rails.application.config.assets.css_compressor = nil if ENV["SKIP_SASS_COMPRESSION"] == "true"' > config/initializers/skip_sass_compression.rb
+
+      - name: Precompile assets with compression disabled
+        run: |
+          SKIP_SASS_COMPRESSION=true bin/rails assets:precompile
 
       - name: Prepare database
         run: |
-          bin/rails db:create RAILS_ENV=test
-          bin/rails db:migrate RAILS_ENV=test
+          bin/rails db:create
+          bin/rails db:migrate
 
       - name: Run RSpec tests
         run: |
