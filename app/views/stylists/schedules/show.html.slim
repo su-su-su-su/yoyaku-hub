@@ -27,15 +27,9 @@ h1.px-2.text-xl.font-bold 予約表
           th.border.bg-gray-100.text-center 予約数
           - @time_slots.each do |time_str|
             - slot_idx = to_slot_index(time_str)
-            td.text-center
-              = @reservation_counts[slot_idx].to_i
-        tr
-          th.border.bg-gray-100.text-center 残り受付可能数
-          - @time_slots.each do |time_str|
-            - slot_idx = to_slot_index(time_str)
-            td.text-center
-              = turbo_frame_tag "slot-limit-#{slot_idx}" do
-                = render 'slot_limit', slot_idx: slot_idx
+            td.text-center.border
+             = @reservation_counts[slot_idx].to_i
+        = render 'reservation_limits_row', time_slots: @time_slots
         tr
           th.border.bg-gray-100.text-center #{@stylist.family_name} #{@stylist.given_name}
           - @time_slots.each do |time_str|

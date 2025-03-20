@@ -16,17 +16,22 @@ module Stylists
     def reservation_limits
       slot_idx = params[:slot].to_i
       direction = params[:direction]
+      stylist_id = current_user.id
 
-      update_reservation_limit(current_user.id, @date, slot_idx, direction)
-      set_schedule_data(current_user.id, @date)
+      update_reservation_limit(stylist_id, @date, slot_idx, direction)
+
+      @is_holiday = Holiday.default_for(stylist_id, @date)
+      set_working_hour_and_time_slots(stylist_id, @date)
+      @reservation_counts = slotwise_reservation_counts(stylist_id, @date)
+      @reservation_limits = slotwise_reservation_limits(stylist_id, date: @date)
 
       respond_to do |format|
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace("slot-limit-#{slot_idx}",
-                 partial: 'slot_limit', locals: { slot_idx: slot_idx })
+          render turbo_stream: turbo_stream.replace("reservation-limits-row",
+            partial: 'reservation_limits_row', locals: { time_slots: @time_slots })
         }
         format.html {
-          render partial: 'slot_limit', locals: { slot_idx: slot_idx }
+          redirect_to stylists_schedules_path(date: @date.strftime("%Y-%m-%d"))
         }
       end
     end
@@ -49,7 +54,7 @@ module Stylists
       @is_holiday = Holiday.default_for(stylist_id, date)
       set_working_hour_and_time_slots(stylist_id, date)
       @reservation_counts = slotwise_reservation_counts(stylist_id, date)
-      @reservation_limits = slotwise_reservation_limits(stylist_id, date)
+      @reservation_limits = slotwise_reservation_limits(stylist_id, date: date)
       @slotwise_reservations = slotwise_reservations_map(stylist_id, date) if action_name == 'show'
     end
 
@@ -106,7 +111,7 @@ module Stylists
       counts
     end
 
-    def slotwise_reservation_limits(stylist_id, date)
+    def slotwise_reservation_limits(stylist_id, date:)
       limits = Hash.new(0)
       ReservationLimit.where(stylist_id: stylist_id, target_date: date).each do |lim|
         limits[lim.time_slot] = lim.max_reservations
