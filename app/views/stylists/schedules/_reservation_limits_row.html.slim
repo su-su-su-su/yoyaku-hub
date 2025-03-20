@@ -1,0 +1,9 @@
+tr#reservation-limits-row
+  th.border.bg-gray-100.text-center 残り受付可能数
+  - time_slots.each do |time_str|
+    - slot_idx = to_slot_index(time_str)
+    td.text-center.border
+      div.flex.flex-col.items-center.justify-center.w-full
+        = button_to "▲", stylists_reservation_limits_path(date: @date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'up'), class: 'limit-up-btn w-full', data: { turbo: true }, method: :patch
+        div.my-1.font-medium = (@reservation_limits[slot_idx].to_i - @reservation_counts[slot_idx].to_i).clamp(0, 2)
+        = button_to "▼", stylists_reservation_limits_path(date: @date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'down'), class: 'limit-down-btn w-full', data: { turbo: true }, method: :patch

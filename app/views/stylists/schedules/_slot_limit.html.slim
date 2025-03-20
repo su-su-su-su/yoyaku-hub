@@ -1,11 +1,7 @@
 - max_res = @reservation_limits[slot_idx].to_i
 - current_count = @reservation_counts[slot_idx].to_i
 - remaining = (max_res - current_count).clamp(0, 2)
-
-= button_to "▲", stylists_reservation_limits_path(date: @date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'up'),
-  data: { turbo_frame: "slot-limit-#{slot_idx}" }, method: :patch
-
-= remaining
-
-= button_to "▼", stylists_reservation_limits_path(date: @date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'down'),
-  data: { turbo_frame: "slot-limit-#{slot_idx}" }, method: :patch
+div.flex.flex-col.items-center
+  = button_to "▲", stylists_reservation_limits_path(date: @date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'up'), class: 'limit-up-btn', data: { turbo: true }, method: :patch
+  div.my-1 = remaining
+  = button_to "▼", stylists_reservation_limits_path(date: @date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'down'), class: 'limit-down-btn', data: { turbo: true }, method: :patch
