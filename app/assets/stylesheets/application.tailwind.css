@@ -167,6 +167,10 @@
     border-color: #3e5cd7;
   }
 
+  .menu-checkbox {
+    @apply absolute opacity-0 w-0 h-0 pointer-events-none;
+  }
+
   table.fixed-table {
     table-layout: fixed;
     width: 100%;
