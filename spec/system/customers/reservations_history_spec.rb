@@ -221,10 +221,11 @@ RSpec.describe 'Customer Reservation History' do
     end
 
     it 'shows a confirmation dialog when cancel is clicked' do
-      page.execute_script('window.confirm = function(msg) { window.confirmMessage = msg; return true; }')
-      click_on 'キャンセル'
-      message = page.evaluate_script('window.confirmMessage')
-      expect(message).to eq('本当にキャンセルしますか？')
+      accept_confirm('本当にキャンセルしますか？') do
+        click_on 'キャンセル'
+      end
+
+      expect(page).to have_current_path(customers_reservations_path, ignore_query: true)
     end
 
     it 'moves the reservation to past reservations after cancellation' do
