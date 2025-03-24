@@ -59,7 +59,8 @@ module Stylists
         :duration,
         :description,
         :is_active,
-        category: [])
+        category: []
+      )
     end
   end
 end
