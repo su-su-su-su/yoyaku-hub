@@ -56,3 +56,14 @@ Metrics/BlockLength:
   Exclude:
     - "config/environments/development.rb"
     - "config/routes.rb"
+
+Style/MultilineIfModifier:
+  Enabled: false
+
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+  IndentationWidth: 2
