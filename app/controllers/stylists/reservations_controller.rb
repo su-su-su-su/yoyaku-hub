@@ -18,8 +18,7 @@ module Stylists
       redirect_to stylists_schedules_path(date: @reservation.start_at.to_date), notice: t('stylists.reservations.cancelled')
     end
 
-    def edit
-    end
+    def edit; end
 
     def update
       if @reservation.update(reservation_params)
