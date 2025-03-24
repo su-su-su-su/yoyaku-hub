@@ -19,8 +19,8 @@ module Stylists
         saturday_end = Time.zone.parse(wh_params[:saturday_end_time])
         sunday_start = Time.zone.parse(wh_params[:sunday_start_time])
         sunday_end = Time.zone.parse(wh_params[:sunday_end_time])
-        holiday_start   = Time.zone.parse(wh_params[:holiday_start_time])
-        holiday_end     = Time.zone.parse(wh_params[:holiday_end_time])
+        holiday_start = Time.zone.parse(wh_params[:holiday_start_time])
+        holiday_end = Time.zone.parse(wh_params[:holiday_end_time])
 
         (1..5).each do |wday|
           wh = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday)
@@ -44,8 +44,7 @@ module Stylists
         wh_holiday.end_time = holiday_end
         wh_holiday.save!
 
-
-        redirect_to stylists_shift_settings_path, notice: I18n.t('stylists.shift_settings.working_hours.create_success')
+        redirect_to stylists_shift_settings_path, notice: t('stylists.shift_settings.working_hours.create_success')
       end
     end
   end
