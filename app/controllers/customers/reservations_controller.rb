@@ -38,7 +38,7 @@ module Customers
       if @reservation.save
         redirect_to customers_reservation_path(@reservation), notice: t('flash.reservation_confirmed')
       else
-        flash.now[:alert] = I18n.t('flash.reservation_failed')
+        flash.now[:alert] = t('flash.reservation_failed')
         render :new
       end
     end
