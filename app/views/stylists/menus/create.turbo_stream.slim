@@ -1,3 +1,5 @@
+= turbo_stream.update 'flash-message' do
+  .alert.alert-info.flash-notice(data-controller="flash")= t('stylists.menus.created')
 = turbo_stream.update 'new_menu', ''
 = turbo_stream.update 'menu-list' do
   = render partial: 'menus', locals: { menus: @menus }
