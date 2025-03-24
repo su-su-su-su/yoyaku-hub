@@ -5,7 +5,6 @@ module Customers
     class MenusController < ApplicationController
       before_action :authenticate_user!
       before_action -> { ensure_role(:customer) }
-      before_action :ensure_stylist_resource
       before_action :set_stylist
 
       def index
@@ -27,13 +26,6 @@ module Customers
       def set_stylist
         @stylist = User.find(params[:stylist_id])
         redirect_to customers_dashboard_path unless @stylist.stylist?
-      end
-
-      def ensure_stylist_resource
-        @stylist = User.find(params[:stylist_id])
-        return if @stylist.stylist?
-
-        redirect_to customers_dashboard_path
       end
     end
   end
