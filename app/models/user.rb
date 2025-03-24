@@ -8,9 +8,9 @@ class User < ApplicationRecord
   has_many :holidays, foreign_key: :stylist_id, dependent: :destroy, inverse_of: :stylist
   has_many :reservation_limits, foreign_key: :stylist_id, dependent: :destroy, inverse_of: :stylist
   has_many :reservations, class_name: 'Reservation', foreign_key: :customer_id, inverse_of: :customer,
-                          dependent: :destroy
+    dependent: :destroy
   has_many :stylist_reservations, class_name: 'Reservation', foreign_key: :stylist_id, inverse_of: :stylist,
-                                  dependent: :destroy
+    dependent: :destroy
 
   KATAKANA_REGEX = /\A[ァ-ヶー]+\z/
 
@@ -31,8 +31,8 @@ class User < ApplicationRecord
 
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [:google_oauth2]
+    :recoverable, :rememberable, :validatable,
+    :omniauthable, omniauth_providers: [:google_oauth2]
 
   def self.from_omniauth(auth, role)
     user = find_or_initialize_by(provider: auth.provider, uid: auth.uid)

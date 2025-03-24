@@ -19,9 +19,9 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     setup_reservations
 
     create(:holiday,
-           stylist: stylist,
-           target_date: base_date + 2.days,
-           is_holiday: true)
+      stylist: stylist,
+      target_date: base_date + 2.days,
+      is_holiday: true)
   end
 
   def setup_working_hours
@@ -29,17 +29,17 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
     dates.each do |date|
       create(:working_hour,
-             stylist: stylist,
-             target_date: date,
-             start_time: Time.zone.parse("#{date} 10:00"),
-             end_time: Time.zone.parse("#{date} 19:00"))
+        stylist: stylist,
+        target_date: date,
+        start_time: Time.zone.parse("#{date} 10:00"),
+        end_time: Time.zone.parse("#{date} 19:00"))
 
       (20..38).each do |slot|
         create(:reservation_limit,
-               stylist: stylist,
-               target_date: date,
-               time_slot: slot,
-               max_reservations: 1)
+          stylist: stylist,
+          target_date: date,
+          time_slot: slot,
+          max_reservations: 1)
       end
     end
   end
@@ -49,10 +49,10 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     end_time_str = format_time_string(end_time)
 
     create(:reservation, :before_visit,
-           customer: customer,
-           stylist: stylist,
-           start_at: Time.zone.parse("#{day} #{start_time_str}"),
-           end_at: Time.zone.parse("#{day} #{end_time_str}"))
+      customer: customer,
+      stylist: stylist,
+      start_at: Time.zone.parse("#{day} #{start_time_str}"),
+      end_at: Time.zone.parse("#{day} #{end_time_str}"))
   end
 
   def format_time_string(time)

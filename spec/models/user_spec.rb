@@ -5,11 +5,11 @@ require 'rails_helper'
 RSpec.describe User do
   def setup_working_hour(stylist, day: Date.current.wday, start_time: '09:00', end_time: '17:00')
     create(:working_hour,
-           stylist: stylist,
-           day_of_week: day,
-           target_date: nil,
-           start_time: Time.zone.parse(start_time),
-           end_time: Time.zone.parse(end_time))
+      stylist: stylist,
+      day_of_week: day,
+      target_date: nil,
+      start_time: Time.zone.parse(start_time),
+      end_time: Time.zone.parse(end_time))
   end
 
   let(:customer) { create(:user, role: :customer) }
@@ -70,7 +70,7 @@ RSpec.describe User do
         expect(user).not_to be_valid
         expect(user.errors[:password_confirmation]).to include(
           I18n.t('errors.messages.confirmation',
-                 attribute: described_class.human_attribute_name(:password))
+            attribute: described_class.human_attribute_name(:password))
         )
       end
     end
@@ -134,10 +134,10 @@ RSpec.describe User do
 
       it 'can have holiday settings for Japanese holidays' do
         create(:holiday,
-               stylist: stylist,
-               day_of_week: 7,
-               target_date: nil,
-               is_holiday: true)
+          stylist: stylist,
+          day_of_week: 7,
+          target_date: nil,
+          is_holiday: true)
 
         jp_holiday = stylist.holidays.find_by(day_of_week: 7)
         expect(jp_holiday).to be_present
@@ -162,9 +162,9 @@ RSpec.describe User do
 
       it 'can have multiple reservations' do
         create(:reservation, customer: customer, stylist: stylist,
-                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
+          menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
         create(:reservation, customer: customer, stylist: stylist,
-                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
+          menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
         expect(customer.reservations.count).to eq(2)
       end
 
@@ -174,9 +174,9 @@ RSpec.describe User do
 
       it 'can have multiple stylist_reservations' do
         create(:reservation, customer: customer, stylist: stylist,
-                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
+          menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
         create(:reservation, customer: create(:user, role: :customer), stylist: stylist,
-                             menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
+          menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
         expect(stylist.stylist_reservations.count).to eq(2)
       end
 
@@ -185,18 +185,18 @@ RSpec.describe User do
         tomorrow = Date.current.tomorrow
 
         create(:reservation,
-               customer: customer,
-               stylist: stylist,
-               menu_ids: [menu.id],
-               start_date_str: today.to_s,
-               start_time_str: '10:00')
+          customer: customer,
+          stylist: stylist,
+          menu_ids: [menu.id],
+          start_date_str: today.to_s,
+          start_time_str: '10:00')
 
         create(:reservation,
-               customer: customer,
-               stylist: stylist,
-               menu_ids: [menu.id],
-               start_date_str: tomorrow.to_s,
-               start_time_str: '11:00')
+          customer: customer,
+          stylist: stylist,
+          menu_ids: [menu.id],
+          start_date_str: tomorrow.to_s,
+          start_time_str: '11:00')
 
         expect(stylist.stylist_reservations.where(start_at: today.all_day).count).to eq(1)
         expect(stylist.stylist_reservations.where(start_at: tomorrow.all_day).count).to eq(1)
@@ -207,14 +207,14 @@ RSpec.describe User do
   describe 'OAuthログイン (.from_omniauth)' do
     let(:auth) do
       OmniAuth::AuthHash.new({
-                               provider: 'google_oauth2',
-                               uid: '123456',
-                               info: {
-                                 email: 'ca@example.com',
-                                 first_name: '太郎',
-                                 last_name: '予約'
-                               }
-                             })
+        provider: 'google_oauth2',
+        uid: '123456',
+        info: {
+          email: 'ca@example.com',
+          first_name: '太郎',
+          last_name: '予約'
+        }
+      })
     end
 
     context 'when the user is new' do

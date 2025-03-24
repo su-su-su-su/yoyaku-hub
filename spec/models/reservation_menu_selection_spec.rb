@@ -9,10 +9,10 @@ RSpec.describe ReservationMenuSelection do
 
   def setup_working_hour(start_time: '09:00', end_time: '17:00')
     create(:working_hour,
-           stylist: stylist,
-           day_of_week: Date.current.wday,
-           start_time: Time.zone.parse(start_time),
-           end_time: Time.zone.parse(end_time))
+      stylist: stylist,
+      day_of_week: Date.current.wday,
+      start_time: Time.zone.parse(start_time),
+      end_time: Time.zone.parse(end_time))
   end
 
   before do
@@ -26,7 +26,7 @@ RSpec.describe ReservationMenuSelection do
   describe 'アソシエーション' do
     let(:reservation) do
       create(:reservation, customer: customer, stylist: stylist,
-                           start_date_str: Date.current.to_s, start_time_str: '10:00')
+        start_date_str: Date.current.to_s, start_time_str: '10:00')
     end
     let(:reservation_menu_selection) { create(:reservation_menu_selection, reservation: reservation, menu: menu) }
 

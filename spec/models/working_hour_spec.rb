@@ -59,10 +59,10 @@ RSpec.describe WorkingHour do
     context 'when a specific working hour exists for the date' do
       let!(:specific_wh) do
         create(:working_hour,
-               stylist: stylist,
-               target_date: date,
-               start_time: Time.zone.parse('10:00'),
-               end_time: Time.zone.parse('19:00'))
+          stylist: stylist,
+          target_date: date,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('19:00'))
       end
 
       it 'returns the specific working hour' do
@@ -75,11 +75,11 @@ RSpec.describe WorkingHour do
       let(:holiday_date) { Date.new(2023, 1, 1) }
       let!(:holiday_wh) do
         create(:working_hour,
-               stylist: stylist,
-               day_of_week: 7,
-               target_date: nil,
-               start_time: Time.zone.parse('10:00'),
-               end_time: Time.zone.parse('15:00'))
+          stylist: stylist,
+          day_of_week: 7,
+          target_date: nil,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('15:00'))
       end
 
       before do
@@ -95,11 +95,11 @@ RSpec.describe WorkingHour do
     context 'when a default working hour exists for the day of week' do
       let!(:default_wh) do
         create(:working_hour,
-               stylist: stylist,
-               day_of_week: date.wday,
-               target_date: nil,
-               start_time: Time.zone.parse('11:00'),
-               end_time: Time.zone.parse('20:00'))
+          stylist: stylist,
+          day_of_week: date.wday,
+          target_date: nil,
+          start_time: Time.zone.parse('11:00'),
+          end_time: Time.zone.parse('20:00'))
       end
 
       it 'returns the default working hour for that day of week' do
@@ -149,10 +149,10 @@ RSpec.describe WorkingHour do
     context 'when a working hour exists for the date' do
       before do
         create(:working_hour,
-               stylist: stylist,
-               target_date: date,
-               start_time: Time.zone.parse('10:00'),
-               end_time: Time.zone.parse('14:00'))
+          stylist: stylist,
+          target_date: date,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('14:00'))
       end
 
       it 'returns time options between the working hour start and end times' do
@@ -201,8 +201,8 @@ RSpec.describe WorkingHour do
     context 'when working hour is present' do
       let(:wh) do
         build(:working_hour,
-              start_time: Time.zone.parse('10:30'),
-              end_time: Time.zone.parse('19:30'))
+          start_time: Time.zone.parse('10:30'),
+          end_time: Time.zone.parse('19:30'))
       end
 
       it 'returns formatted start and end times' do

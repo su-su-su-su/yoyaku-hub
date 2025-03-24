@@ -8,10 +8,10 @@ RSpec.describe Menu do
 
   def setup_working_hour(start_time: '09:00', end_time: '17:00')
     create(:working_hour,
-           stylist: stylist,
-           day_of_week: Date.current.wday,
-           start_time: Time.zone.parse(start_time),
-           end_time: Time.zone.parse(end_time))
+      stylist: stylist,
+      day_of_week: Date.current.wday,
+      start_time: Time.zone.parse(start_time),
+      end_time: Time.zone.parse(end_time))
   end
 
   before do
@@ -137,14 +137,14 @@ RSpec.describe Menu do
 
     it 'has many reservation_menu_selections' do
       reservation = create(:reservation, customer: customer, stylist: stylist,
-                                         start_date_str: Date.current.to_s, start_time_str: '10:00')
+        start_date_str: Date.current.to_s, start_time_str: '10:00')
       selection = create(:reservation_menu_selection, reservation: reservation, menu: menu)
       expect(menu.reservation_menu_selections).to include(selection)
     end
 
     it 'has many reservations through reservation_menu_selections' do
       reservation = create(:reservation, customer: customer, stylist: stylist,
-                                         start_date_str: Date.current.to_s, start_time_str: '10:00')
+        start_date_str: Date.current.to_s, start_time_str: '10:00')
       create(:reservation_menu_selection, reservation: reservation, menu: menu)
       expect(menu.reservations).to include(reservation)
     end
