@@ -16,7 +16,7 @@ module Customers
       return if current_user.profile_complete?
 
       redirect_to edit_customers_profile_path,
-                  alert: I18n.t('customers.profiles.incomplete_profile')
+        alert: t('customers.profiles.incomplete_profile')
     end
   end
 end
