@@ -222,6 +222,8 @@ ja:
         name: "メニュー名"
         price: "価格"
         Duration: "施術時間"
+        created: "メニューが作成されました。"
+        updated: "メニューが更新されました。"
     profiles:
       updated: "カスタマー情報を更新しました"
       incomplete_profile: "サービスを利用する前にプロフィールを入力してください"
