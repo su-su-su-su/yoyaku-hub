@@ -9,14 +9,16 @@ module Customers
 
     def index
       user = current_user
+
       @upcoming_reservations = user.reservations
-      .where("start_at >= ?", Time.zone.now)
-      .where.not(status: [:canceled, :no_show])
-      .order(:start_at)
+        .where(start_at: Time.zone.now..)
+        .where.not(status: [:canceled, :no_show])
+        .order(:start_at)
 
       @past_reservations = user.reservations
-      .where("(start_at < :now) OR (status = :canceled)",
-        now: Time.zone.now, canceled: Reservation.statuses[:canceled]).order(start_at: :desc)
+        .where(start_at: ..Time.zone.now)
+        .or(user.reservations.where(status: :canceled))
+        .order(start_at: :desc)
     end
 
     def new
