@@ -22,7 +22,7 @@ module Stylists
           end
         end
 
-        redirect_to stylists_shift_settings_path, notice: I18n.t('stylists.shift_settings.holidays.create_success')
+        redirect_to stylists_shift_settings_path, notice: t('stylists.shift_settings.holidays.create_success')
       end
     end
   end
