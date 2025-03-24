@@ -24,7 +24,7 @@ module Stylists
       if @menu.save
         respond_to do |format|
           format.turbo_stream
-          format.html { redirect_to menus_settings_path, notice: t('stylists.menus.created')  }
+          format.html { redirect_to menus_settings_path, notice: t('stylists.menus.created') }
         end
       else
         render :new, status: :unprocessable_entity
