@@ -14,7 +14,7 @@ module Stylists
         limit.save!
 
         redirect_to stylists_shift_settings_path,
-                    notice: I18n.t('stylists.shift_settings.reservation_limits.create_success')
+          notice: I18n.t('stylists.shift_settings.reservation_limits.create_success')
       end
     end
   end

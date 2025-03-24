@@ -10,10 +10,10 @@ RSpec.describe Reservation do
 
   def setup_working_hour(start_time: '09:00', end_time: '17:00')
     create(:working_hour,
-           stylist: stylist,
-           day_of_week: Date.current.wday,
-           start_time: Time.zone.parse(start_time),
-           end_time: Time.zone.parse(end_time))
+      stylist: stylist,
+      day_of_week: Date.current.wday,
+      start_time: Time.zone.parse(start_time),
+      end_time: Time.zone.parse(end_time))
   end
 
   def build_test_reservation(attrs = {})
@@ -88,8 +88,8 @@ RSpec.describe Reservation do
 
       it 'is invalid when working hours start and end time are the same' do
         closed_hours = instance_double(WorkingHour,
-                                       start_time: Time.zone.parse('09:00'),
-                                       end_time: Time.zone.parse('09:00'))
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('09:00'))
         allow(WorkingHour).to receive(:date_only_for).and_return(closed_hours)
 
         reservation = build_test_reservation
@@ -115,10 +115,10 @@ RSpec.describe Reservation do
     context 'when slot capacity is exceeded' do
       it 'is invalid when a time slot exceeds capacity' do
         limit = build_stubbed(:reservation_limit,
-                              stylist: stylist,
-                              target_date: Date.current,
-                              time_slot: 20,
-                              max_reservations: 0)
+          stylist: stylist,
+          target_date: Date.current,
+          time_slot: 20,
+          max_reservations: 0)
 
         allow(ReservationLimit).to receive(:find_by).and_return(nil)
         allow(ReservationLimit).to receive(:find_by)

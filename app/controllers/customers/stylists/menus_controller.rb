@@ -14,7 +14,7 @@ module Customers
       def select_menus
         if params[:menu_ids].blank?
           return redirect_to customers_stylist_menus_path(@stylist),
-                             alert: t('flash.menu_not_selected')
+            alert: t('flash.menu_not_selected')
         end
 
         redirect_to weekly_customers_stylist_menus_path(@stylist, menu_ids: params[:menu_ids])

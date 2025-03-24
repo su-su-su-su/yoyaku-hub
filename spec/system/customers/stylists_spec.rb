@@ -28,18 +28,18 @@ RSpec.describe 'Customer Stylist Selection' do
     [stylists[:recent], stylists[:old], stylists[:other]].each do |stylist|
       (0..6).each do |day|
         create(:working_hour,
-               stylist: stylist,
-               day_of_week: day,
-               target_date: nil,
-               start_time: Time.zone.parse('09:00'),
-               end_time: Time.zone.parse('18:00'))
+          stylist: stylist,
+          day_of_week: day,
+          target_date: nil,
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('18:00'))
       end
     end
 
     allow(WorkingHour).to receive(:date_only_for).and_return(
       instance_double(WorkingHour,
-                      start_time: Time.zone.parse('09:00'),
-                      end_time: Time.zone.parse('18:00'))
+        start_time: Time.zone.parse('09:00'),
+        end_time: Time.zone.parse('18:00'))
     )
 
     allow(ReservationLimit).to receive(:find_by).and_return(
@@ -48,32 +48,32 @@ RSpec.describe 'Customer Stylist Selection' do
 
     one_year_ago = 1.year.ago
     create(:reservation,
-           customer: users[:customer],
-           stylist: stylists[:recent],
-           start_date_str: Date.current.to_s,
-           start_time_str: '10:00',
-           menu_ids: [menus[:recent].id],
-           created_at: one_year_ago,
-           updated_at: one_year_ago)
+      customer: users[:customer],
+      stylist: stylists[:recent],
+      start_date_str: Date.current.to_s,
+      start_time_str: '10:00',
+      menu_ids: [menus[:recent].id],
+      created_at: one_year_ago,
+      updated_at: one_year_ago)
 
     four_years_ago = 4.years.ago
     create(:reservation,
-           customer: users[:customer],
-           stylist: stylists[:old],
-           start_date_str: Date.current.to_s,
-           start_time_str: '11:00',
-           menu_ids: [menus[:old].id],
-           created_at: four_years_ago,
-           updated_at: four_years_ago)
+      customer: users[:customer],
+      stylist: stylists[:old],
+      start_date_str: Date.current.to_s,
+      start_time_str: '11:00',
+      menu_ids: [menus[:old].id],
+      created_at: four_years_ago,
+      updated_at: four_years_ago)
 
     create(:reservation,
-           customer: users[:another_customer],
-           stylist: stylists[:other],
-           start_date_str: Date.current.to_s,
-           start_time_str: '13:00',
-           menu_ids: [menus[:other].id],
-           created_at: one_year_ago,
-           updated_at: one_year_ago)
+      customer: users[:another_customer],
+      stylist: stylists[:other],
+      start_date_str: Date.current.to_s,
+      start_time_str: '13:00',
+      menu_ids: [menus[:other].id],
+      created_at: one_year_ago,
+      updated_at: one_year_ago)
   end
 
   describe 'stylist selection page' do

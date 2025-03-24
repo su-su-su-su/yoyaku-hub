@@ -65,7 +65,7 @@ RSpec.describe ReservationLimit do
     context 'when global setting has time_slot' do
       before do
         @global_reservation_limit = create(:reservation_limit, stylist: stylist, target_date: nil, max_reservations: 0,
-                                                               time_slot: 60)
+          time_slot: 60)
       end
 
       it 'inherits time_slot value from global settings to new instance' do
