@@ -13,8 +13,7 @@ module Stylists
         limit.max_reservations = limit_params[:max_reservations].to_i
         limit.save!
 
-        redirect_to stylists_shift_settings_path,
-          notice: I18n.t('stylists.shift_settings.reservation_limits.create_success')
+        redirect_to stylists_shift_settings_path, notice: t('stylists.shift_settings.reservation_limits.create_success')
       end
     end
   end

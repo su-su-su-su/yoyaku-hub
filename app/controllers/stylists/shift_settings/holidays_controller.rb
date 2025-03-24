@@ -17,12 +17,12 @@ module Stylists
           existing.where.not(day_of_week: chosen_wdays).destroy_all
 
           chosen_wdays.each do |wday|
-            hol = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday)
-            hol.save! unless hol.persisted?
+            holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday)
+            holiday.save! unless holiday.persisted?
           end
         end
 
-        redirect_to stylists_shift_settings_path, notice: I18n.t('stylists.shift_settings.holidays.create_success')
+        redirect_to stylists_shift_settings_path, notice: t('stylists.shift_settings.holidays.create_success')
       end
     end
   end
