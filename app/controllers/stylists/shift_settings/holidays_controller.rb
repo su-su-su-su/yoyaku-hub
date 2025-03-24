@@ -17,8 +17,8 @@ module Stylists
           existing.where.not(day_of_week: chosen_wdays).destroy_all
 
           chosen_wdays.each do |wday|
-            hol = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday)
-            hol.save! unless hol.persisted?
+            holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday)
+            holiday.save! unless holiday.persisted?
           end
         end
 
