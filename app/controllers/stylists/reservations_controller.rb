@@ -15,7 +15,7 @@ module Stylists
     def cancel
       @reservation = Reservation.find(params[:id])
       @reservation.canceled!
-      redirect_to stylists_schedules_path(date: @reservation.start_at.to_date), notice: I18n.t('flash.reservation_cancelled')
+      redirect_to stylists_schedules_path(date: @reservation.start_at.to_date), notice: t('stylists.reservations.cancelled')
     end
 
     def edit
@@ -23,7 +23,7 @@ module Stylists
 
     def update
       if @reservation.update(reservation_params)
-        redirect_to stylists_reservation_path(date: @reservation.start_at.to_date), notice: '予約が正常に更新されました。'
+        redirect_to stylists_reservation_path(date: @reservation.start_at.to_date), notice: t('stylists.reservations.updated')
       else
         render :edit, status: :unprocessable_entity
       end
