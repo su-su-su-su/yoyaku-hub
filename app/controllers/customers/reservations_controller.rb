@@ -10,15 +10,13 @@ module Customers
     def index
       user = current_user
       @upcoming_reservations = user.reservations
-                                   .where("start_at >= ?", Time.zone.now)
-                                   .where.not(status: [:canceled, :no_show])
-                                   .order(:start_at)
+      .where("start_at >= ?", Time.zone.now)
+      .where.not(status: [:canceled, :no_show])
+      .order(:start_at)
 
       @past_reservations = user.reservations
-                               .where("(start_at < :now) OR (status = :canceled)",
-                                      now: Time.zone.now,
-                                      canceled: Reservation.statuses[:canceled])
-                               .order(start_at: :desc)
+      .where("(start_at < :now) OR (status = :canceled)",
+        now: Time.zone.now, canceled: Reservation.statuses[:canceled]).order(start_at: :desc)
     end
 
     def new
@@ -36,8 +34,7 @@ module Customers
       @reservation = build_reservation
 
       if @reservation.save
-        redirect_to customers_reservation_path(@reservation),
-                    notice: I18n.t('flash.reservation_confirmed')
+        redirect_to customers_reservation_path(@reservation), notice: t('flash.reservation_confirmed')
       else
         flash.now[:alert] = I18n.t('flash.reservation_failed')
         render :new
@@ -47,7 +44,7 @@ module Customers
     def cancel
       @reservation.canceled!
       redirect_to customers_reservations_path(date: @reservation.start_at.to_date),
-                  notice: I18n.t('flash.reservation_cancelled')
+        notice: t('flash.reservation_cancelled')
     end
 
     private
@@ -55,16 +52,16 @@ module Customers
     def set_reservation
       @reservation = current_user.reservations.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      redirect_to customers_reservations_path, alert: I18n.t('flash.reservation_not_found')
+      redirect_to customers_reservations_path, alert: t('flash.reservation_not_found')
     end
 
     def set_reservation_form_data
       @stylist_id = params[:stylist_id]
-      @date     = params[:date]
+      @date = params[:date]
       @time_str = params[:time_str]
       @menu_ids = params[:menu_ids]
-      @stylist  = User.find(@stylist_id)
-      @menus    = Menu.where(id: @menu_ids).to_a
+      @stylist = User.find(@stylist_id)
+      @menus = Menu.where(id: @menu_ids).to_a
       calculate_totals
     end
 
@@ -90,10 +87,10 @@ module Customers
 
     def build_reservation
       reservation = Reservation.new(
-        customer:         @user,
-        stylist:          @stylist,
-        start_date_str:   @date,
-        start_time_str:   @time_str
+        customer: @user,
+        stylist: @stylist,
+        start_date_str: @date,
+        start_time_str: @time_str
       )
       reservation.menu_ids = @menu_ids
       reservation
