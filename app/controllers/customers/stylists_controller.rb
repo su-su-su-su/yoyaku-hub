@@ -8,8 +8,10 @@ module Customers
 
     def index
       @stylists = User.where(role: :stylist)
-                      .joins(:stylist_reservations).where(stylist_reservations: { customer_id: current_user.id })
-                      .where(stylist_reservations: { created_at: 3.years.ago.. }).distinct
+        .joins(:stylist_reservations)
+        .where(stylist_reservations: { customer_id: current_user.id })
+        .where(stylist_reservations: { created_at: 3.years.ago.. })
+        .distinct
     end
 
     def ensure_profile_complete
