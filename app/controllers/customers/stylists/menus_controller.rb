@@ -5,7 +5,6 @@ module Customers
     class MenusController < ApplicationController
       before_action :authenticate_user!
       before_action -> { ensure_role(:customer) }
-      before_action :ensure_stylist_resource
       before_action :set_stylist
 
       def index
@@ -14,9 +13,8 @@ module Customers
 
       def select_menus
         if params[:menu_ids].blank?
-          flash[:alert] = I18n.t('flash.menu_not_selected')
-          redirect_to customers_stylist_menus_path(@stylist)
-          return
+          return redirect_to customers_stylist_menus_path(@stylist),
+                             alert: t('flash.menu_not_selected')
         end
 
         redirect_to weekly_customers_stylist_menus_path(@stylist, menu_ids: params[:menu_ids])
@@ -27,13 +25,6 @@ module Customers
       def set_stylist
         @stylist = User.find(params[:stylist_id])
         redirect_to customers_dashboard_path unless @stylist.stylist?
-      end
-
-      def ensure_stylist_resource
-        @stylist = User.find(params[:stylist_id])
-        return if @stylist.stylist?
-
-        redirect_to customers_dashboard_path
       end
     end
   end

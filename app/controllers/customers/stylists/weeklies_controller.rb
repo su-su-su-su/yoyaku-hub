@@ -20,6 +20,7 @@ module Customers
 
       def set_stylist
         @stylist = User.find(params[:stylist_id])
+        redirect_to customers_dashboard_path unless @stylist.stylist?
       end
 
       def set_selected_menus

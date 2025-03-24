@@ -12,7 +12,6 @@ module Customers
     def update
       @user = current_user
       @user.validating_profile = true
-
       if @user.update(customer_params)
         redirect_to customers_dashboard_path, notice: t('customers.profiles.updated')
       else
@@ -21,10 +20,6 @@ module Customers
     end
 
     private
-
-    def ensure_customer
-      redirect_to root_path unless current_user&.role == 'customer'
-    end
 
     def customer_params
       params.require(:user).permit(
