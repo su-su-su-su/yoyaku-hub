@@ -37,26 +37,26 @@ RSpec.describe 'Stylist working hours settings' do
       expect(page).to have_content(I18n.t('stylists.shift_settings.working_hours.create_success'))
 
       (1..5).each do |wday|
-        wh = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: wday)
-        expect(wh).to be_present
-        expect(wh.start_time.strftime('%H:%M')).to eq '10:00'
-        expect(wh.end_time.strftime('%H:%M')).to eq '19:00'
+        weekday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: wday)
+        expect(weekday_working_hour).to be_present
+        expect(weekday_working_hour.start_time.strftime('%H:%M')).to eq '10:00'
+        expect(weekday_working_hour.end_time.strftime('%H:%M')).to eq '19:00'
       end
 
-      wh_sat = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 6)
-      expect(wh_sat).to be_present
-      expect(wh_sat.start_time.strftime('%H:%M')).to eq '11:00'
-      expect(wh_sat.end_time.strftime('%H:%M')).to eq '18:00'
+      saturday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 6)
+      expect(saturday_working_hour).to be_present
+      expect(saturday_working_hour.start_time.strftime('%H:%M')).to eq '11:00'
+      expect(saturday_working_hour.end_time.strftime('%H:%M')).to eq '18:00'
 
-      wh_sun = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 0)
-      expect(wh_sun).to be_present
-      expect(wh_sun.start_time.strftime('%H:%M')).to eq '12:00'
-      expect(wh_sun.end_time.strftime('%H:%M')).to eq '17:00'
+      sunday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 0)
+      expect(sunday_working_hour).to be_present
+      expect(sunday_working_hour.start_time.strftime('%H:%M')).to eq '12:00'
+      expect(sunday_working_hour.end_time.strftime('%H:%M')).to eq '17:00'
 
-      wh_holiday = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 7)
-      expect(wh_holiday).to be_present
-      expect(wh_holiday.start_time.strftime('%H:%M')).to eq '10:30'
-      expect(wh_holiday.end_time.strftime('%H:%M')).to eq '16:30'
+      holiday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 7)
+      expect(holiday_working_hour).to be_present
+      expect(holiday_working_hour.start_time.strftime('%H:%M')).to eq '10:30'
+      expect(holiday_working_hour.end_time.strftime('%H:%M')).to eq '16:30'
     end
 
     it 'can update existing working hours' do
@@ -92,26 +92,26 @@ RSpec.describe 'Stylist working hours settings' do
       expect(page).to have_content(I18n.t('stylists.shift_settings.working_hours.create_success'))
 
       (1..5).each do |wday|
-        wh = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: wday)
-        expect(wh).to be_present
-        expect(wh.start_time.strftime('%H:%M')).to eq '11:00'
-        expect(wh.end_time.strftime('%H:%M')).to eq '20:00'
+        weekday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: wday)
+        expect(weekday_working_hour).to be_present
+        expect(weekday_working_hour.start_time.strftime('%H:%M')).to eq '11:00'
+        expect(weekday_working_hour.end_time.strftime('%H:%M')).to eq '20:00'
       end
 
-      wh_sat = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 6)
-      expect(wh_sat).to be_present
-      expect(wh_sat.start_time.strftime('%H:%M')).to eq '12:00'
-      expect(wh_sat.end_time.strftime('%H:%M')).to eq '19:00'
+      saturday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 6)
+      expect(saturday_working_hour).to be_present
+      expect(saturday_working_hour.start_time.strftime('%H:%M')).to eq '12:00'
+      expect(saturday_working_hour.end_time.strftime('%H:%M')).to eq '19:00'
 
-      wh_sun = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 0)
-      expect(wh_sun).to be_present
-      expect(wh_sun.start_time.strftime('%H:%M')).to eq '13:00'
-      expect(wh_sun.end_time.strftime('%H:%M')).to eq '18:00'
+      sunday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 0)
+      expect(sunday_working_hour).to be_present
+      expect(sunday_working_hour.start_time.strftime('%H:%M')).to eq '13:00'
+      expect(sunday_working_hour.end_time.strftime('%H:%M')).to eq '18:00'
 
-      wh_holiday = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 7)
-      expect(wh_holiday).to be_present
-      expect(wh_holiday.start_time.strftime('%H:%M')).to eq '11:30'
-      expect(wh_holiday.end_time.strftime('%H:%M')).to eq '17:30'
+      holiday_working_hour = WorkingHour.find_by(stylist_id: stylist.id, day_of_week: 7)
+      expect(holiday_working_hour).to be_present
+      expect(holiday_working_hour.start_time.strftime('%H:%M')).to eq '11:30'
+      expect(holiday_working_hour.end_time.strftime('%H:%M')).to eq '17:30'
     end
   end
 
