@@ -163,10 +163,17 @@ module Customers
       end
 
       def build_time_slots_for_week(_dates)
-        earliest_start = @wh_non_holiday.map(&:start_time).compact_blank.min
-        latest_end = @wh_non_holiday.map(&:end_time).compact_blank.max
+        valid_working_hours = @wh_non_holiday.reject do |wh|
+          wh.start_time.hour == 0 && wh.end_time.hour == 0
+        end
 
-        return [] if earliest_start.blank? || latest_end.blank?
+        if valid_working_hours.empty?
+          earliest_start = Time.zone.parse(WorkingHour::DEFAULT_START_TIME)
+          latest_end = Time.zone.parse(WorkingHour::DEFAULT_END_TIME)
+        else
+          earliest_start = valid_working_hours.map(&:start_time).min
+          latest_end = valid_working_hours.map(&:end_time).max
+        end
 
         slots = []
         current_time = earliest_start
