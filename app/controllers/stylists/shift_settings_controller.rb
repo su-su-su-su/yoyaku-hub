@@ -4,7 +4,7 @@ module Stylists
   class ShiftSettingsController < StylistsController
     before_action :authenticate_user!
     before_action -> { ensure_role(:stylist) }
-    before_action :set_date_info, only: [:index]
+    before_action :set_date_info, only: %i[index]
     before_action :ensure_profile_complete
 
 
