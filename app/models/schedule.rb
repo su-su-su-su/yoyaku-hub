@@ -116,7 +116,7 @@ class Schedule
         date.beginning_of_day.in_time_zone,
         date.end_of_day.in_time_zone
       )
-      .where.not(start_at: nil, end_at: nil)
+      .where('start_at IS NOT NULL AND end_at IS NOT NULL')
       .includes(:menus, :customer)
 
     map = Hash.new { |h, k| h[k] = [] }
