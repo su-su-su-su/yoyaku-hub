@@ -1,6 +1,5 @@
 ja:
   flash:
-    reservation_cancelled: "予約をキャンセルしました。"
     menu_not_selected: "メニューを1つ以上選択してください"
     reservation_confirmed: "予約を確定しました。"
     batch_setting_success: "シフトを設定しました"
@@ -218,13 +217,18 @@ ja:
         create_success: "休業日が設定されました。"
       reservation_limits:
         create_success: "受付可能数が設定されました。"
-      menus:
-        name: "メニュー名"
-        price: "価格"
-        Duration: "施術時間"
+    menus:
+      name: "メニュー名"
+      price: "価格"
+      Duration: "施術時間"
+      created: "メニューが作成されました。"
+      updated: "メニューが更新されました。"
     profiles:
       updated: "カスタマー情報を更新しました"
       incomplete_profile: "サービスを利用する前にプロフィールを入力してください"
+    reservations:
+      updated: "予約が正常に更新されました。"
+      cancelled: "予約をキャンセルしました。"
 
   customers:
     profiles:

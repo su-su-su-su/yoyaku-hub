@@ -1,3 +1,5 @@
+= turbo_stream.update 'flash-message' do
+  .alert.alert-info.flash-notice(data-controller="flash")= t('stylists.menus.updated')
 
 = turbo_stream.replace dom_id(@menu) do
   = turbo_frame_tag dom_id(@menu) do
