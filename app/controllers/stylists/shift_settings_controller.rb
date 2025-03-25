@@ -100,7 +100,7 @@ module Stylists
         save_reservation_limits(date, start_time_obj, end_time_obj, max_res_str.to_i)
       end
 
-      redirect_to stylists_shift_settings_path, notice: I18n.t('flash.batch_setting_success')
+      redirect_to stylists_shift_settings_path, notice: t('flash.batch_setting_success')
     end
 
     private
@@ -153,7 +153,7 @@ module Stylists
     def ensure_profile_complete
       unless current_user.profile_complete?
         redirect_to edit_stylists_profile_path,
-        alert: I18n.t('stylists.profiles.incomplete_profile')
+        alert: t('stylists.profiles.incomplete_profile')
       end
     end
   end
