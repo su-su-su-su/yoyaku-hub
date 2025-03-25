@@ -19,11 +19,17 @@ class Reservation < ApplicationRecord
   def combine_date_and_time
     return unless start_date_str.present? && start_time_str.present?
 
-    new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
-    self.start_at = new_start_at
+    begin
+      new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
+      self.start_at = new_start_at
 
-    used_duration = custom_duration.presence || menus.sum(&:duration)
-    self.end_at = new_start_at + used_duration.minutes
+      used_duration = custom_duration.presence || menus.sum(&:duration)
+      self.end_at = new_start_at + used_duration.minutes
+    rescue ArgumentError => e
+      Rails.logger.warn("日時パースエラー: #{e.message}, 日付: #{start_date_str}, 時間: #{start_time_str}")
+      errors.add(:start_date_str, :invalid)
+      errors.add(:start_time_str, :invalid)
+    end
   end
 
   def self.find_next_reservation_start_slot(stylist_id, date, from_slot)
@@ -76,6 +82,17 @@ class Reservation < ApplicationRecord
 
   def self.to_slot_index(time)
     (time.hour * 2) + (time.min >= 30 ? 1 : 0)
+  end
+
+  def self.safe_parse_date(date_string, default: Time.zone.today)
+    return default if date_string.blank?
+
+    begin
+      Date.parse(date_string.to_s)
+    rescue ArgumentError, TypeError => e
+      Rails.logger.warn("日付パースエラー: #{e.message}, 入力値: #{date_string}")
+      default
+    end
   end
 
   private

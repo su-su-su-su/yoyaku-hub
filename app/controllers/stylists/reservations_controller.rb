@@ -26,9 +26,12 @@ module Stylists
     end
 
     def update_time_options
-      reservation_date = params[:start_date_str].present? ? Date.parse(params[:start_date_str]) : Time.zone.today
-      stylist_id = current_user.id
+      reservation_date = Reservation.safe_parse_date(
+        params[:start_date_str],
+        default: Time.zone.today
+      )
 
+      stylist_id = current_user.id
       @time_options = WorkingHour.time_options_for(stylist_id, reservation_date)
 
       render partial: 'time_select', locals: { f: nil, time_options: @time_options, selected_time: nil }
@@ -45,13 +48,10 @@ module Stylists
     end
 
     def load_time_options
-      reservation_date = if params.dig(:reservation, :start_date_str).present?
-                           Date.parse(params[:reservation][:start_date_str])
-                         elsif @reservation.start_at.present?
-                           @reservation.start_at.to_date
-                         else
-                           Time.zone.today
-                         end
+      reservation_date = Reservation.safe_parse_date(
+        params.dig(:reservation, :start_date_str),
+        default: @reservation&.start_at&.to_date || Time.zone.today
+      )
 
       stylist_id = current_user.id
       @time_options = WorkingHour.time_options_for(stylist_id, reservation_date)
