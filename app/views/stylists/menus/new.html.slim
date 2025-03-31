@@ -1,9 +1,9 @@
 = turbo_frame_tag 'new_menu'
-  .section.bg-gray-100.p-4.mb-4
-    h2.text-l.font-bold.mb-2 新規登録
+  .bg-gray-50.p-4.md:p-6.rounded-lg.shadow-sm.mb-6
+    h2.text-lg.md:text-xl.font-bold.mb-4 新規登録
     - if @menu.errors.any?
-      .alert.alert-danger
-        ul
+      .alert.alert-danger.p-4.mb-4
+        ul.list-disc.pl-5.mt-2.text-sm
           - @menu.errors.full_messages.each do |message|
             li = message
     = render 'form', menu: @menu

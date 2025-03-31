@@ -1,15 +1,17 @@
-h1.text-xl.font-bold シフト設定
-- if notice
-  .alert.alert-info.flash-notice(data-controller="flash")= notice
-.section.bg-gray-100.p-4.mb-4.mt-4
-  .card.bg-base-100
-    .card-body.p-6
-      = render "working_hour_form", time_options: @time_options, weekday_start_str: @weekday_start_str, weekday_end_str: @weekday_end_str, saturday_start_str: @saturday_start_str, saturday_end_str: @saturday_end_str, sunday_start_str: @sunday_start_str, sunday_end_str: @sunday_end_str
-      flex-row.items-center.border-b.border-gray-300.pb-4
-      = render "holiday_form"
-      flex-row.items-center.border-b.border-gray-300.pb-4
-      = render "reservation_limits_form"
-  h2.text-xl.font-bold.mt-8 毎月の受付設定
+.container.mx-auto.p-4.md:p-6
+  h1.text-xl.md:text-2xl.font-bold.mb-4 シフト設定
+  - if notice
+    .alert.alert-info.flash-notice(data-controller="flash")= notice
+
+  .bg-white.rounded-lg.shadow-sm.p-4.md:p-6.mt-4.space-y-8
+    = render "working_hour_form", time_options: @time_options, weekday_start_str: @weekday_start_str, weekday_end_str: @weekday_end_str, saturday_start_str: @saturday_start_str, saturday_end_str: @saturday_end_str, sunday_start_str: @sunday_start_str, sunday_end_str: @sunday_end_str
+    hr.border-gray-200
+    = render "holiday_form"
+    hr.border-gray-200
+    = render "reservation_limits_form"
+
+  h2.text-xl.md:text-2xl.font-bold.mt-8.mb-4 毎月の受付設定
+
   .grid.grid-cols-3.gap-4.mt-4
     .card.bg-base-100
       .card-body.flex.flex-col.items-center

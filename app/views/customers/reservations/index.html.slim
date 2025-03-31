@@ -1,56 +1,64 @@
-h1.text-2xl.font-bold 予約履歴
-- if notice
-  .alert.alert-info.flash-notice(data-controller="flash")= notice
+.container.mx-auto.p-4.max-w-lg
+  h1.text-xl.md:text-2xl.font-bold.mb-4 予約履歴
+  - if notice
+    .alert.alert-info.flash-notice(data-controller="flash")= notice
 
-.section.bg-gray-100.p-4.mb-4
-  h2.text-xl.font-bold 現在の予約
+  .section.bg-gray-100.p-4.mb-6.rounded-lg
+    h2.text-lg.md:text-xl.font-bold.mb-3 現在の予約
 
-  - if @upcoming_reservations.any?
-    - @upcoming_reservations.each do |res|
-      .border.rounded.bg-white.p-4.mb-4
-        p
-          | 来店日時:
-          = I18n.l(res.start_at, format: :wday_short)
+    - if @upcoming_reservations.any?
+      .space-y-4
+        - @upcoming_reservations.each do |res|
+          .border.rounded-lg.bg-white.p-4.shadow-sm
+            .mb-3
+              span.font-medium.text-gray-600 来店日時:
+              span.ml-2= I18n.l(res.start_at, format: :wday_short)
 
-        p
-          | スタイリスト:
-          = "#{res.stylist.family_name} #{res.stylist.given_name}"
+            .mb-3
+              span.font-medium.text-gray-600 スタイリスト:
+              span.ml-2= "#{res.stylist.family_name} #{res.stylist.given_name}"
 
-        p
-          | メニュー:
-          - if res.menus.any?
-            = res.menus.map(&:name).join(", ")
-          - else
-            | (メニュー情報なし)
+            .mb-3
+              span.font-medium.text-gray-600 メニュー:
+              span.ml-2
+                - if res.menus.any?
+                  = res.menus.map(&:name).join(", ")
+                - else
+                  | (メニュー情報なし)
 
-        = link_to "詳細", customers_reservation_path(res), class: "text-blue-500 underline mr-4 cursor-not-allowed", aria: { disabled: true }
+            .mt-4.flex
+              = link_to "詳細", customers_reservation_path(res), class: "bg-blue-500 text-white py-2 px-4 rounded-lg inline-block min-h-[44px] flex items-center justify-center", aria: { disabled: true }
 
-  - else
-    p 現在の予約はありません。
+    - else
+      .bg-white.p-4.rounded-lg.border 現在の予約はありません。
 
-.section.bg-gray-100.p-4
-  h2.text-xl.font-bold 過去の予約
+  .section.bg-gray-100.p-4.rounded-lg
+    h2.text-lg.md:text-xl.font-bold.mb-3 過去の予約
 
-  - if @past_reservations.any?
-    - @past_reservations.each do |res|
-      .border.rounded.bg-white.p-4.mb-4
-        p
-          | 来店日時:
-          = I18n.l(res.start_at, format: :wday_short)
+    - if @past_reservations.any?
+      .space-y-4
+        - @past_reservations.each do |res|
+          .border.rounded-lg.bg-white.p-4.shadow-sm
+            .mb-3
+              span.font-medium.text-gray-600 来店日時:
+              span.ml-2= I18n.l(res.start_at, format: :wday_short)
 
-        p
-          | スタイリスト:
-          = "#{res.stylist.family_name} #{res.stylist.given_name}"
+            .mb-3
+              span.font-medium.text-gray-600 スタイリスト:
+              span.ml-2= "#{res.stylist.family_name} #{res.stylist.given_name}"
 
-        p
-          | メニュー:
-          - if res.menus.any?
-            = res.menus.map(&:name).join(", ")
-          - else
-            | (メニュー情報なし)
+            .mb-3
+              span.font-medium.text-gray-600 メニュー:
+              span.ml-2
+                - if res.menus.any?
+                  = res.menus.map(&:name).join(", ")
+                - else
+                  | (メニュー情報なし)
 
-        = link_to "詳細", customers_reservation_path(res), class: "text-blue-500 underline mr-4 cursor-not-allowed", aria: { disabled: true }
-  - else
-    p 過去の予約は存在しません。
-.mt-4.mb-4.text-center
-  = link_to '戻る', customers_dashboard_path, class: "text-blue-500 underline"
+            .mt-4.flex
+              = link_to "詳細", customers_reservation_path(res), class: "bg-blue-500 text-white py-2 px-4 rounded-lg inline-block min-h-[44px] flex items-center justify-center", aria: { disabled: true }
+    - else
+      .bg-white.p-4.rounded-lg.border 過去の予約は存在しません。
+
+  .mt-6.mb-6.flex.justify-center
+    = link_to '戻る', customers_dashboard_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center"

@@ -13,7 +13,7 @@ h1.px-2.text-xl.font-bold 予約表
   - elsif @working_hour.nil?
     p.text-center 営業時間が設定されていません
   - else
-    table.fixed-table.border-collapse style="table-layout: fixed; min-width: 1500px;"
+    table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: 1500px;"
       colgroup
         col style="width: 150px;"
         - @time_slots.each do |_time_slot|

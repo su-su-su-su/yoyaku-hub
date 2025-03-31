@@ -1,12 +1,22 @@
-- if user_signed_in?
-- if notice
-  .alert.alert-info.flash-notice(data-controller="flash")= notice
-  p ログイン中: = current_user.email
-.link-item
-  a href="/customers/stylists/index"
-    .image-box
-      img src="/images/customers/reservation.png" alt="予約する"
-.link-item
-  a href="/customers/reservations"
-    .image-box
-      img src="/images/customers/reservation_history.png" alt="予約履歴"
+.container.mx-auto.px-4.py-4.md:py-6
+  - if user_signed_in?
+    - if notice
+      .alert.alert-info.flash-notice(data-controller="flash")= notice
+    p.text-base.mb-4 ログイン中: = current_user.email
+
+  .link-items-container.space-y-4.md:space-y-0.md:grid.md:grid-cols-2.md:gap-4.lg:grid-cols-3
+    .link-item
+      a.block.p-2.rounded-lg(href="/customers/stylists/index")
+        .image-box.overflow-hidden.rounded
+          img.w-full.h-auto(
+            src="/images/customers/reservation.png"
+            alt="予約する"
+            loading="lazy")
+
+    .link-item
+      a.block.p-2.rounded-lg(href="/customers/reservations")
+        .image-box.overflow-hidden.rounded
+          img.w-full.h-auto(
+            src="/images/customers/reservation_history.png"
+            alt="予約履歴"
+            loading="lazy")

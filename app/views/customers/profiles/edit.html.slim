@@ -1,6 +1,6 @@
-.container.mx-auto.mt-10.max-w-md
-  .bg-white.shadow-md.rounded-lg.p-6
-    h2.text-2xl.font-semibold.mb-4 カスタマー情報
+.container.mx-auto.mt-6.px-4.md:mt-10.md:px-0.max-w-md
+  .bg-white.shadow-md.rounded-lg.p-4.md:p-6
+    h2.text-xl.md:text-2xl.font-semibold.mb-4 カスタマー情報
     - if notice
       .alert.alert-info.flash-notice(data-controller="flash")= notice
     - if alert
@@ -12,45 +12,47 @@
           - @user.errors.full_messages.each do |message|
             li = message
 
-    = form_for @user, url: customers_profile_path, method: :patch, html: { class: 'space-y-4' } do |f|
+    = form_for @user, url: customers_profile_path, method: :patch, html: { class: 'space-y-5' } do |f|
       .flex.flex-col
-        = f.label :family_name, '性', class: 'mb-1 font-semibold'
+        = f.label :family_name, '性', class: 'mb-2 font-semibold text-base'
         = f.text_field :family_name,
-            class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            class: 'border border-gray-300 rounded px-3 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500'
       .flex.flex-col
-        = f.label :given_name, '名', class: 'mb-1 font-semibold'
+        = f.label :given_name, '名', class: 'mb-2 font-semibold text-base'
         = f.text_field :given_name,
-            class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            class: 'border border-gray-300 rounded px-3 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500'
       .flex.flex-col
-        = f.label :family_name_kana, 'セイ', class: 'mb-1 font-semibold'
+        = f.label :family_name_kana, 'セイ', class: 'mb-2 font-semibold text-base'
         = f.text_field :family_name_kana,
             placeholder: 'ヤマダ',
             pattern: '[ァ-ヶー]+',
             title: '全角カタカナのみを入力してください',
-            class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            class: 'border border-gray-300 rounded px-3 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500'
       .flex.flex-col
-        = f.label :given_name_kana, 'メイ', class: 'mb-1 font-semibold'
+        = f.label :given_name_kana, 'メイ', class: 'mb-2 font-semibold text-base'
         = f.text_field :given_name_kana,
             placeholder: 'タロウ',
             pattern: '[ァ-ヶー]+',
             title: '全角カタカナのみを入力してください',
-            class: 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            class: 'border border-gray-300 rounded px-3 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500'
       .flex.flex-col
-        = f.label :gender, '性別', class: 'mb-1 font-semibold'
-        .flex.space-x-4
-          label.flex.items-center
-            = f.radio_button :gender, 'male', class: 'mr-1'
-            span 男性
-          label.flex.items-center
-            = f.radio_button :gender, 'female', class: 'mr-1'
-            span 女性
-          label.flex.items-center
-            = f.radio_button :gender, 'no_answer', class: 'mr-1'
-            span 答えない
+        = f.label :gender, '性別', class: 'mb-2 font-semibold text-base'
+        .flex.flex-col.space-y-3.md:flex-row.md:space-y-0.md:space-x-4
+          label.flex.items-center.p-2.border.rounded.cursor-pointer
+            = f.radio_button :gender, 'male', class: 'mr-2 h-5 w-5'
+            span.text-base 男性
+          label.flex.items-center.p-2.border.rounded.cursor-pointer
+            = f.radio_button :gender, 'female', class: 'mr-2 h-5 w-5'
+            span.text-base 女性
+          label.flex.items-center.p-2.border.rounded.cursor-pointer
+            = f.radio_button :gender, 'no_answer', class: 'mr-2 h-5 w-5'
+            span.text-base 答えない
       .flex.flex-col
-        = f.label :date_of_birth, '生年月日', class: 'mb-1 font-semibold'
+        = f.label :date_of_birth, '生年月日', class: 'mb-2 font-semibold text-base'
         .flex.space-x-2
           = f.date_select :date_of_birth,
-            {start_year: 1930,end_year: Time.current.year, use_month_numbers: true,order: [:year, :month, :day]},
-            {class: 'border border-gray-300 rounded px-2 py-1 inline-block w-auto focus:outline-none focus:ring-2 focus:ring-blue-500'}
-      = f.submit '登録', class: "btn-primary"
+            {start_year: 1930, end_year: Time.current.year, use_month_numbers: true, order: [:year, :month, :day]},
+            {class: 'border border-gray-300 rounded px-2 py-3 text-base w-auto focus:outline-none focus:ring-2 focus:ring-blue-500'}
+
+      .mt-6
+        = f.submit '登録', class: "btn-primary w-full md:w-auto"

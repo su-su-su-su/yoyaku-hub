@@ -1,7 +1,7 @@
 - if menus.empty?
   p.text-center.text-red-600 メニューが登録されていません。
 - else
-  .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3
+  .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-4.md:gap-6
     - menus.each do |menu|
       = turbo_frame_tag dom_id(menu) do
         = render partial: 'menu_item', locals: { menu: menu }
