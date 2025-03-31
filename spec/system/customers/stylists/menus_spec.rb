@@ -34,7 +34,7 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'allows selecting a menu and proceeding to the next step' do
-      first('label.menu-item').click
+      first('label.cs-menu-item').click
 
       click_on '日時を設定'
 
@@ -118,7 +118,7 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'displays menus in sort_order sequence' do
-      menu_names = page.all('.menu-item h2').map(&:text)
+      menu_names = page.all('.cs-menu-item h2').map(&:text)
       expect(menu_names).to eq(%w[カット カラー パーマ])
     end
   end

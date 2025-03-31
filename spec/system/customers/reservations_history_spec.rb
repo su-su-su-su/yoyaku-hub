@@ -192,7 +192,7 @@ RSpec.describe 'Customer Reservation History' do
       before do
         visit_reservation_history
 
-        within all('.border.rounded.bg-white').last do
+        within all('.border.rounded-lg.bg-white').last do
           click_on '詳細'
         end
       end
@@ -234,7 +234,7 @@ RSpec.describe 'Customer Reservation History' do
       end
 
       expect(page).to have_current_path(customers_reservations_path, ignore_query: true)
-      expect(page).to have_content(I18n.t('flash.reservation_cancelled'))
+      expect(page).to have_content(I18n.t('stylists.reservations.cancelled'))
 
       expect(page).to have_content(stylist.family_name)
       expect(page).to have_content(I18n.l(future_reservation.start_at, format: :wday_short))
