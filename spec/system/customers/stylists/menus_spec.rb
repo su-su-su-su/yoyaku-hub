@@ -102,7 +102,7 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'user top page link functions correctly' do
-      click_on 'ユーザートップページへ'
+      click_on 'ユーザーダッシュボードへ'
       expect(page).to have_current_path(customers_dashboard_path)
     end
   end
