@@ -46,7 +46,7 @@ module Customers
     def cancel
       @reservation.canceled!
       redirect_to customers_reservations_path(date: @reservation.start_at.to_date),
-        notice: t('flash.reservation_cancelled')
+        notice: t('stylists.reservations.cancelled')
     end
 
     private
