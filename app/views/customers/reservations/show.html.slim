@@ -1,51 +1,46 @@
-h1.text-2xl.font-bold.mb-6 予約詳細
-- if notice
-  .alert.alert-info.flash-notice(data-controller="flash")= notice
+.container.mx-auto.p-4.max-w-lg
+  h1.text-xl.md:text-2xl.lg:text-3xl.font-bold.mb-4 予約詳細
+  - if notice
+    .alert.alert-info.flash-notice(data-controller="flash")= notice
 
-table.border.border-collapse.mx-auto.p-4
+  .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden.md:border-0.md:rounded-none.md:shadow-none
+    table.w-full.responsive-table
+      tbody
+        tr
+          th.md:w-1/3 スタイリスト名
+          td= "#{@stylist.family_name} #{@stylist.given_name}"
 
-  thead.hidden
-    tr
-      th スタイリスト名
-      th 来店日時
-      th メニュー
-      th 施術時間
-      th 合計金額
-  tbody
-    tr
-      th.bg-gray-100.px-4.py-2.text-left スタイリスト名
-      td.px-4.py-2= "#{@stylist.family_name} #{@stylist.given_name}"
+        tr
+          th.md:w-1/3 来店日時
+          td
+            - if @reservation.start_at
+              = I18n.l(@reservation.start_at, format: :wday_short)
 
-    tr
-      th.bg-gray-100.px-4.py-2.text-left 来店日時
-      td.px-4.py-2
-        - if @reservation.start_at
-          = I18n.l(@reservation.start_at, format: :wday_short)
+        tr
+          th.md:w-1/3 メニュー
+          td
+            - if @menus.any?
+              .space-y-1
+                - @menus.each do |menu|
+                  div= menu.name
+            - else
+              | なし
 
-    tr
-      th.bg-gray-100.px-4.py-2.text-left メニュー
-      td.px-4.py-2
-        - if @menus.any?
-          = @menus.map(&:name).join(", ")
-        - else
-          | なし
+        tr
+          th.md:w-1/3 施術時間
+          td= "#{@total_duration} 分"
 
-    tr
-      th.bg-gray-100.px-4.py-2.text-left 施術時間
-      td.px-4.py-2= "#{@total_duration} 分"
+        tr
+          th.md:w-1/3 合計金額
+          td.font-bold= "¥#{@total_price} (税込み)"
 
-    tr
-      th.bg-gray-100.px-4.py-2.text-left 合計金額
-      td.px-4.py-2= "¥#{@total_price} (税込み)"
+  .mt-8.flex.flex-col.md:flex-row.items-center.justify-center.space-y-4.md:space-y-0.md:space-x-6
+    - if @reservation.before_visit? && @reservation.start_at > Time.current
+      = link_to "キャンセル", cancel_customers_reservation_path(@reservation),
+        class: "w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center",
+        form_class: "inline w-full md:w-auto",
+        data: {turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？"}
 
-
-.mt-4.flex.justify-center.space-x-6.mt-8
-  - if @reservation.before_visit? && @reservation.start_at > Time.current
-    = link_to "キャンセル", cancel_customers_reservation_path(@reservation),
-      class: "btn-primary", form_class: "inline",
-      data: {turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？"}
-
-.mt-6.text-center
-  = link_to "戻る", customers_reservations_path, class:"underline text-blue-500"
-  .mt-4.text-center
-    = link_to 'ユーザートップページへ',customers_dashboard_path, class: "underline text-blue-500"
+  .mt-8.flex.flex-col.items-center.space-y-4.md:space-y-0.md:flex-row.md:justify-between.md:space-x-4
+    = link_to "予約一覧へ戻る", customers_reservations_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+    = link_to 'ユーザートップページへ', customers_dashboard_path, class: "bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"

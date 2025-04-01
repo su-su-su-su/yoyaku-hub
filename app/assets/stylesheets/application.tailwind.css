@@ -122,6 +122,10 @@
     }
   }
   .simple-calendar {
+    width: 100%;
+    overflow-x: auto; /* モバイルでの横スクロール対応 */
+    -webkit-overflow-scrolling: touch;
+
     .wday-0,
     .wday-7 {
       p.font-bold.mb-1 {
@@ -138,83 +142,144 @@
     }
   }
 
+  /* ナビゲーションバー - スティッキー対応 */
   body.stylists-shift-settings .navbar,
   .stylists-shift-settings .navbar {
     position: sticky;
+    top: 0; /* top位置を追加 */
     left: 0;
     width: 100%;
     z-index: 50;
   }
 
-  .stylists-shift-settings .simple-calendar,
-  .stylists-shift-settings .calendar-responsive-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .menu-item {
-    @apply border-2 border-gray-300 rounded-lg mb-2 p-4;
-
+  /* メニュー項目 - タッチに適したサイズに */
+  .cs-menu-item {
+    @apply border-2 border-gray-300 rounded-lg mb-3 p-4;
     cursor: pointer;
     display: block;
+    min-height: 48px;
     transition:
       background-color 0.2s ease,
       border-color 0.2s ease;
   }
 
-  .menu-checkbox:checked + .menu-item {
+  .cs-menu-checkbox:checked + .cs-menu-item {
     background-color: #e7f1ff;
     border-color: #3e5cd7;
   }
 
-  .menu-checkbox {
+  .cs-menu-checkbox {
     @apply absolute opacity-0 w-0 h-0 pointer-events-none;
   }
 
-  table.fixed-table {
+  table.st-fixed-table {
     table-layout: fixed;
     width: 100%;
   }
 
-  table.fixed-table th,
-  table.fixed-table td {
+  table.st-fixed-table th,
+  table.st-fixed-table td {
+    padding: 12px 8px; /* パディング増加 */
     min-width: 80px;
     word-wrap: break-word;
     border: 1px solid #ccc;
   }
 
-  table.fixed-table tr {
-    height: 88px;
+  table.st-fixed-table tr {
+    height: 96px; /* 適切な高さ */
+    max-height: 96px; /* 最大高さも制限 */
+    overflow: hidden; /* はみ出した内容を隠す */
   }
 
-  .reservation-card {
+  table.st-fixed-table td.border:empty {
+    height: 96px;
+  }
+
+  .st-reservation-card {
+    max-height: 80px; /* テーブル行の高さより少し小さく設定 */
+    overflow-y: auto; /* 縦方向にスクロール可能に */
     border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
+    padding: 8px; /* パディングを少し小さく */
+    margin-bottom: 0; /* 下マージンを削除 */
+    border-radius: 4px;
     background-color: #ecf2ff;
   }
 
-  .reservation-card p {
-    margin-bottom: 5px;
+  /* 予約カード内のテキストを調整 */
+  .st-reservation-card p {
+    margin-bottom: 8px;
+    font-size: 16px; /* フォントサイズを小さくして収まりやすく */
   }
 
-  .trim-magic {
+  .st-trim-magic {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .st-trim-magic {
+      max-width: 300px;
+    }
   }
 
   .flash-notice {
     background-color: #81a9e6b9;
     color: #ffffff;
+    padding: 12px; /* パディング追加 */
+    border-radius: 8px; /* 角丸追加 */
+    margin-bottom: 16px; /* 下マージン追加 */
   }
 
+  /* ボタン - タッチ操作に適したサイズに */
   .btn-primary {
-    @apply px-4 py-2 rounded font-bold text-white inline-block text-center;
+    @apply px-4 py-3 rounded font-bold text-white inline-block text-center;
     background-color: #3e5cd7;
+    min-height: 48px; /* タッチ操作のための最小高さ */
+    min-width: 120px; /* タッチ操作のための最小幅 */
   }
+
   .btn-gray {
-    @apply bg-gray-400 text-white py-2 px-4 rounded font-bold text-center;
+    @apply bg-gray-400 text-white py-3 px-4 rounded font-bold text-center;
+    min-height: 48px; /* タッチ操作のための最小高さ */
+    min-width: 120px; /* タッチ操作のための最小幅 */
+  }
+
+  /* レスポンシブテーブル - モバイル向け */
+  .responsive-table {
+    @apply block w-full md:table; /* デフォルトblock, md以上table */
+  }
+
+  .responsive-table tbody {
+    @apply block md:table-row-group; /* デフォルトblock, md以上table-row-group */
+  }
+
+  .responsive-table tr {
+    /* デフォルト(モバイル): block, 下マージン, ボーダー, 角丸, overflow */
+    @apply block mb-4 border border-gray-300 rounded-lg overflow-hidden;
+    /* md以上: table-row, マージン・ボーダー・角丸リセット */
+    @apply md:table-row md:mb-0 md:border-0 md:rounded-none md:overflow-visible;
+  }
+
+  .responsive-table th,
+  .responsive-table td {
+    /* デフォルト(モバイル): block, w-full, 左寄せ, パディング */
+    @apply block w-full text-left px-4 py-3;
+    /* md以上: table-cell, 幅自動, パディング調整, ボーダー, 上揃え */
+    @apply md:table-cell md:w-auto md:px-3 md:py-2 md:border md:border-gray-300 md:align-top;
+  }
+
+  .responsive-table th {
+    /* th は常に（モバイルでもタブレット以上でも）太字・背景色 */
+    @apply font-bold bg-gray-100;
+  }
+
+  /* タブレット以上のサイズではテーブルを通常表示に */
+  @media (min-width: 768px) {
+    /* md ブレークポイント */
+    .responsive-table tr:nth-child(even) {
+      @apply bg-gray-50; /* md以上でのみ偶数行に背景色 */
+    }
   }
 }

@@ -5,12 +5,12 @@
   - end_slot = to_slot_index(res.end_at)
   - if slot_idx == start_slot
     - col_span = end_slot - start_slot
-    td.border(colspan=col_span)
-      = link_to stylists_reservation_path(res) do
-        .reservation-card
+    td.border.p-1(colspan=col_span)
+      = link_to stylists_reservation_path(res), class: "block w-full h-full" do
+        .st-reservation-card
           - menu_names = res.menus.map(&:name).join(", ")
-          p.trim-magic メニュー: #{menu_names}
-          p.trim-magic #{res.customer.family_name} #{res.customer.given_name} 様
+          p.st-trim-magic.text-xs.md:text-sm メニュー: #{menu_names}
+          p.st-trim-magic.text-xs.md:text-sm #{res.customer.family_name} #{res.customer.given_name} 様
   - else
 - else
   td.border

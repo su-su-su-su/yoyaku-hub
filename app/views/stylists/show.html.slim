@@ -1,12 +1,32 @@
-- if user_signed_in?
-- if notice
-  .alert.alert-info.flash-notice(data-controller="flash")= notice
-  p ログイン中: = current_user.email
-.buttons.grid.grid-cols-2.gap-4.md:grid-cols-4.mt-4
-  div
-    a href="/stylists/schedules/:date" style="display: inline-block; width: 120px; height: 120px; padding: 20px; background-color: #ddd; border: 1px solid #333; text-decoration: none; color: black; border-radius: 8px; margin: 10px; display: flex; align-items: center; justify-content: center;" 予約表
-  div
-    a href="/stylists/menus_settings" style="display: inline-block; width: 120px; height: 120px; padding: 20px; background-color: #ddd; border: 1px solid #333; text-decoration: none; color: black; border-radius: 8px; margin: 10px; display: flex; align-items: center; justify-content: center;" メニュー管理
-  div
-    a href="/stylists/shift_settings" style="display: inline-block; width: 120px; height: 120px; padding: 20px; background-color: #ddd; border: 1px solid #333; text-decoration: none; color: black; border-radius: 8px; margin: 10px; display: flex; align-items: center; justify-content: center;" シフト管理
-  div
+.container.mx-auto.px-4.py-4.md:py-6
+  - if user_signed_in?
+    - if notice
+      .alert.alert-info.flash-notice(data-controller="flash")= notice
+    p.text-base.mb-4 ログイン中: = current_user.email
+
+  h2.text-xl.font-bold.mt-4.mb-4.md:text-2xl スタイリストメニュー
+
+  .grid.grid-cols-2.gap-3.md:grid-cols-3.lg:grid-cols-4.mt-4
+    .menu-card
+      a.block.bg-gray-100.border.border-gray-300.rounded-lg.p-4.h-32.md:h-40.flex.flex-col.items-center.justify-center(
+        href="/stylists/schedules/:date")
+        .icon.text-blue-500.mb-2
+          svg.w-8.h-8.md:w-10.md:h-10(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+        span.text-sm.md:text-base.font-medium 予約表
+
+    .menu-card
+      a.block.bg-gray-100.border.border-gray-300.rounded-lg.p-4.h-32.md:h-40.flex.flex-col.items-center.justify-center(
+        href="/stylists/menus_settings")
+        .icon.text-green-500.mb-2
+          svg.w-8.h-8.md:w-10.md:h-10(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+        span.text-sm.md:text-base.font-medium メニュー管理
+
+    .menu-card
+      a.block.bg-gray-100.border.border-gray-300.rounded-lg.p-4.h-32.md:h-40.flex.flex-col.items-center.justify-center(
+        href="/stylists/shift_settings")
+        .icon.text-purple-500.mb-2
+          svg.w-8.h-8.md:w-10.md:h-10(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+        span.text-sm.md:text-base.font-medium シフト管理

@@ -1,17 +1,15 @@
-.col-span-1.mt-6
-  .card.bg-white.w-full.p-8
-    .card-body
-      p.text-gray-600 No.#{menu.sort_order}
-      h2.text-xl.font-bold= menu.name
-      p.text-gray-600 価格: ￥#{menu.price}（税込み）
-      p.text-gray-600 施術時間: #{menu.duration}分
-      p.text-gray-600 備考: #{menu.description}
-      p.text-gray-600 カテゴリー: #{menu.category.join(', ')}
-      p.text-gray-600
-      | 掲載の有無:
-      - if menu.is_active
-        |  掲載中
-      - else
-        |  非掲載
-      .flex.justify-end.mt-4
-      = link_to '編集', edit_menus_setting_path(menu), class: 'btn btn-primary', data: { turbo_frame: dom_id(menu) }
+.bg-white.rounded-lg.shadow-sm.hover:shadow-md.transition-shadow.duration-200.h-full.p-4.md:p-6 data-testid="stylist-menu-item"
+  p.text-gray-500.text-xs.md:text-sm No.#{menu.sort_order}
+  h2.text-lg.md:text-xl.font-bold.mb-1= menu.name
+  p.text-gray-600.text-sm.md:text-base 価格: ￥#{menu.price}（税込み）
+  p.text-gray-600.text-sm.md:text-base 施術時間: #{menu.duration}分
+  p.text-gray-600.text-sm.md:text-base.mt-2 備考: #{menu.description}
+  p.text-gray-600.text-sm.md:text-base.mt-1 カテゴリー: #{menu.category.join(', ')}
+  p.text-gray-600.text-sm.md:text-base.mt-1
+    | 掲載の有無:
+    - if menu.is_active
+      span.ml-1.text-green-600.font-medium 掲載中
+    - else
+      span.ml-1.text-red-600.font-medium 非掲載
+  .flex.justify-end.mt-4
+    = link_to '編集', edit_menus_setting_path(menu), class: 'btn-primary px-4 py-2 text-sm', data: { turbo_frame: dom_id(menu) }

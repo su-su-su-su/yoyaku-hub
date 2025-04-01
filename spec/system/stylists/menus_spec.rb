@@ -142,7 +142,7 @@ RSpec.describe 'Stylist Menu Management' do
       end
 
       visit menus_settings_path
-      menu_elements = all('.card')
+      menu_elements = all('[data-testid="stylist-menu-item"]')
       expect(menu_elements[0]).to have_text('パーマ')
       expect(menu_elements[1]).to have_text('カット')
       expect(menu_elements[2]).to have_text('カラー')

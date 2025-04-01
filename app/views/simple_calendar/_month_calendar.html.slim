@@ -1,18 +1,18 @@
 .simple-calendar
   = form_with url: create_stylists_shift_settings_path(year: @year, month: @month), method: :post, local: true do
 
-    table.table.table-striped
+    table.table.w-full.border-collapse
       thead
         tr
           - date_range.slice(0, 7).each do |day|
-            th = t('date.abbr_day_names')[day.wday]
+            th.p-1.text-center.text-xs.md:text-sm.font-medium.border = t('date.abbr_day_names')[day.wday]
 
       tbody
         - date_range.each_slice(7) do |week|
           tr
             - week.each do |day|
               - if day.month != @month
-                td
+                td.border.bg-gray-50
               - else
                 - wh = @working_hours_for_month[day]
                 - wh ||= WorkingHour.new(start_time: Time.zone.parse(WorkingHour::DEFAULT_START_TIME), end_time: Time.zone.parse(WorkingHour::DEFAULT_END_TIME))
@@ -21,34 +21,38 @@
                 - wday = day.wday
                 - wday = 7 if HolidayJp.holiday?(day)
 
-                = content_tag :td, class: "#{calendar.td_classes_for(day)} wday-#{wday}" do
-                  .day-cell.border.border-gray-200.p-1
+                = content_tag :td, class: "#{calendar.td_classes_for(day)} wday-#{wday} border p-1 align-top" do
+                  .day-cell.min-h-[140px]
                     = hidden_field_tag "shift_data[#{day.day}][date]", day
-
-                    p.font-bold.mb-1 = "#{day.day}日"
+                    p.font-bold.mb-1.text-xs.md:text-sm = "#{day.day}日"
 
                     div data-controller="holiday-toggle"
-                      .flex.items-center.mb-1
-                        = check_box_tag "shift_data[#{day.day}][is_holiday]", "1", is_holiday, id: "shift_data_#{day.day}_is_holiday", data: { action: "change->holiday-toggle#toggle", "holiday-toggle-target": "checkbox" }
-                        label.ml-1 for="shift_data_#{day.day}_is_holiday" 休業日
+                      label.flex.items-center.mb-1.cursor-pointer for="shift_data_#{day.day}_is_holiday"
+                        = check_box_tag "shift_data[#{day.day}][is_holiday]", "1", is_holiday,
+                          id: "shift_data_#{day.day}_is_holiday",
+                          data: { action: "change->holiday-toggle#toggle", "holiday-toggle-target": "checkbox" },
+                          class: "checkbox checkbox-xs checkbox-primary mr-1"
+                        span.ml-1.text-xs.md:text-sm 休業日
 
-                      .mb-1
+                      .mb-1.flex.flex-col.space-y-1.md:flex-row.md:items-center.md:space-y-0.md:space-x-1
                         = select_tag "shift_data[#{day.day}][start_time]",
-                          options_for_select(@time_options, wh.start_time.strftime("%H:%M")),
-                          data: { "holiday-toggle-target": "startTime" },
-                          class: 'input input-bordered w-20'
-                        span.mx-1 ~
+                            options_for_select(@time_options, wh.start_time.strftime("%H:%M")),
+                            data: { "holiday-toggle-target": "startTime" },
+                            class: 'input input-bordered w-full md:w-20 text-xs px-1 py-1 min-h-[36px]'
+                        span.hidden.md:inline.mx-1 ~
                         = select_tag "shift_data[#{day.day}][end_time]",
-                          options_for_select(@time_options, wh.end_time.strftime("%H:%M")),
-                          data: { "holiday-toggle-target": "endTime" },
-                          class: 'input input-bordered w-20'
+                            options_for_select(@time_options, wh.end_time.strftime("%H:%M")),
+                            data: { "holiday-toggle-target": "endTime" },
+                            class: 'input input-bordered w-full md:w-20 text-xs px-1 py-1 min-h-[36px]'
 
-                      .mt-1
-                        label 受付可能数
+                      .mt-1.flex.flex-col.md:flex-row.md:items-center
+                        label.text-xs.md:text-sm.mr-1.mb-1.md:mb-0 for="shift_data_#{day.day}_max_reservations" 受付数
                         - options = (0..2).map { |n| [n.to_s, n] }
-                        = select_tag "shift_data[#{day.day}][max_reservations]", options_for_select(options, rl.max_reservations),
-                          data: { "holiday-toggle-target": "maxReservations" },
-                          class: 'input input-bordered w-16'
+                        = select_tag "shift_data[#{day.day}][max_reservations]",
+                            options_for_select(options, rl.max_reservations),
+                            data: { "holiday-toggle-target": "maxReservations" },
+                            id: "shift_data_#{day.day}_max_reservations",
+                            class: 'input input-bordered w-full md:w-16 text-xs px-1 py-1 min-h-[36px]'
 
     .mt-4.flex.justify-center
-      = submit_tag "一括設定", class: "btn btn-primary text-base"
+      = submit_tag "一括設定", class: "btn btn-primary text-base px-6"
