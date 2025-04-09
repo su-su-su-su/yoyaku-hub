@@ -2,7 +2,8 @@
 
 Rails.application.routes.draw do
   get 'home/index'
-  devise_for :users, skip: %i[registrations sessions passwords], controllers: {
+  devise_for :users, skip: %i[registrations sessions], controllers: {
+    passwords: 'users/passwords',
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -85,12 +86,8 @@ Rails.application.routes.draw do
     get 'login', to: 'devise/sessions#new', as: :new_user_session
     post 'login', to: 'devise/sessions#create', as: :user_session
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
-
-    get 'password/new', to: 'devise/passwords#new', as: :new_user_password
-    post 'password', to: 'devise/passwords#create', as: :user_password
-    get 'password/edit', to: 'devise/passwords#edit', as: :edit_user_password
-    patch 'password', to: 'devise/passwords#update'
   end
+
   unauthenticated do
     root to: 'home#index', as: :unauthenticated_root
   end
@@ -98,4 +95,7 @@ Rails.application.routes.draw do
   root to: 'home#index'
   # Defines the root path route ("/")
   # root "posts#index"
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
 end

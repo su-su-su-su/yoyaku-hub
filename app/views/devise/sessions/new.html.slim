@@ -1,5 +1,7 @@
 .w-full.max-w-md.mx-auto.px-4.sm:px-6.md:px-0
   h2.text-xl.sm:text-2xl.font-bold.mt-6.mb-6.text-center ログイン
+  - if notice
+    .alert.alert-info.flash-notice(data-controller="flash")= notice
 
   .social-login.space-y-4
     = render 'devise/shared/google_login_link_customer'
