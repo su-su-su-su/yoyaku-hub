@@ -76,4 +76,9 @@ group :development do
   gem 'rubocop-rspec_rails', require: false
   gem 'slim_lint', require: false
   gem 'web-console'
+  gem 'capistrano', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-rbenv', require: false
+  gem 'capistrano-puma', require: false
 end
