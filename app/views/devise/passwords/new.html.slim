@@ -1,16 +1,20 @@
-h2.text-2xl.font-bold.mt-4.px-4 パスワードをお忘れですか？
-.form-container.px-4
-  = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: 'space-y-4 mt-6 mb-4'  }) do |f|
-    = render "devise/shared/error_messages", resource: resource
-    .field
-      = f.label :email
-      br
-      label.input.input-bordered.flex.items-center.gap-2
-        svg.h-4.w-4.opacity-70
-          | xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-          path(d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z")
-          path(d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z")
-        = f.email_field :email, class: 'grow', autofocus: true, autocomplete: "email"
-    .actions
-      button.btn = t('devise.passwords.new.send_me_reset_password_instructions')
-  = render "devise/shared/links"
+.w-full.max-w-md.mx-auto.px-4.sm:px-6.md:px-0
+  h2.text-xl.sm:text-2xl.font-bold.mt-6.mb-6.text-center パスワードをお忘れですか？
+
+  .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8.mt-6
+    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: 'space-y-6', data: { turbo: false } }) do |f|
+      = render "devise/shared/error_messages", resource: resource
+
+      .field.mb-4
+        = f.label :email, class: "text-sm font-medium mb-2 block"
+        label.input.input-bordered.flex.items-center.gap-2.w-full.min-h-12.p-3
+          svg.h-5.w-5.opacity-70 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
+            path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"
+            path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"
+          = f.email_field :email, class: 'grow outline-none bg-transparent', autofocus: true, autocomplete: "email"
+
+      .actions.mt-8
+        button.btn.btn-primary.w-full.py-3.text-base.rounded-lg.min-h-12 = t('devise.passwords.new.send_me_reset_password_instructions')
+
+  .mt-6.mb-8.text-center
+    = render "devise/shared/links"
