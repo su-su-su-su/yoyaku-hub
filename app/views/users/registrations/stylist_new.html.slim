@@ -1,9 +1,14 @@
-h2.text-xl.font-bold.px-4 スタイリスト会員登録
-= render 'devise/shared/google_login_link_stylist'
-= form_for(resource, as: resource_name, url: stylist_registration_path, html: { data: { turbo: false }, class: 'space-y-4 mt-6' }) do |f|
-  = render 'devise/shared/error_messages', resource: resource
-  = render 'devise/shared/form', f: f
-  .actions.px-4
-    button.btn.btn-primary = t('devise.registrations.new.sign_up')
-.px-4.px-4.mt-4
-  = render 'devise/shared/links'
+.w-full.max-w-md.mx-auto.px-4.sm:px-6.md:px-0
+  h2.text-xl.sm:text-2xl.font-bold.mt-6.mb-6.text-center スタイリスト会員登録
+
+  .social-login.space-y-4.mb-6
+    = render 'devise/shared/google_login_link_stylist'
+
+  .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8
+    = form_for(resource, as: resource_name, url: stylist_registration_path, html: { data: { turbo: false }, class: 'space-y-4 mt-6' }) do |f|
+      = render 'devise/shared/error_messages', resource: resource
+
+      = render 'devise/shared/form', f: f
+
+      .actions.mt-8
+        button.btn.btn-primary.w-full.py-3.text-base.rounded-lg.min-h-12 = t('devise.registrations.new.sign_up')

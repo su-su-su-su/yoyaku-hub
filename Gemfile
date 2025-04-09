@@ -54,6 +54,7 @@ group :development, :test do
   gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
   gem 'dotenv-rails'
   gem 'factory_bot_rails'
+  gem 'letter_opener_web'
   gem 'rspec-rails'
   gem 'selenium-webdriver'
 
