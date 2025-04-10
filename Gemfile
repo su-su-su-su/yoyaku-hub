@@ -13,7 +13,7 @@ gem 'sprockets-rails'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 # Use the Puma web server [https://github.com/puma/puma]
-gem 'puma', '>= 5.0'
+gem 'puma', '>= 6.0'
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem 'turbo-rails'
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
@@ -67,11 +67,13 @@ end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem 'bcrypt_pbkdf', '~> 1.0'
   gem 'capistrano', require: false
+  gem 'capistrano3-puma', '~> 6.0', require: false
   gem 'capistrano-bundler', require: false
-  gem 'capistrano-puma', require: false
   gem 'capistrano-rails', require: false
   gem 'capistrano-rbenv', require: false
+  gem 'ed25519', '~> 1.2'
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-fjord', require: false

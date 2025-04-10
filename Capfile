@@ -30,6 +30,9 @@ install_plugin Capistrano::SCM::Git
 #
 # require "capistrano/rvm"
 require 'capistrano/rbenv'
+set :rbenv_type, :user
+set :rbenv_ruby, File.read('.ruby-version').strip
+set :rbenv_map_bins, %w[rake gem bundle ruby rails puma pumactl]
 require 'capistrano/rails'
 require 'capistrano/puma'
 require 'capistrano/bundler'
@@ -37,6 +40,7 @@ require 'capistrano/bundler'
 # require "capistrano/rails/assets"
 # require "capistrano/rails/migrations"
 # require "capistrano/passenger"
-
+install_plugin Capistrano::Puma
+install_plugin Capistrano::Puma::Systemd
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
