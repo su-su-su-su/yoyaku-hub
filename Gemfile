@@ -67,11 +67,13 @@ end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem 'bcrypt_pbkdf', '~> 1.0'
   gem 'capistrano', require: false
+  gem 'capistrano3-puma', '~> 5.2.0', require: false
   gem 'capistrano-bundler', require: false
-  gem 'capistrano-puma', require: false
   gem 'capistrano-rails', require: false
   gem 'capistrano-rbenv', require: false
+  gem 'ed25519', '~> 1.2'
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-fjord', require: false

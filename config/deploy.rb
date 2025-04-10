@@ -60,7 +60,10 @@ set :puma_access_log, "#{shared_path}/log/puma_access.log"
 set :puma_error_log, "#{shared_path}/log/puma_error.log"
 set :puma_preload_app, true
 set :puma_init_active_record, true
-set :puma_systemctl_user, :system
+set :puma_systemctl_user, :user
+set :puma_enable_lingering, false
+
+append :linked_dirs, 'log', 'tmp/pids', 'tmp/sockets', 'public/system', 'vendor/bundle'
 
 namespace :deploy do
   desc 'Restart application'
