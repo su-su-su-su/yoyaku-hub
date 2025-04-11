@@ -18,7 +18,7 @@ set :branch, ENV['BRANCH'] || 'main'
 # set :format_options, command_output: true, log_file: "log/capistrano.log", color: :auto, truncate: :auto
 
 # Default value for :pty is false
- set :pty, true
+set :pty, true
 
 # Default value for :linked_files is []
 set :linked_files, fetch(:linked_files, []).push('config/master.key', '.env')
