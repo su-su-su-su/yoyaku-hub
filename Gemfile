@@ -3,10 +3,10 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 7.2.1', '>= 7.2.1.1'
-gem 'dotenv-rails'
 gem 'devise'
 gem 'devise-i18n'
+gem 'dotenv-rails'
+gem 'rails', '~> 7.2.1', '>= 7.2.1.1'
 gem 'rails-i18n'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
