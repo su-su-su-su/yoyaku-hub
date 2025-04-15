@@ -1,7 +1,90 @@
-h1 Welcome to the Homepage
+section.hero.bg-gradient-to-br.from-blue-50.to-blue-100.pt-24.pb-24.relative.overflow-hidden
+  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+    .hero-content.flex.flex-col.items-center.gap-16.lg:flex-row.lg:gap-16.lg:text-left
+      .hero-text.flex-1.order-1.text-center.lg:order-0.lg:text-left
+        h1.text-3xl.sm:text-4xl.font-bold.mb-5.text-gray-800.md:text-5xl
+          | 美容師の自由な働き方を
+          br
+          | 支えるプラットフォーム
+        p.text-lg.text-gray-600.mb-8
+          | 予約・顧客管理・会計をシンプルに。
+          br
+          | あなたの時間を施術に集中できるように。
+        div.flex.flex-col.items-center.gap-3.lg:flex-row.lg:items-baseline.lg:justify-start.lg:gap-3
 
-- if user_signed_in?
-  p ログイン中: = current_user.email
-  = button_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'btn btn-primary'
-- else
-  = link_to 'ログイン', new_user_session_path, class: 'btn btn-primary'
+          a.cta-button.bg-blue-600.text-white.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-blue-800[href=new_user_session_path]
+            | ログイン
+          div.flex.justify-center.gap-3
+            a.cta-button.secondary.bg-white.text-blue-600.border.border-blue-600.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-gray-50[href=new_stylist_registration_path]
+              | スタイリスト登録
+            a.cta-button.secondary.bg-white.text-blue-600.border.border-blue-600.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-gray-50[href=new_customer_registration_path]
+              | ユーザー登録
+
+section#problems.problems.bg-white.py-24
+  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+    .section-title.text-center.mb-16
+      h2.text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+        | フリーランス美容師が
+        br.md:hidden
+        | 直面する課題
+      p.text-lg.text-gray-600.max-w-3xl.mx-auto
+        | 多くのフリーランス美容師さんが日々感じている悩みに対する解決策を提供します
+    .problem-cards.grid.grid-cols-1.gap-8.md:grid-cols-2.lg:grid-cols-3
+      .problem-card.bg-white.rounded-xl.p-8.shadow-md.transition.duration-300.ease-in-out.hover:shadow-lg
+        .icon.w-16.h-16.bg-blue-100.rounded-xl.flex.items-center.justify-center.mb-5.text-blue-600.font-bold.text-2xl
+          | 1
+        h3.text-xl.font-bold.mb-4
+          | 複数ツールの管理が煩雑
+        p.text-gray-600
+          | 予約、顧客管理、会計と別々のツールを使い分けることによる時間のロスと混乱。YOYAKU HUBはこれらを一つのプラットフォームに統合します。
+      .problem-card.bg-white.rounded-xl.p-8.shadow-md.transition.duration-300.ease-in-out.hover:shadow-lg
+        .icon.w-16.h-16.bg-blue-100.rounded-xl.flex.items-center.justify-center.mb-5.text-blue-600.font-bold.text-2xl
+          | 2
+        h3.text-xl.font-bold.mb-4
+          | 非効率な予約管理
+        p.text-gray-600
+          | 予約の隙間時間が発生し、効率的に仕事ができない問題。スマートな予約最適化機能で隙間時間を自動的に調整します。
+      .problem-card.bg-white.rounded-xl.p-8.shadow-md.transition.duration-300.ease-in-out.hover:shadow-lg
+        .icon.w-16.h-16.bg-blue-100.rounded-xl.flex.items-center.justify-center.mb-5.text-blue-600.font-bold.text-2xl
+          | 3
+        h3.text-xl.font-bold.mb-4
+          | 不透明な料金体系
+        p.text-gray-600
+          | 月額料金に加えて追加料金が発生する不透明な料金体系。YOYAKU HUBは明確でシンプルな料金体系で、美容師の経済的負担を軽減します。
+
+section#benefits.benefits.bg-gray-50.py-24
+  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+    .section-title.text-center.mb-16
+      h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+        | YOYAKU HUBがもたらす変化
+      p.text-lg.text-gray-600.max-w-3xl.mx-auto
+        | YOYAKU HUBを導入することで得られるメリットをご紹介します
+    .benefit-cards.grid.grid-cols-1.gap-8.sm:grid-cols-2.lg:grid-cols-4
+      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+        .icon.w-20.h-20.mx-auto.mb-5.bg-gray-50.rounded-full.flex.items-center.justify-center.text-4xl
+          | ⏱
+        h3.text-xl.font-bold.mb-4
+          | 時間の節約
+        p.text-gray-600
+          | 事務作業時間を削減。その時間を自分の為の時間や休息に充てられます。
+      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+        .icon.w-20.h-20.mx-auto.mb-5.bg-gray-50.rounded-full.flex.items-center.justify-center.text-4xl
+          | 💰
+        h3.text-xl.font-bold.mb-4
+          | 収益アップ
+        p.text-gray-600
+          | 隙間時間の最適化により、毎月の予約枠増加が可能に。売上アップにつながります。
+      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+        .icon.w-20.h-20.mx-auto.mb-5.bg-gray-50.rounded-full.flex.items-center.justify-center.text-4xl
+          | 📊
+        h3.text-xl.font-bold.mb-4
+          | データ分析
+        p.text-gray-600
+          | 顧客データや売上の分析機能で、自分の強みや改善点を可視化。戦略的な経営判断ができます。
+      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+        .icon.w-20.h-20.mx-auto.mb-5.bg-gray-50.rounded-full.flex.items-center.justify-center.text-4xl
+          | 💸
+        h3.text-xl.font-bold.mb-4
+          | 固定費削減
+        p.text-gray-600
+          | 複数のサービス料を統合することで、月間のサブスクリプション費用を削減できます。
