@@ -123,7 +123,7 @@
   }
   .simple-calendar {
     width: 100%;
-    overflow-x: auto; /* モバイルでの横スクロール対応 */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 
     .wday-0,
@@ -142,17 +142,15 @@
     }
   }
 
-  /* ナビゲーションバー - スティッキー対応 */
   body.stylists-shift-settings .navbar,
   .stylists-shift-settings .navbar {
     position: sticky;
-    top: 0; /* top位置を追加 */
+    top: 0;
     left: 0;
     width: 100%;
     z-index: 50;
   }
 
-  /* メニュー項目 - タッチに適したサイズに */
   .cs-menu-item {
     @apply border-2 border-gray-300 rounded-lg mb-3 p-4;
     cursor: pointer;
@@ -161,6 +159,12 @@
     transition:
       background-color 0.2s ease,
       border-color 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .cs-menu-item:hover {
+      @apply bg-gray-50 border-gray-400;
+    }
   }
 
   .cs-menu-checkbox:checked + .cs-menu-item {
@@ -179,16 +183,16 @@
 
   table.st-fixed-table th,
   table.st-fixed-table td {
-    padding: 12px 8px; /* パディング増加 */
+    padding: 12px 8px;
     min-width: 80px;
     word-wrap: break-word;
     border: 1px solid #ccc;
   }
 
   table.st-fixed-table tr {
-    height: 96px; /* 適切な高さ */
-    max-height: 96px; /* 最大高さも制限 */
-    overflow: hidden; /* はみ出した内容を隠す */
+    height: 96px;
+    max-height: 96px;
+    overflow: hidden;
   }
 
   table.st-fixed-table td.border:empty {
@@ -196,19 +200,18 @@
   }
 
   .st-reservation-card {
-    max-height: 80px; /* テーブル行の高さより少し小さく設定 */
-    overflow-y: auto; /* 縦方向にスクロール可能に */
+    max-height: 80px;
+    overflow-y: auto;
     border: 1px solid #ccc;
-    padding: 8px; /* パディングを少し小さく */
-    margin-bottom: 0; /* 下マージンを削除 */
+    padding: 8px;
+    margin-bottom: 0;
     border-radius: 4px;
     background-color: #ecf2ff;
   }
 
-  /* 予約カード内のテキストを調整 */
   .st-reservation-card p {
     margin-bottom: 8px;
-    font-size: 16px; /* フォントサイズを小さくして収まりやすく */
+    font-size: 16px;
   }
 
   .st-trim-magic {
@@ -227,59 +230,58 @@
   .flash-notice {
     background-color: #81a9e6b9;
     color: #ffffff;
-    padding: 12px; /* パディング追加 */
-    border-radius: 8px; /* 角丸追加 */
-    margin-bottom: 16px; /* 下マージン追加 */
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
   }
 
-  /* ボタン - タッチ操作に適したサイズに */
   .btn-primary {
-    @apply px-4 py-3 rounded font-bold text-white inline-block text-center;
+    @apply rounded font-bold text-white inline-flex items-center justify-center;
     background-color: #3e5cd7;
-    min-height: 48px; /* タッチ操作のための最小高さ */
-    min-width: 120px; /* タッチ操作のための最小幅 */
+    min-height: 48px;
+    min-width: 120px;
+
+    @apply hover:bg-blue-800;
+
+    @apply active:bg-blue-900;
   }
 
   .btn-gray {
     @apply bg-gray-400 text-white py-3 px-4 rounded font-bold text-center;
-    min-height: 48px; /* タッチ操作のための最小高さ */
-    min-width: 120px; /* タッチ操作のための最小幅 */
+    min-height: 48px;
+    min-width: 120px;
+
+    @apply hover:bg-gray-500;
+
+    @apply active:bg-gray-600;
   }
 
-  /* レスポンシブテーブル - モバイル向け */
   .responsive-table {
-    @apply block w-full md:table; /* デフォルトblock, md以上table */
+    @apply block w-full md:table;
   }
 
   .responsive-table tbody {
-    @apply block md:table-row-group; /* デフォルトblock, md以上table-row-group */
+    @apply block md:table-row-group;
   }
 
   .responsive-table tr {
-    /* デフォルト(モバイル): block, 下マージン, ボーダー, 角丸, overflow */
     @apply block mb-4 border border-gray-300 rounded-lg overflow-hidden;
-    /* md以上: table-row, マージン・ボーダー・角丸リセット */
     @apply md:table-row md:mb-0 md:border-0 md:rounded-none md:overflow-visible;
   }
 
   .responsive-table th,
   .responsive-table td {
-    /* デフォルト(モバイル): block, w-full, 左寄せ, パディング */
     @apply block w-full text-left px-4 py-3;
-    /* md以上: table-cell, 幅自動, パディング調整, ボーダー, 上揃え */
     @apply md:table-cell md:w-auto md:px-3 md:py-2 md:border md:border-gray-300 md:align-top;
   }
 
   .responsive-table th {
-    /* th は常に（モバイルでもタブレット以上でも）太字・背景色 */
     @apply font-bold bg-gray-100;
   }
 
-  /* タブレット以上のサイズではテーブルを通常表示に */
   @media (min-width: 768px) {
-    /* md ブレークポイント */
     .responsive-table tr:nth-child(even) {
-      @apply bg-gray-50; /* md以上でのみ偶数行に背景色 */
+      @apply bg-gray-50;
     }
   }
 }
