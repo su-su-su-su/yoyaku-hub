@@ -51,11 +51,12 @@ RSpec.describe 'User login' do
       sign_in customer
       visit '/customers/dashboard'
 
-      find('.dropdown .btn-ghost.btn-circle', match: :first).click
+      first('.dropdown .btn-ghost.btn-circle').click
 
       click_on 'ログアウト'
 
-      expect(page).to have_content('Welcome to the Homepage')
+      expect(page).to have_content('美容師の自由な働き方を
+支えるプラットフォーム')
       expect(page).to have_current_path('/', url: false)
     end
   end

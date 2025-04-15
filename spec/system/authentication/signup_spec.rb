@@ -21,8 +21,9 @@ RSpec.describe 'User signup' do
       visit new_customer_registration_path
       click_on '登録'
 
-      expect(page).to have_content('エラー')
-      expect(page).to have_field('user_email')
+      expect(page).to have_content('2 件のエラーが発生したため')
+      expect(page).to have_content('メールアドレスを入力してください')
+      expect(page).to have_content('パスワードを入力してください')
     end
   end
 
