@@ -1,3 +1,4 @@
+- date_str = @date ? I18n.l(@date, format: :long) : ' '
 - content_for :title, "#{date_str}の予約表 | スタイリスト管理 | YOYAKU HUB"
 - content_for :meta_description, "#{date_str}の予約状況と予約枠を確認できます。時間帯ごとの予約数や予約上限も表示されます。"
 
