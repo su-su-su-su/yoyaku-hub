@@ -6,7 +6,7 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
 - if notice
   .alert.alert-info.flash-notice(data-controller="flash")= notice
 .flex.px-2.mt-4.items-center.justify-between
-  = link_to '前の日へ', stylists_schedules_path(date: (@date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 border rounded'
+  = link_to '前の日へ', stylists_schedules_path(date: (@date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100  border rounded'
   span.font-bold
     = I18n.l(@date, format: :long)
   = link_to '後の日へ', stylists_schedules_path(date: (@date + 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 border rounded'
