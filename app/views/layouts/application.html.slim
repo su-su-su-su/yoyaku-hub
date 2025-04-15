@@ -1,13 +1,36 @@
 doctype html
 html
   head
-    title = content_for(:title) || "Pix Pick"
-    meta name="viewport" content="width=device-width,initial-scale=1"
-    meta name="apple-mobile-web-app-capable" content="yes"
-    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    - default_title = "YOYAKU HUB | フリーランス美容師のための予約・顧客管理プラットフォーム"
+    - default_description = "YOYAKU HUBはフリーランス美容師の予約管理、顧客管理、会計をシンプルにするプラットフォームです。事務作業を効率化し、施術に集中できる環境を提供します。"
+    - default_image_url = '/images/yoyakuhub-1200x600.jpg'
+    - site_name = "YOYAKU HUB"
+    - default_og_type = 'website'
+    - default_twitter_card = 'summary_large_image'
 
+    - final_title = content_for?(:title) ? yield(:title) : default_title
+    - final_description = content_for?(:meta_description) ? yield(:meta_description) : default_description
+    - final_og_title = content_for?(:og_title) ? yield(:og_title) : final_title
+    - final_og_description = content_for?(:og_description) ? yield(:og_description) : final_description
+    - final_og_image = content_for?(:og_image) ? yield(:og_image) : default_image_url
+    - final_og_url = content_for?(:og_url) ? yield(:og_url) : request.original_url
+    - final_og_type = content_for?(:og_type) ? yield(:og_type) : default_og_type
+    - final_twitter_card = content_for?(:twitter_card) ? yield(:twitter_card) : default_twitter_card
+
+    title = final_title
+    meta name="description" content=final_description
+    meta charset="UTF-8"
+    meta name="viewport" content="width=device-width,initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
+
+    meta property="og:title" content=final_og_title
+    meta property="og:description" content=final_og_description
+    meta property="og:url" content=final_og_url
+    meta property="og:image" content=final_og_image
+    meta property="og:type" content=final_og_type
+    meta property="og:site_name" content=site_name
+    meta name="twitter:card" content=final_twitter_card
 
     = yield :head
 
@@ -15,8 +38,6 @@ html
     link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"
     link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"
     link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"
-    link rel="manifest" href="/site.webmanifest"
-
 
     = stylesheet_link_tag "application", "data-turbo-track": "reload"
     = stylesheet_link_tag "simple_calendar", "data-turbo-track": "reload"

@@ -1,3 +1,6 @@
+- content_for :title, '予約履歴 | YOYAKU HUB'
+- content_for :meta_description, 'YOYAKU HUBでの予約履歴一覧です。今後のご予約と過去のご利用履歴をご確認いただけます。'
+
 .container.mx-auto.p-4.max-w-lg
   h1.text-xl.md:text-2xl.font-bold.mb-4 予約履歴
   - if notice
@@ -42,11 +45,9 @@
             .mb-3
               span.font-medium.text-gray-600 来店日時:
               span.ml-2= I18n.l(res.start_at, format: :wday_short)
-
             .mb-3
               span.font-medium.text-gray-600 スタイリスト:
               span.ml-2= "#{res.stylist.family_name} #{res.stylist.given_name}"
-
             .mb-3
               span.font-medium.text-gray-600 メニュー:
               span.ml-2
@@ -54,7 +55,6 @@
                   = res.menus.map(&:name).join(", ")
                 - else
                   | (メニュー情報なし)
-
             .mt-4.flex
               = link_to "詳細", customers_reservation_path(res), class: "bg-blue-500 text-white py-2 px-4 rounded-lg inline-block min-h-[44px] flex items-center justify-center", aria: { disabled: true }
     - else
