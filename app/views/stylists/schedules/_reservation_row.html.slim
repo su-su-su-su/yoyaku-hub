@@ -9,7 +9,7 @@
       = link_to stylists_reservation_path(res), class: "block w-full h-full" do
         .st-reservation-card
           - menu_names = res.menus.map(&:name).join(", ")
-          p.st-trim-magic.text-xs.md:text-sm メニュー: #{menu_names}
+          p.st-trim-magic.text-xs.md:text-sm #{menu_names}
           p.st-trim-magic.text-xs.md:text-sm #{res.customer.family_name} #{res.customer.given_name} 様
   - else
 - else
