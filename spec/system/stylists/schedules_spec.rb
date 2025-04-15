@@ -168,7 +168,7 @@ RSpec.describe 'Stylists::Schedules' do
     end
 
     it 'displays reservation information' do
-      expect(page).to have_content('メニュー: カット, カラー')
+      expect(page).to have_content('カット, カラー')
       expect(page).to have_content("#{customer.family_name} #{customer.given_name} 様")
     end
 
@@ -201,7 +201,7 @@ RSpec.describe 'Stylists::Schedules' do
     end
 
     it 'navigates to the detail screen when a reservation is clicked' do
-      find('a', text: /メニュー: .+/).click
+      find('a', text: 'カット, カラー' ).click
 
       expect(page).to have_current_path(%r{/stylists/reservations/#{reservation.id}})
     end
