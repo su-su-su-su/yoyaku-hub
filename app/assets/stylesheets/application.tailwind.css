@@ -209,6 +209,16 @@
     background-color: #ecf2ff;
   }
 
+  a:hover .st-reservation-card {
+    background-color: #ddeaff;
+    border-color: #a8c7fa;
+  }
+
+  a:active .st-reservation-card {
+    background-color: #c8dfff;
+    border-color: #7eaaef;
+  }
+
   .st-reservation-card p {
     margin-bottom: 8px;
     font-size: 16px;
