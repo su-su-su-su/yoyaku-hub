@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get '/terms', to: 'static_pages#terms'
+  get '/privacy', to: 'static_pages#privacy'
   get 'home/index'
   devise_for :users, skip: %i[registrations sessions], controllers: {
     passwords: 'users/passwords',
@@ -91,6 +93,9 @@ Rails.application.routes.draw do
   unauthenticated do
     root to: 'home#index', as: :unauthenticated_root
   end
+
+  get '/terms', to: 'static_pages#terms'
+  get '/privacy', to: 'static_pages#privacy'
 
   root to: 'home#index'
   # Defines the root path route ("/")
