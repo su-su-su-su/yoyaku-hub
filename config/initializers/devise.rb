@@ -31,5 +31,11 @@ Devise.setup do |config|
 
   config.responder.redirect_status = :see_other
 
-  config.omniauth :google_oauth2, ENV.fetch('GOOGLE_CLIENT_ID', nil), ENV.fetch('GOOGLE_CLIENT_SECRET', nil), {}
+  config.omniauth :google_oauth2,
+                Rails.application.credentials.dig(:google_oauth2, :client_id),
+                Rails.application.credentials.dig(:google_oauth2, :client_secret),
+                {
+                   scope: 'email, profile',
+                   prompt: 'select_account'
+                }
 end
