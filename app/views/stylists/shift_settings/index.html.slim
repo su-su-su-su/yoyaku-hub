@@ -46,3 +46,5 @@
         - btn_class = @is_next_next_month_configured ? "btn btn-primary mt-2 px-4 min-w-[80px] whitespace-nowrap" : "btn btn-gray mt-2 px-4 min-w-[80px] whitespace-nowrap"
         = link_to show_stylists_shift_settings_path(year: @next_next_month_year, month: @next_next_month), class: btn_class do
           = button_label
+  .mt-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
+    = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
