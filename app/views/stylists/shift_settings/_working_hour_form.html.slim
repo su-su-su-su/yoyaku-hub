@@ -7,7 +7,7 @@ h2.text-lg.font-bold.mb-4 営業時間
         = wh_f.select :weekday_start_time, @time_options, {selected: @weekday_start_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
         span ~
-        = f.select :weekday_end_time, @time_options, {selected: @weekday_end_str},
+        = wh_f.select :weekday_end_time, @time_options, {selected: @weekday_end_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
 
     .form-group.flex.flex-col
