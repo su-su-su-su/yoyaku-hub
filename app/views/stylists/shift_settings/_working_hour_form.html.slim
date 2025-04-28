@@ -1,41 +1,39 @@
 h2.text-lg.font-bold.mb-4 営業時間
-= form_with model: WorkingHour.new, url: working_hours_stylists_shift_settings_path, method: :post, local: true do |f|
+= f.fields_for :working_hour do |wh_f|
   .space-y-4
     .form-group.flex.flex-col.md:flex-row.md:items-center
-      = f.label :weekday_start_time, "平日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
+      = wh_f.label :weekday_start_time, "平日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
       .flex.items-center.w-full.md:w-2/3.space-x-2
-        = f.select :weekday_start_time, @time_options, {selected: @weekday_start_str},
+        = wh_f.select :weekday_start_time, @time_options, {selected: @weekday_start_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
         span ~
         = f.select :weekday_end_time, @time_options, {selected: @weekday_end_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
 
     .form-group.flex.flex-col.md:flex-row.md:items-center
-      = f.label :saturday_start_time, "土曜日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
+      = wh_f.label :saturday_start_time, "土曜日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
       .flex.items-center.w-full.md:w-2/3.space-x-2
-        = f.select :saturday_start_time, @time_options, {selected: @saturday_start_str},
+        = wh_f.select :saturday_start_time, @time_options, {selected: @saturday_start_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
         span ~
-        = f.select :saturday_end_time, @time_options, {selected: @saturday_end_str},
+        = wh_f.select :saturday_end_time, @time_options, {selected: @saturday_end_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
 
     .form-group.flex.flex-col.md:flex-row.md:items-center
-      = f.label :sunday_start_time, "日曜日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
+      = wh_f.label :sunday_start_time, "日曜日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
       .flex.items-center.w-full.md:w-2/3.space-x-2
-        = f.select :sunday_start_time, @time_options, {selected: @sunday_start_str},
+        = wh_f.select :sunday_start_time, @time_options, {selected: @sunday_start_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
         span ~
-        = f.select :sunday_end_time, @time_options, {selected: @sunday_end_str},
+        = wh_f.select :sunday_end_time, @time_options, {selected: @sunday_end_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
 
     .form-group.flex.flex-col.md:flex-row.md:items-center
-      = f.label :holiday_start_time, "祝祭日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
+      = wh_f.label :holiday_start_time, "祝祭日", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
       .flex.items-center.w-full.md:w-2/3.space-x-2
-        = f.select :holiday_start_time, @time_options, {selected: @holiday_start_str},
+        = wh_f.select :holiday_start_time, @time_options, {selected: @holiday_start_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
         span ~
-        = f.select :holiday_end_time, @time_options, {selected: @holiday_end_str},
+        = wh_f.select :holiday_end_time, @time_options, {selected: @holiday_end_str},
                    class: 'border border-gray-300 rounded px-3 py-2 w-full flex-1 min-h-[44px]'
 
-  .flex.justify-center.mt-6
-    = f.submit "設定", class: 'btn-primary px-6'
