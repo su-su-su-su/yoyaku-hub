@@ -211,12 +211,9 @@ ja:
     login_failed: "認証に失敗しました。別の方法でログインをお試しください。"
   stylists:
     shift_settings:
-      working_hours:
-        create_success: "営業時間が設定されました。"
-      holidays:
-        create_success: "休業日が設定されました。"
-      reservation_limits:
-        create_success: "受付可能数が設定されました。"
+      defaults:
+        update_success: "勤務のデフォルトを保存しました。"
+        update_failure: "勤務のデフォルトの保存に失敗しました。入力内容を確認してください。"
     menus:
       name: "メニュー名"
       price: "価格"
