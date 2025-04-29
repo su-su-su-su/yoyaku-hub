@@ -23,7 +23,7 @@ module Stylists
       @holiday_start_str = @holiday_hours[:start]
       @holiday_end_str = @holiday_hours[:end]
 
-      @chosen_wdays = Holiday.where(stylist_id: current_user.id).pluck(:day_of_week)
+      @chosen_wdays = Holiday.where(stylist_id: current_user.id, target_date: nil).where.not(day_of_week: nil).pluck(:day_of_week)
       @current_limit = ReservationLimit.find_by(stylist_id: current_user.id, target_date: nil)
 
       @is_this_month_configured = month_configured?(@this_month_year, @this_month)

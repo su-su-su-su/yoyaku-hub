@@ -1,13 +1,14 @@
-h2.text-lg.font-bold.mb-4 休業日
-= f.fields_for :holiday do |h_f|
-  p.text-sm.text-gray-500.mb-4 休業日にしたい曜日にチェックを入れてください
+div#default_holiday_settings
+  h2.text-lg.font-bold.mb-4 休業日
+  = f.fields_for :holiday do |h_f|
+    p.text-sm.text-gray-500.mb-4 休業日にしたい曜日にチェックを入れてください
 
-  = hidden_field_tag "holiday[day_of_weeks][]", ""
-  - weekdays = {1 => "月曜日",2 => "火曜日",3 => "水曜日",4 => "木曜日",5 => "金曜日",6 => "土曜日", 0 => "日曜日", 7 => "祝祭日"}
+    = hidden_field_tag "default_settings[holiday][day_of_weeks][]", ""
+    - weekdays = {1 => "月曜日",2 => "火曜日",3 => "水曜日",4 => "木曜日",5 => "金曜日",6 => "土曜日", 0 => "日曜日", 7 => "祝祭日"}
 
-  .grid.grid-cols-2.sm:grid-cols-3.md:grid-cols-4.gap-x-4.gap-y-3
-    - weekdays.each do |wday, label|
-      label.flex.items-center.gap-2.p-1.cursor-pointer.rounded.hover:bg-gray-100
-        = h_f.check_box :day_of_weeks, { multiple: true, checked: @chosen_wdays.include?(wday) }, wday, nil
-        span.text-sm= label
-
+    .grid.grid-cols-2.sm:grid-cols-3.md:grid-cols-4.gap-x-4.gap-y-3
+      - weekdays.each do |wday, label_text|
+        - checkbox_id = "default_settings_holiday_day_of_weeks_#{wday}"
+        label.flex.items-center.gap-2.p-1.cursor-pointer.rounded.hover:bg-gray-100 { for: checkbox_id }
+          = check_box_tag "default_settings[holiday][day_of_weeks][]", wday, chosen_wdays.include?(wday), id: checkbox_id, class: 'checkbox checkbox-sm'
+          span.text-sm= label_text
