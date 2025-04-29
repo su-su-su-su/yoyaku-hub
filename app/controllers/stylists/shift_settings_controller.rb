@@ -23,7 +23,7 @@ module Stylists
       @holiday_start_str = @holiday_hours[:start]
       @holiday_end_str = @holiday_hours[:end]
 
-      @chosen_wdays = Holiday.where(stylist_id: current_user.id).pluck(:day_of_week)
+      @chosen_wdays = Holiday.where(stylist_id: current_user.id, target_date: nil).where.not(day_of_week: nil).pluck(:day_of_week)
       @current_limit = ReservationLimit.find_by(stylist_id: current_user.id, target_date: nil)
 
       @is_this_month_configured = month_configured?(@this_month_year, @this_month)
@@ -103,6 +103,14 @@ module Stylists
       redirect_to stylists_shift_settings_path, notice: t('flash.batch_setting_success')
     end
 
+    def update_defaults
+      settings_params = default_settings_params
+      save_default_working_hours(settings_params[:working_hour])
+      save_default_holidays(settings_params[:holiday])
+      save_default_reservation_limit(settings_params[:reservation_limit])
+      redirect_to stylists_shift_settings_path, notice: t('stylists.shift_settings.defaults.update_success')
+    end
+
     private
 
     def set_date_info
@@ -155,6 +163,78 @@ module Stylists
         redirect_to edit_stylists_profile_path,
         alert: t('stylists.profiles.incomplete_profile')
       end
+    end
+
+    def default_settings_params
+      params.require(:default_settings).permit(
+        working_hour: [:weekday_start_time, :weekday_end_time, :saturday_start_time, :saturday_end_time, :sunday_start_time, :sunday_end_time, :holiday_start_time, :holiday_end_time],
+        holiday: [day_of_weeks: []],
+        reservation_limit: [:max_reservations]
+      )
+    end
+
+    def save_default_working_hours(working_hour_params)
+      return unless working_hour_params
+
+      weekday_start = Time.zone.parse(working_hour_params[:weekday_start_time])
+      weekday_end = Time.zone.parse(working_hour_params[:weekday_end_time])
+      saturday_start = Time.zone.parse(working_hour_params[:saturday_start_time])
+      saturday_end = Time.zone.parse(working_hour_params[:saturday_end_time])
+      sunday_start = Time.zone.parse(working_hour_params[:sunday_start_time])
+      sunday_end = Time.zone.parse(working_hour_params[:sunday_end_time])
+      holiday_start = Time.zone.parse(working_hour_params[:holiday_start_time])
+      holiday_end = Time.zone.parse(working_hour_params[:holiday_end_time])
+
+      (1..5).each do |wday|
+        weekday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday, target_date: nil)
+        weekday_working_hour.start_time = weekday_start
+        weekday_working_hour.end_time = weekday_end
+        weekday_working_hour.save!
+      end
+
+      saturday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: 6, target_date: nil)
+      saturday_working_hour.start_time = saturday_start
+      saturday_working_hour.end_time = saturday_end
+      saturday_working_hour.save!
+
+      sunday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: 0, target_date: nil)
+      sunday_working_hour.start_time = sunday_start
+      sunday_working_hour.end_time = sunday_end
+      sunday_working_hour.save!
+
+      holiday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: 7, target_date: nil)
+      holiday_working_hour.start_time = holiday_start
+      holiday_working_hour.end_time = holiday_end
+      holiday_working_hour.save!
+    end
+
+    def save_default_holidays(holiday_params)
+      return unless holiday_params
+
+      chosen_wdays = holiday_params[:day_of_weeks].compact_blank.map(&:to_i)
+      existing_defaults = Holiday.where(stylist_id: current_user.id, target_date: nil).where.not(day_of_week: nil)
+
+
+      if chosen_wdays.empty?
+        existing_defaults.destroy_all
+      else
+        existing_defaults.where.not(day_of_week: chosen_wdays).destroy_all
+
+        chosen_wdays.each do |wday|
+          holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday, target_date: nil)
+          holiday.save! unless holiday.persisted?
+        end
+      end
+
+    end
+
+    def save_default_reservation_limit(limit_params)
+      return unless limit_params
+
+      limit = ReservationLimit.find_or_initialize_by(stylist_id: current_user.id, target_date: nil, time_slot: nil)
+
+      limit.max_reservations = limit_params[:max_reservations].to_i
+      limit.save!
     end
   end
 end

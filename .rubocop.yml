@@ -36,6 +36,7 @@ AllCops:
     - spec/system/stylists/reservations_spec.rb
     - spec/system/customers/reservations_history_spec.rb
     - spec/models/schedule_spec.rb
+    - spec/system/stylists/shift_settings/defaults_spec.rb
 
 Style/Documentation:
   Enabled: false
