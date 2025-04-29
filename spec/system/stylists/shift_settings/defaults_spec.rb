@@ -221,6 +221,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
         end
       end
       expect(page).to have_select('default_settings[reservation_limit][max_reservations]', selected: '1')
+    end
 
     it 'can set national holidays as a holiday while setting other defaults' do
       Holiday.where(stylist_id: stylist.id, day_of_week: 7, target_date: nil).destroy_all
