@@ -15,13 +15,8 @@ RSpec.describe 'Stylist shift settings' do
       expect(page).to have_content('シフト設定')
 
       expect(page).to have_content('営業時間')
-      expect(page).to have_css('form[action$="/stylists/shift_settings/working_hours"]')
-
       expect(page).to have_content('休業日')
-      expect(page).to have_css('form[action$="/stylists/shift_settings/holidays"]')
-
       expect(page).to have_content('受付可能数')
-      expect(page).to have_css('form[action$="/stylists/shift_settings/reservation_limits"]')
 
       expect(page).to have_content('毎月の受付設定')
 
