@@ -6,11 +6,27 @@
   - if notice
     .alert.alert-info.flash-notice(data-controller="flash")= notice
 
-  .social-login.space-y-4
-    = render 'devise/shared/google_login_link_customer'
-    = render 'devise/shared/google_login_link_stylist'
+  p.text-center.text-gray-700.mb-4
+    | Googleアカウントでログインされる方は、
+    br
+    | 該当するボタンを選択してください。
 
-  .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8.mt-6
+  .social-login.space-y-4.text-center
+    div
+      p.text-sm.text-center.text-gray-600.mb-1 予約をしたいお客様はこちら
+      = render 'devise/shared/google_auth_link', button_text: 'お客様としてログイン', role: 'customer'
+    div
+      p.text-sm.text-center.text-gray-600.mb-1 美容師の方はこちら
+      = render 'devise/shared/google_auth_link', button_text: 'としてログイン', role: 'stylist'
+
+  .my-6.border-t
+
+  p.text-center.text-gray-700
+    | 既にメールアドレスでアカウントをお持ちの方は
+    br
+    | 以下よりログインしてください。
+
+  .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8
     = form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'space-y-6' }) do |f|
       .field.mb-4
         = f.label :email, class: "text-sm font-medium mb-2 block"
@@ -35,7 +51,7 @@
           = f.label :remember_me, class: "text-sm"
 
       .actions.mt-8
-        button.btn.btn-primary.w-full.py-3.text-base.rounded-lg.min-h-12 = t('devise.registrations.new.sign_up')
+        button.btn.btn-primary.w-full.py-3.text-base.rounded-lg.min-h-12 = t('devise.sessions.new.sign_in')
 
   .mt-6.mb-8
     = render "devise/shared/links"
