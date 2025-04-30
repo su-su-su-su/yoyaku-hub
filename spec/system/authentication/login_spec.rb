@@ -12,7 +12,7 @@ RSpec.describe 'User login' do
 
       fill_in 'user_email', with: customer.email
       fill_in 'user_password', with: 'testtest'
-      click_on '登録'
+      click_on 'ログイン'
 
       expect(page).to have_content('ログインしました')
       expect(page).to have_current_path('/customers/dashboard', url: false)
@@ -24,7 +24,7 @@ RSpec.describe 'User login' do
       fill_in 'user_email', with: customer.email
       fill_in 'user_password', with: 'wrong_password'
 
-      click_on '登録'
+      click_on 'ログイン'
 
       expect(page).to have_current_path('/login', url: false)
       expect(page).to have_field('user_email')
@@ -39,7 +39,7 @@ RSpec.describe 'User login' do
       fill_in 'user_email', with: stylist.email
       fill_in 'user_password', with: 'testtest'
 
-      click_on '登録'
+      click_on 'ログイン'
 
       expect(page).to have_content('ログインしました')
       expect(page).to have_current_path('/stylists/dashboard', url: false)
@@ -55,8 +55,7 @@ RSpec.describe 'User login' do
 
       click_on 'ログアウト'
 
-      expect(page).to have_content('美容師の自由な働き方を
-支えるプラットフォーム')
+      expect(page).to have_content("予約・顧客管理・会計を\nシンプルに。")
       expect(page).to have_current_path('/', url: false)
     end
   end
