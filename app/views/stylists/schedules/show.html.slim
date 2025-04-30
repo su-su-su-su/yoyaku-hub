@@ -37,7 +37,7 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
              = @reservation_counts[slot_idx].to_i
         = render 'reservation_limits_row', time_slots: @time_slots
         tr
-          th.border.bg-gray-100.text-center #{@stylist.family_name} #{@stylist.given_name}
+          th.border.bg-gray-100.text-center
           - @time_slots.each do |time_str|
             - slot_idx = to_slot_index(time_str)
             = render 'reservation_row', slot_idx: slot_idx
