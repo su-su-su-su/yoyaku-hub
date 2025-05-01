@@ -64,4 +64,15 @@ class User < ApplicationRecord
   def trying_to_complete_profile?
     validating_profile == true
   end
+
+  def default_shift_settings_configured?
+    default_working_hour_exists = WorkingHour.exists?(stylist_id: self.id, target_date: nil)
+    default_reservation_limit_exists = ReservationLimit.exists?(stylist_id: self.id, target_date: nil, time_slot: nil)
+
+    default_working_hour_exists && default_reservation_limit_exists
+  end
+
+  def has_registered_menus?
+     Menu.exists?(stylist_id: self.id)
+  end
 end
