@@ -8,6 +8,19 @@
     p.text-base.mb-4 ログイン中: = current_user.email
 
   h2.text-xl.font-bold.mt-4.mb-4.md:text-2xl スタイリストメニュー
+  - if @show_shift_settings_warning || @show_menu_warning
+  .bg-white.border.border-gray-200.rounded-lg.p-4.mb-4
+    p.text-lg.font-bold.mb-2 ご利用いただくには各設定が必要です
+    ul.list-none.ml-5.mt-2
+      - if @show_shift_settings_warning
+        li.mb-1
+          | シフト設定が完了していません。
+          = link_to "設定ページへ", stylists_shift_settings_path, class: 'underline text-blue-600 hover:text-blue-800'
+
+      - if @show_menu_warning
+        li.mb-1
+          | メニュー設定が完了していません。
+          = link_to "設定ページへ", menus_settings_path, class: 'underline text-blue-600 hover:text-blue-800'
 
   .grid.grid-cols-2.gap-3.md:grid-cols-3.lg:grid-cols-4.mt-4
     .menu-card
