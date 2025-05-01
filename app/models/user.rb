@@ -66,13 +66,13 @@ class User < ApplicationRecord
   end
 
   def default_shift_settings_configured?
-    default_working_hour_exists = WorkingHour.exists?(stylist_id: self.id, target_date: nil)
-    default_reservation_limit_exists = ReservationLimit.exists?(stylist_id: self.id, target_date: nil, time_slot: nil)
+    default_working_hour_exists = working_hours.where(target_date: nil).exists?
+    default_reservation_limit_exists = reservation_limits.where(target_date: nil, time_slot: nil).exists?
 
     default_working_hour_exists && default_reservation_limit_exists
   end
 
   def has_registered_menus?
-     Menu.exists?(stylist_id: self.id)
+     menus.exists?(stylist_id: self.id)
   end
 end
