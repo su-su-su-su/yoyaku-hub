@@ -346,4 +346,83 @@ RSpec.describe User do
       end
     end
   end
+
+  describe '#default_shift_settings_configured?' do
+    context 'when both default working hours and default reservation limits exist' do
+      before do
+        create(:working_hour, stylist: stylist, target_date: nil, day_of_week: nil)
+        create(:reservation_limit, stylist: stylist, target_date: nil, time_slot: nil)
+      end
+
+      it 'returns true' do
+        expect(stylist.default_shift_settings_configured?).to be true
+      end
+    end
+
+    context 'when only default working hours exist' do
+      before do
+        create(:working_hour, stylist: stylist, target_date: nil, day_of_week: nil)
+      end
+
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+
+    context 'when only default reservation limits exist' do
+      before do
+        create(:reservation_limit, stylist: stylist, target_date: nil, time_slot: nil)
+      end
+
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+
+    context 'when neither default working hours nor default reservation limits exist' do
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+
+    context 'when only specific date or day records exist (no defaults)' do
+      before do
+        setup_working_hour(stylist, day: 1)
+        create(:reservation_limit, stylist: stylist, target_date: Date.current, time_slot: 900)
+      end
+
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+  end
+
+  describe '#has_registered_menus?' do
+    context 'when menus are registered for the stylist' do
+      before do
+        create(:menu, stylist: stylist)
+      end
+
+      it 'returns true' do
+        expect(stylist.has_registered_menus?).to be true
+      end
+    end
+
+    context 'when no menus are registered for the stylist' do
+      it 'returns false' do
+        expect(stylist.has_registered_menus?).to be false
+      end
+    end
+
+    context 'when only other stylists have registered menus' do
+      let(:other_stylist) { create(:user, role: :stylist) }
+      before do
+        create(:menu, stylist: other_stylist)
+      end
+
+      it 'returns false' do
+        expect(stylist.has_registered_menus?).to be false
+      end
+    end
+  end
 end
