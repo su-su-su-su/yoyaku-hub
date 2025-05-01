@@ -14,12 +14,12 @@
     ul.list-none.ml-5.mt-2
       - if @show_shift_settings_warning
         li.mb-1
-          | シフト設定が完了していません。
+          | シフトの設定してください。
           = link_to "設定ページへ", stylists_shift_settings_path, class: 'underline text-blue-600 hover:text-blue-800'
 
       - if @show_menu_warning
         li.mb-1
-          | メニュー設定が完了していません。
+          | メニューを1つ以上登録してください。
           = link_to "設定ページへ", menus_settings_path, class: 'underline text-blue-600 hover:text-blue-800'
 
   .grid.grid-cols-2.gap-3.md:grid-cols-3.lg:grid-cols-4.mt-4
