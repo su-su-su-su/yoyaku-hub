@@ -73,6 +73,6 @@ class User < ApplicationRecord
   end
 
   def has_registered_menus?
-     menus.exists?(stylist_id: self.id)
+     menus.exists?
   end
 end
