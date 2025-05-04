@@ -128,7 +128,8 @@ RSpec.describe 'Customer Stylist Selection' do
 
       it 'restricts access to customer-only functionality' do
         visit customers_stylists_index_path
-        expect(page).to have_no_current_path(customers_stylists_index_path)
+        expect(page).to have_current_path(root_path)
+        expect(page).to have_content("予約・顧客管理・会計を\nシンプルに。")
       end
     end
   end

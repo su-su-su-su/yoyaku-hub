@@ -346,4 +346,170 @@ RSpec.describe User do
       end
     end
   end
+
+  describe '#default_shift_settings_configured?' do
+    context 'when both default working hours and default reservation limits exist' do
+      before do
+        create(:working_hour, stylist: stylist, target_date: nil, day_of_week: nil)
+        create(:reservation_limit, stylist: stylist, target_date: nil, time_slot: nil)
+      end
+
+      it 'returns true' do
+        expect(stylist.default_shift_settings_configured?).to be true
+      end
+    end
+
+    context 'when only default working hours exist' do
+      before do
+        create(:working_hour, stylist: stylist, target_date: nil, day_of_week: nil)
+      end
+
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+
+    context 'when only default reservation limits exist' do
+      before do
+        create(:reservation_limit, stylist: stylist, target_date: nil, time_slot: nil)
+      end
+
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+
+    context 'when neither default working hours nor default reservation limits exist' do
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+
+    context 'when only specific date or day records exist (no defaults)' do
+      before do
+        setup_working_hour(stylist, day: 1)
+        create(:reservation_limit, stylist: stylist, target_date: Date.current, time_slot: 900)
+      end
+
+      it 'returns false' do
+        expect(stylist.default_shift_settings_configured?).to be false
+      end
+    end
+  end
+
+  describe '#registered_menus?' do
+    context 'when menus are registered for the stylist' do
+      before do
+        create(:menu, stylist: stylist)
+      end
+
+      it 'returns true' do
+        expect(stylist.registered_menus?).to be true
+      end
+    end
+
+    context 'when no menus are registered for the stylist' do
+      it 'returns false' do
+        expect(stylist.registered_menus?).to be false
+      end
+    end
+
+    context 'when only other stylists have registered menus' do
+      let(:other_stylist) { create(:user, role: :stylist) }
+
+      before do
+        create(:menu, stylist: other_stylist)
+      end
+
+      it 'returns false' do
+        expect(stylist.registered_menus?).to be false
+      end
+    end
+  end
+
+  describe '#current_month_shifts_configured?' do
+    before { travel_to Date.new(2025, 5, 10) }
+
+    let(:current_month_date) { Date.current }
+    let(:prev_month_date) { Date.current.prev_month }
+    let(:next_month_date) { Date.current.next_month }
+
+    context 'when date-specific settings exist in the current month' do
+      it 'returns true if a working hour exists' do
+        create(:working_hour, stylist: stylist, target_date: current_month_date)
+        expect(stylist.current_month_shifts_configured?).to be true
+      end
+
+      it 'returns true if a holiday exists' do
+        create(:holiday, stylist: stylist, target_date: current_month_date)
+        expect(stylist.current_month_shifts_configured?).to be true
+      end
+
+      it 'returns true if a reservation limit exists' do
+        create(:reservation_limit, stylist: stylist, target_date: current_month_date)
+        expect(stylist.current_month_shifts_configured?).to be true
+      end
+    end
+
+    context 'when no date-specific settings exist in the current month' do
+      it 'returns false if no records exist for the stylist' do
+        expect(stylist.current_month_shifts_configured?).to be false
+      end
+
+      it 'returns false if only default settings (target_date: nil) exist' do
+        create(:working_hour, stylist: stylist, target_date: nil, day_of_week: 1)
+        create(:reservation_limit, stylist: stylist, target_date: nil, time_slot: nil)
+        expect(stylist.current_month_shifts_configured?).to be false
+      end
+
+      it 'returns false if records exist only for other months' do
+        create(:working_hour, stylist: stylist, target_date: prev_month_date)
+        create(:holiday, stylist: stylist, target_date: next_month_date)
+        expect(stylist.current_month_shifts_configured?).to be false
+      end
+    end
+  end
+
+  describe '#next_month_shifts_configured?' do
+    before { travel_to Date.new(2025, 5, 10) }
+
+    let(:current_month_date) { Date.current }
+    let(:next_month_date) { Date.current.next_month }
+    let(:next_next_month_date) { Date.current.next_month(2) }
+
+    context 'when date-specific settings exist in the next month' do
+      it 'returns true if a working hour exists' do
+        create(:working_hour, stylist: stylist, target_date: next_month_date)
+        expect(stylist.next_month_shifts_configured?).to be true
+      end
+
+      it 'returns true if a holiday exists' do
+        create(:holiday, stylist: stylist, target_date: next_month_date)
+        expect(stylist.next_month_shifts_configured?).to be true
+      end
+
+      it 'returns true if a reservation limit exists' do
+        create(:reservation_limit, stylist: stylist, target_date: next_month_date)
+        expect(stylist.next_month_shifts_configured?).to be true
+      end
+    end
+
+    context 'when no date-specific settings exist in the next month' do
+      it 'returns false if no records exist for the stylist' do
+        expect(stylist.next_month_shifts_configured?).to be false
+      end
+
+      it 'returns false if only default settings (target_date: nil) exist' do
+        create(:working_hour, stylist: stylist, target_date: nil, day_of_week: 1)
+        create(:reservation_limit, stylist: stylist, target_date: nil, time_slot: nil)
+        expect(stylist.next_month_shifts_configured?).to be false
+      end
+
+      it 'returns false if records exist only for other months' do
+        create(:working_hour, stylist: stylist, target_date: current_month_date)
+        create(:holiday, stylist: stylist, target_date: next_next_month_date)
+        expect(stylist.next_month_shifts_configured?).to be false
+      end
+    end
+  end
 end

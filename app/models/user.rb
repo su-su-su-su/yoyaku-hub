@@ -64,4 +64,37 @@ class User < ApplicationRecord
   def trying_to_complete_profile?
     validating_profile == true
   end
+
+  def default_shift_settings_configured?
+    default_working_hour_exists = working_hours.exists?(target_date: nil)
+    default_reservation_limit_exists = reservation_limits.exists?(target_date: nil, time_slot: nil)
+
+    default_working_hour_exists && default_reservation_limit_exists
+  end
+
+  def registered_menus?
+    menus.exists?
+  end
+
+  def current_month_shifts_configured?
+    today = Date.current
+    start_of_month = today.beginning_of_month
+    end_of_month = today.end_of_month
+    month_range = start_of_month..end_of_month
+
+    working_hours.exists?(target_date: month_range) ||
+      holidays.exists?(target_date: month_range) ||
+      reservation_limits.exists?(target_date: month_range)
+  end
+
+  def next_month_shifts_configured?
+    next_month_date = Date.current.next_month
+    start_of_month = next_month_date.beginning_of_month
+    end_of_month = next_month_date.end_of_month
+    month_range = start_of_month..end_of_month
+
+    working_hours.exists?(target_date: month_range) ||
+      holidays.exists?(target_date: month_range) ||
+      reservation_limits.exists?(target_date: month_range)
+  end
 end
