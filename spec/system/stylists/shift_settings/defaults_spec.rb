@@ -32,7 +32,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       end
       expect(form).to have_select('default_settings[reservation_limit][max_reservations]')
 
-      expect(form).to have_button('勤務のデフォルトを保存')
+      expect(form).to have_button('シフトの基本情報を保存')
       expect(form).to have_no_button('設定')
     end
 
@@ -65,7 +65,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
 
       select '2', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on '勤務のデフォルトを保存'
+      click_on 'シフトの基本情報を保存'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
@@ -138,7 +138,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
 
       select '0', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on '勤務のデフォルトを保存'
+      click_on 'シフトの基本情報を保存'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
@@ -203,7 +203,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       select '16:30', from: 'default_settings[working_hour][holiday_end_time]'
       select '1', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on '勤務のデフォルトを保存'
+      click_on 'シフトの基本情報を保存'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
@@ -255,7 +255,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       select '16:30', from: 'default_settings[working_hour][holiday_end_time]'
       select '2', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on '勤務のデフォルトを保存'
+      click_on 'シフトの基本情報を保存'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
