@@ -26,6 +26,7 @@ module Users
 
     def process_new_user_registration(user, auth, role_from_session)
       if role_from_session.present?
+        if user.save
           handle_successful_authentication
         else
           error_messages = user.errors.full_messages.join(', ')
