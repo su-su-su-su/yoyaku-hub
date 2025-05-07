@@ -146,4 +146,57 @@ RSpec.describe '/stylists/dashboards' do
       end
     end
   end
+
+  describe 'Customer Invitation URL Section' do
+    let!(:menu_url_for_stylist) { "https://yoyakuhub.jp/customers/stylists/#{stylist.id}/menus" }
+    let(:section_title_text) { 'お客様へのご案内用URL' }
+    let(:description_line1_text) { 'あなたのメニュー一覧ページのURLはこちらです。' }
+    let(:description_line2_text) { 'お客様が予約される際は、このURLを共有し、メニューを選択して手続きを進めてもらうようお伝えください。' }
+    let(:copy_button_default_text) { 'コピー' }
+    let(:copy_button_success_text_regex) { /コピー完了!/ }
+
+    before do
+      visit stylists_dashboard_path
+    end
+
+    it 'displays the section title' do
+      expect(page).to have_content(section_title_text)
+    end
+
+    it 'displays the description text' do
+      expect(page).to have_content(description_line1_text)
+      expect(page).to have_content(description_line2_text)
+    end
+
+    it 'displays the URL in a readonly input field with the correct value' do
+      url_input_field = find("input[data-copy-clipboard-target='source']")
+      expect(url_input_field).to be_visible
+      expect(url_input_field.value).to eq(menu_url_for_stylist)
+      expect(url_input_field).to be_readonly
+    end
+
+    it 'displays the copy button with correct text and icon' do
+      copy_button = find("button[data-copy-clipboard-target='button']")
+      expect(copy_button).to be_visible
+      expect(copy_button).to have_text(copy_button_default_text)
+      expect(copy_button).to have_css('svg')
+    end
+
+    context 'when the copy button is clicked', js: true do
+      it 'changes the button content to success and then reverts' do
+        copy_button = find("button[data-copy-clipboard-target='button']")
+        actual_original_button_text = copy_button.text
+        original_icon_svg_path_part = "M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192"
+
+        copy_button.click
+
+        expect(copy_button).to have_text(copy_button_success_text_regex, wait: Capybara.default_max_wait_time)
+        success_icon_svg_path_part = "M4.5 12.75l6 6 9-13.5"
+        expect(copy_button).to have_css("svg path[d*='#{success_icon_svg_path_part}']", wait: Capybara.default_max_wait_time)
+
+        expect(copy_button).to have_text(actual_original_button_text, wait: 3)
+        expect(copy_button).to have_css("svg path[d*='#{original_icon_svg_path_part}']", wait: 3)
+      end
+    end
+  end
 end
