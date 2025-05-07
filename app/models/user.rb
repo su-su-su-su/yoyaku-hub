@@ -34,35 +34,31 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable,
     :omniauthable, omniauth_providers: [:google_oauth2]
 
-    def self.from_omniauth(auth, role_for_new_user = nil)
-      user = find_by(provider: auth.provider, uid: auth.uid)
+  def self.from_omniauth(auth, role_for_new_user = nil)
+    user = find_by(provider: auth.provider, uid: auth.uid)
 
-      if user
-        user.email = auth.info.email
-        user.family_name = auth.info.last_name if auth.info.last_name.present? && user.family_name.blank?
-        user.given_name  = auth.info.first_name if auth.info.first_name.present? && user.given_name.blank?
+    if user
+      user.email = auth.info.email
+      user.family_name = auth.info.last_name if auth.info.last_name.present? && user.family_name.blank?
+      user.given_name  = auth.info.first_name if auth.info.first_name.present? && user.given_name.blank?
 
-        user.save if user.changed?
-        return user
-      end
-
-      if role_for_new_user.present?
-        new_attrs = {
-          provider: auth.provider,
-          uid: auth.uid,
-          email: auth.info.email,
-          password: Devise.friendly_token[0, 20],
-          role: role_for_new_user,
-          family_name: auth.info.last_name,
-          given_name: auth.info.first_name
-        }
-        user = new(new_attrs)
-
-        return user
-      else
-        return nil
-      end
+      user.save if user.changed?
+      return user
     end
+
+    return nil if role_for_new_user.blank?
+
+    new_attrs = {
+      provider: auth.provider,
+      uid: auth.uid,
+      email: auth.info.email,
+      password: Devise.friendly_token[0, 20],
+      role: role_for_new_user,
+      family_name: auth.info.last_name,
+      given_name: auth.info.first_name
+    }
+    new(new_attrs)
+  end
 
   def min_active_menu_duration
     menus.where(is_active: true).minimum(:duration) || 0

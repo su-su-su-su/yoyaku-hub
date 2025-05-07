@@ -2,10 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'OmniAuth Google Authentication', type: :system do
-  before do
-  end
-
+RSpec.describe 'OmniAuth Google Authentication' do
   describe 'User logs in via Google' do
     context 'when the user is new and registers as a customer' do
       before do
@@ -47,7 +44,7 @@ RSpec.describe 'OmniAuth Google Authentication', type: :system do
 
       before do
         mock_google_auth_hash(email: existing_user.email, uid: existing_user.uid,
-                              first_name: existing_user.given_name, last_name: existing_user.family_name)
+          first_name: existing_user.given_name, last_name: existing_user.family_name)
         visit new_user_session_path
         click_link_or_button 'Googleでログイン'
       end

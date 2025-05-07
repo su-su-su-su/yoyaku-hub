@@ -7,30 +7,14 @@ module Users
     def google_oauth2
       auth = request.env['omniauth.auth']
       role_from_session = session.delete(:role)
-
       @user = User.from_omniauth(auth, role_from_session)
 
       if @user&.persisted?
         handle_successful_authentication
-      elsif @user && @user.new_record? && role_from_session.present?
-        if @user.save
-          handle_successful_authentication
-        else
-          error_messages = @user.errors.full_messages.join(', ')
-          session['devise.google_data'] = auth.except(:extra)
-          redirect_path = if role_from_session == 'stylist'
-                            new_stylist_registration_path
-                          else
-                            new_customer_registration_path
-                          end
-          alert_message = "#{I18n.t('errors.messages.registration_failed')}: #{error_messages}"
-          redirect_to redirect_path, alert: alert_message
-        end
-      elsif @user.nil? && role_from_session.nil?
-        session['devise.google_data'] = auth.except(:extra)
-        redirect_to new_user_session_path, alert: I18n.t('alerts.omniauth_account_not_found')
+      elsif @user
+        process_new_user_registration(@user, auth, role_from_session)
       else
-        handle_failed_authentication(auth)
+        handle_unregistered_login_attempt(auth)
       end
     end
 
@@ -39,6 +23,35 @@ module Users
     end
 
     private
+
+    def process_new_user_registration(user, auth, role_from_session)
+      if role_from_session.present?
+          handle_successful_authentication
+        else
+          error_messages = user.errors.full_messages.join(', ')
+          session['devise.google_data'] = auth.except(:extra)
+          redirect_path = determine_registration_failure_redirect_path(role_from_session)
+          alert_message = "#{I18n.t('errors.messages.registration_failed')}: #{error_messages}"
+          redirect_to redirect_path, alert: alert_message
+        end
+      else
+        logger.warn "OmniAuth Callback: Attempted to process new user without role. Auth UID: #{auth&.uid}"
+        handle_general_omniauth_failure(auth)
+      end
+    end
+
+    def handle_unregistered_login_attempt(auth)
+      session['devise.google_data'] = auth.except(:extra)
+      redirect_to new_user_session_path, alert: I18n.t('alerts.omniauth_account_not_found')
+    end
+
+    def determine_registration_failure_redirect_path(role)
+      if role == 'stylist'
+        new_stylist_registration_path
+      else
+        new_customer_registration_path
+      end
+    end
 
     def handle_successful_authentication
       sign_in(:user, @user)
@@ -56,8 +69,8 @@ module Users
       end
     end
 
-    def handle_failed_authentication(auth)
-      session['devise.google_data'] = auth.except(:extra)
+    def handle_general_omniauth_failure(auth_data)
+      session['devise.google_data'] = auth_data.except(:extra) if auth_data
       redirect_to new_user_registration_url, alert: I18n.t('alerts.authentication_failed')
     end
   end

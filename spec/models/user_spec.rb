@@ -218,11 +218,12 @@ RSpec.describe User do
     end
 
     context 'when the user is new (新規登録)' do
-      let(:role) {'customer'}
       subject(:user_from_omniauth) { described_class.from_omniauth(auth, role) }
 
+      let(:role) { 'customer' }
+
       it 'returns a new user object' do
-        expect(user_from_omniauth).to be_a(User)
+        expect(user_from_omniauth).to be_a(described_class)
         expect(user_from_omniauth).to be_new_record
       end
 
@@ -239,12 +240,12 @@ RSpec.describe User do
       end
 
       it 'does not save the user to the database directly' do
-        expect {user_from_omniauth}.not_to change(User, :count)
+        expect { user_from_omniauth }.not_to change(described_class, :count)
       end
 
       it 'can be saved to create a new user' do
         new_user = described_class.from_omniauth(auth, role)
-        expect {new_user.save}.to change(User, :count).by(1)
+        expect { new_user.save }.to change(described_class, :count).by(1)
         expect(new_user).to be_persisted
       end
     end
@@ -257,21 +258,21 @@ RSpec.describe User do
       it 'does not attempt to create a new user' do
         expect do
           described_class.from_omniauth(auth, nil)
-        end.not_to change(User, :count)
+        end.not_to change(described_class, :count)
       end
     end
 
     context 'when the user already exists' do
+      subject(:user_from_omniauth) { described_class.from_omniauth(auth, role_for_new_user_attempt) }
+
       let!(:existing_user) do
         create(:user, provider: 'google_oauth2', uid: '123456', email: 'old@example.com', role: 'stylist',
           family_name: nil, given_name: nil)
       end
-      let(:role_for_new_user_attempt) {'customer'}
-
-      subject(:user_from_omniauth) { described_class.from_omniauth(auth, role_for_new_user_attempt) }
+      let(:role_for_new_user_attempt) { 'customer' }
 
       it 'does not create a new user' do
-        expect { user_from_omniauth }.not_to change(User, :count)
+        expect { user_from_omniauth }.not_to change(described_class, :count)
       end
 
       it 'returns the existing user' do
@@ -291,12 +292,11 @@ RSpec.describe User do
       end
 
       it 'does not update name if already present' do
-        existing_user.update!(family_name: "田中", given_name: "太郎")
-
+        existing_user.update!(family_name: '田中', given_name: '太郎')
 
         updated_user = described_class.from_omniauth(auth, role_for_new_user_attempt)
-        expect(updated_user.family_name).to eq("田中")
-        expect(updated_user.given_name).to eq("太郎")
+        expect(updated_user.family_name).to eq('田中')
+        expect(updated_user.given_name).to eq('太郎')
       end
     end
   end

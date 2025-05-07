@@ -13,12 +13,13 @@ require 'capybara/rspec'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories.
-#Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
+# Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
 
 OmniAuth.config.test_mode = true
 
 module OmniauthTestHelper
-  def mock_google_auth_hash(email: 'test@example.com', first_name: 'テスト', last_name: 'ユーザー', uid: '123545', provider: 'google_oauth2')
+  def mock_google_auth_hash(email: 'test@example.com', first_name: 'テスト', last_name: 'ユーザー', uid: '123545',
+                            provider: 'google_oauth2')
     OmniAuth.config.mock_auth[provider.to_sym] = OmniAuth::AuthHash.new({
       provider: provider,
       uid: uid,
