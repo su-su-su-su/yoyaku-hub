@@ -6,12 +6,29 @@ module Users
 
     def google_oauth2
       auth = request.env['omniauth.auth']
-      role = session.delete(:role) || 'customer'
+      role_from_session = session.delete(:role)
 
-      @user = find_or_create_user(auth, role)
+      @user = User.from_omniauth(auth, role_from_session)
 
-      if @user.persisted?
+      if @user&.persisted?
         handle_successful_authentication
+      elsif @user && @user.new_record? && role_from_session.present?
+        if @user.save
+          handle_successful_authentication
+        else
+          error_messages = @user.errors.full_messages.join(', ')
+          session['devise.google_data'] = auth.except(:extra)
+          redirect_path = if role_from_session == 'stylist'
+                            new_stylist_registration_path
+                          else
+                            new_customer_registration_path
+                          end
+          alert_message = "#{I18n.t('errors.messages.registration_failed')}: #{error_messages}"
+          redirect_to redirect_path, alert: alert_message
+        end
+      elsif @user.nil? && role_from_session.nil?
+        session['devise.google_data'] = auth.except(:extra)
+        redirect_to new_user_session_path, alert: I18n.t('alerts.omniauth_account_not_found')
       else
         handle_failed_authentication(auth)
       end
@@ -22,39 +39,6 @@ module Users
     end
 
     private
-
-    def find_or_create_user(auth, role)
-      user = User.find_by(provider: auth.provider, uid: auth.uid)
-
-      if user
-        update_existing_user(user, auth)
-      else
-        create_new_user(auth, role)
-      end
-    end
-
-    def update_existing_user(user, auth)
-      user.update_without_password(
-        email: auth.info.email,
-        family_name: auth.info.last_name,
-        given_name: auth.info.first_name
-      )
-      user
-    end
-
-    def create_new_user(auth, role)
-      user = User.new(
-        provider: auth.provider,
-        uid: auth.uid,
-        email: auth.info.email,
-        password: Devise.friendly_token[0, 20],
-        role: role,
-        family_name: auth.info.last_name,
-        given_name: auth.info.first_name
-      )
-      user.save
-      user
-    end
 
     def handle_successful_authentication
       sign_in(:user, @user)

@@ -34,18 +34,35 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable,
     :omniauthable, omniauth_providers: [:google_oauth2]
 
-  def self.from_omniauth(auth, role)
-    user = find_or_initialize_by(provider: auth.provider, uid: auth.uid)
-    user.email = auth.info.email
-    user.password ||= Devise.friendly_token[0, 20]
-    user.role ||= role
-    user.family_name = auth.info.last_name if auth.info.last_name
-    user.given_name  = auth.info.first_name if auth.info.first_name
-    user.provider = auth.provider
-    user.uid = auth.uid
-    user.save
-    user
-  end
+    def self.from_omniauth(auth, role_for_new_user = nil)
+      user = find_by(provider: auth.provider, uid: auth.uid)
+
+      if user
+        user.email = auth.info.email
+        user.family_name = auth.info.last_name if auth.info.last_name.present? && user.family_name.blank?
+        user.given_name  = auth.info.first_name if auth.info.first_name.present? && user.given_name.blank?
+
+        user.save if user.changed?
+        return user
+      end
+
+      if role_for_new_user.present?
+        new_attrs = {
+          provider: auth.provider,
+          uid: auth.uid,
+          email: auth.info.email,
+          password: Devise.friendly_token[0, 20],
+          role: role_for_new_user,
+          family_name: auth.info.last_name,
+          given_name: auth.info.first_name
+        }
+        user = new(new_attrs)
+
+        return user
+      else
+        return nil
+      end
+    end
 
   def min_active_menu_duration
     menus.where(is_active: true).minimum(:duration) || 0
