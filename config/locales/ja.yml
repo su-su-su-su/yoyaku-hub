@@ -11,6 +11,7 @@ ja:
           has_one: "%{record}が存在しているので削除できません"
           has_many: "%{record}が存在しているので削除できません"
       format: "%{attribute}%{message}"
+      registration_failed: "登録に失敗しました"
       messages:
         blank: "を入力してください"
         not_a_number: "は数値で入力してください"
@@ -209,6 +210,7 @@ ja:
     no_permission: "アクセス権限がありません"
     authentication_failed: "認証に失敗しました。再度お試しください。"
     login_failed: "認証に失敗しました。別の方法でログインをお試しください。"
+    omniauth_account_not_found: "アカウントが見つかりませんでした。お手数ですが、新規登録をお願いします。"
   stylists:
     shift_settings:
       defaults:

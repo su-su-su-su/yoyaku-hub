@@ -210,59 +210,93 @@ RSpec.describe User do
         provider: 'google_oauth2',
         uid: '123456',
         info: {
-          email: 'ca@example.com',
+          email: 'cu@example.com',
           first_name: '太郎',
           last_name: '予約'
         }
       })
     end
 
-    context 'when the user is new' do
-      it 'creates a new user' do
-        expect do
-          described_class.from_omniauth(auth, 'customer')
-        end.to change(described_class, :count).by(1)
+    context 'when the user is new (新規登録)' do
+      subject(:user_from_omniauth) { described_class.from_omniauth(auth, role) }
+
+      let(:role) { 'customer' }
+
+      it 'returns a new user object' do
+        expect(user_from_omniauth).to be_a(described_class)
+        expect(user_from_omniauth).to be_new_record
       end
 
-      it 'sets user attributes correctly' do
-        user = described_class.from_omniauth(auth, 'customer')
-
+      it 'assigns attributes correctly' do
         aggregate_failures 'verifying user attributes' do
-          expect(user.provider).to eq('google_oauth2')
-          expect(user.uid).to eq('123456')
-          expect(user.email).to eq('ca@example.com')
-          expect(user.family_name).to eq('予約')
-          expect(user.given_name).to eq('太郎')
-          expect(user.role).to eq('customer')
+          expect(user_from_omniauth.provider).to eq('google_oauth2')
+          expect(user_from_omniauth.uid).to eq('123456')
+          expect(user_from_omniauth.email).to eq('cu@example.com')
+          expect(user_from_omniauth.family_name).to eq('予約')
+          expect(user_from_omniauth.given_name).to eq('太郎')
+          expect(user_from_omniauth.role).to eq('customer')
+          expect(user_from_omniauth.encrypted_password).to be_present
         end
+      end
+
+      it 'does not save the user to the database directly' do
+        expect { user_from_omniauth }.not_to change(described_class, :count)
+      end
+
+      it 'can be saved to create a new user' do
+        new_user = described_class.from_omniauth(auth, role)
+        expect { new_user.save }.to change(described_class, :count).by(1)
+        expect(new_user).to be_persisted
+      end
+    end
+
+    context 'when the user is new (ログインフで未登録)' do
+      it 'returns nil' do
+        expect(described_class.from_omniauth(auth, nil)).to be_nil
+      end
+
+      it 'does not attempt to create a new user' do
+        expect do
+          described_class.from_omniauth(auth, nil)
+        end.not_to change(described_class, :count)
       end
     end
 
     context 'when the user already exists' do
+      subject(:user_from_omniauth) { described_class.from_omniauth(auth, role_for_new_user_attempt) }
+
       let!(:existing_user) do
-        create(:user, :with_oauth, provider: 'google_oauth2', uid: '123456', email: 'old@example.com')
+        create(:user, provider: 'google_oauth2', uid: '123456', email: 'old@example.com', role: 'stylist',
+          family_name: nil, given_name: nil)
       end
+      let(:role_for_new_user_attempt) { 'customer' }
 
       it 'does not create a new user' do
-        expect do
-          described_class.from_omniauth(auth, 'customer')
-        end.not_to change(described_class, :count)
+        expect { user_from_omniauth }.not_to change(described_class, :count)
       end
 
-      it 'updates user attributes' do
-        user = described_class.from_omniauth(auth, 'customer')
+      it 'returns the existing user' do
+        expect(user_from_omniauth.id).to eq(existing_user.id)
+      end
 
+      it 'updates user attributes (email, and name if blank)' do
         aggregate_failures 'verifying updated attributes' do
-          expect(user.id).to eq(existing_user.id)
-          expect(user.email).to eq('ca@example.com')
+          expect(user_from_omniauth.email).to eq('cu@example.com')
+          expect(user_from_omniauth.family_name).to eq('予約')
+          expect(user_from_omniauth.given_name).to eq('太郎')
         end
       end
 
       it 'preserves the existing role' do
-        existing_user.update(role: 'stylist')
-        user = described_class.from_omniauth(auth, 'customer')
+        expect(user_from_omniauth.role).to eq('stylist')
+      end
 
-        expect(user.role).to eq('stylist')
+      it 'does not update name if already present' do
+        existing_user.update!(family_name: '田中', given_name: '太郎')
+
+        updated_user = described_class.from_omniauth(auth, role_for_new_user_attempt)
+        expect(updated_user.family_name).to eq('田中')
+        expect(updated_user.given_name).to eq('太郎')
       end
     end
   end

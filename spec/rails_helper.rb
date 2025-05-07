@@ -13,7 +13,33 @@ require 'capybara/rspec'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories.
-Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
+# Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
+
+OmniAuth.config.test_mode = true
+
+module OmniauthTestHelper
+  def mock_google_auth_hash(email: 'test@example.com', first_name: 'テスト', last_name: 'ユーザー', uid: '123545',
+                            provider: 'google_oauth2')
+    OmniAuth.config.mock_auth[provider.to_sym] = OmniAuth::AuthHash.new({
+      provider: provider,
+      uid: uid,
+      info: {
+        email: email,
+        first_name: first_name,
+        last_name: last_name
+      },
+      credentials: {
+        token: 'mock_token',
+        refresh_token: 'mock_refresh_token',
+        expires_at: Time.now.to_i + 3600
+      }
+    })
+  end
+
+  def mock_google_auth_invalid(provider: 'google_oauth2')
+    OmniAuth.config.mock_auth[provider.to_sym] = :invalid_credentials
+  end
+end
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
@@ -46,6 +72,7 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :system
   config.include ActionView::RecordIdentifier, type: :system
   config.include ActiveSupport::Testing::TimeHelpers
+  config.include OmniauthTestHelper
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and

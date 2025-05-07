@@ -2,7 +2,7 @@
 
 require 'factory_bot_rails'
 
-customer = User.find_by(email: 'ca@example.com')
+customer = User.find_by(email: 'cu@example.com')
 
 stylist = User.find_by(email: 'st@example.com')
 
