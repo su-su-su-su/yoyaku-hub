@@ -12,8 +12,8 @@ class StylistsController < ApplicationController
     @show_next_month_setup_prompt = false
     is_next_month_unconfigured = !current_user.next_month_shifts_configured?
     is_after_20th = Date.current.day > 20
-
     @show_next_month_setup_prompt = true if is_next_month_unconfigured && is_after_20th
+    @menu_url = "https://yoyakuhub.jp/customers/stylists/#{@stylist_id}/menus"
     set_date_info_for_dashboard
   end
 
