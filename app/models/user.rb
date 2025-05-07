@@ -37,27 +37,11 @@ class User < ApplicationRecord
   def self.from_omniauth(auth, role_for_new_user = nil)
     user = find_by(provider: auth.provider, uid: auth.uid)
 
-    if user
-      user.email = auth.info.email
-      user.family_name = auth.info.last_name if auth.info.last_name.present? && user.family_name.blank?
-      user.given_name  = auth.info.first_name if auth.info.first_name.present? && user.given_name.blank?
-
-      user.save if user.changed?
-      return user
-    end
+    return update_existing_user_with_omniauth(user, auth) if user
 
     return nil if role_for_new_user.blank?
 
-    new_attrs = {
-      provider: auth.provider,
-      uid: auth.uid,
-      email: auth.info.email,
-      password: Devise.friendly_token[0, 20],
-      role: role_for_new_user,
-      family_name: auth.info.last_name,
-      given_name: auth.info.first_name
-    }
-    new(new_attrs)
+    build_new_user_with_omniauth(auth, role_for_new_user)
   end
 
   def min_active_menu_duration
@@ -109,5 +93,29 @@ class User < ApplicationRecord
     working_hours.exists?(target_date: month_range) ||
       holidays.exists?(target_date: month_range) ||
       reservation_limits.exists?(target_date: month_range)
+  end
+
+  def self.update_existing_user_with_omniauth(user, auth)
+    user.email = auth.info.email
+
+    user.family_name = auth.info.last_name if auth.info.last_name.present? && user.family_name.blank?
+
+    user.given_name = auth.info.first_name if auth.info.first_name.present? && user.given_name.blank?
+
+    user.save if user.changed?
+    user
+  end
+
+  def self.build_new_user_with_omniauth(auth, role)
+    new_attrs = {
+      provider: auth.provider,
+      uid: auth.uid,
+      email: auth.info.email,
+      password: Devise.friendly_token[0, 20],
+      role: role,
+      family_name: auth.info.last_name,
+      given_name: auth.info.first_name
+    }
+    new(new_attrs)
   end
 end

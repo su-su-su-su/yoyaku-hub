@@ -38,8 +38,9 @@ RSpec.describe 'OmniAuth Google Authentication' do
 
     context 'when an existing user logs in from the login page' do
       let!(:existing_user) do
-        create(:user, :customer, provider: 'google_oauth2', uid: '123545', email: 'exists@example.com', family_name: '田中', given_name: '太郎',
-          family_name_kana: 'タナカ', given_name_kana: 'タロウ', gender: 0, date_of_birth: '1990-01-01')
+        create(:user, :customer, provider: 'google_oauth2', uid: '123545', email: 'exists@example.com',
+          family_name: '田中', given_name: '太郎', family_name_kana: 'タナカ', given_name_kana: 'タロウ',
+          gender: 0, date_of_birth: '1990-01-01')
       end
 
       before do
