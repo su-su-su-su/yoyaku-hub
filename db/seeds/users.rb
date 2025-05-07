@@ -4,7 +4,7 @@ require 'factory_bot_rails'
 
 users_data = [
   {
-    email: 'ca@example.com',
+    email: 'cu@example.com',
     password: 'testtest',
     family_name: '予約',
     given_name: '太郎',
