@@ -5,7 +5,8 @@
   - if user_signed_in?
     - if notice
       .alert.alert-info.flash-notice(data-controller="flash")= notice
-    p.text-base.mb-4 ログイン中: = current_user.email
+    - if alert
+      .alert.alert-error.shadow-lg.mb-4(data-controller="flash")= alert
 
   .link-items-container.space-y-4.md:space-y-0.md:grid.md:grid-cols-2.md:gap-4.lg:grid-cols-3
     .link-item
