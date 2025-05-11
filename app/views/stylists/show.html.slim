@@ -5,7 +5,8 @@
   - if user_signed_in?
     - if notice
       .alert.alert-info.flash-notice(data-controller="flash")= notice
-    p.text-base.mb-4 ログイン中: = current_user.email
+    - if alert
+      .alert.alert-error.shadow-lg.mb-4(data-controller="flash")= alert
 
   h2.text-xl.font-bold.mt-4.mb-4.md:text-2xl スタイリストメニュー
   - if @show_shift_settings_warning || @show_menu_warning

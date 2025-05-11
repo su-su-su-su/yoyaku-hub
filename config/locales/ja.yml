@@ -3,6 +3,12 @@ ja:
     menu_not_selected: "メニューを1つ以上選択してください"
     reservation_confirmed: "予約を確定しました。"
     batch_setting_success: "シフトを設定しました"
+    customers:
+      stylists:
+        stylist_not_found: "指定されたスタイリストが見つかりません。"
+        invalid_access: "不正なアクセスです。"
+        cannot_view_other_stylist_menus: "他のスタイリストの顧客向けメニューを閲覧することはできません。"
+        access_denied: "アクセス権がありません。"
   activerecord:
     errors:
       messages:
