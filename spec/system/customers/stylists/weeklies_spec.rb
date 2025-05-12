@@ -72,7 +72,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
   end
 
   def find_cell(time, day)
-    time_header = all('tbody th', text: time).first
+    time_header = first('tbody th', text: time)
     return nil unless time_header
 
     day_index = nil
@@ -242,13 +242,63 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       end
 
       it 'navigates to reservation confirmation page when clicking available time slot' do
-        available_slot = find('a', text: '◎', match: :first)
+        available_slot = first('a', text: '◎')
         available_slot.click
         sleep 1
 
         expect(page).to have_current_path(
           %r{/customers/reservations/new}
         )
+      end
+    end
+  end
+
+  describe 'Reservation symbols guide card display' do
+    let(:card_display_stylist) { create(:stylist, email: 'card_display_stylist_revised@example.com') }
+    let(:card_display_customer) { create(:customer, email: 'card_display_customer_revised@example.com') }
+
+    let(:guide_card_selector) { '.mt-6.p-4.border.rounded-lg.bg-white.shadow' }
+    let(:guide_card_title_text) { '予約表の記号について' }
+
+    before do
+      sign_in card_display_customer
+    end
+
+    describe 'when the card should be displayed' do
+      context 'with all active menus being longer than 30 minutes' do
+        it 'displays the reservation symbols guide card' do
+          menu_long_active = create(:menu, stylist: card_display_stylist, name: 'カット', duration: 60, is_active: true)
+          create(:menu, stylist: card_display_stylist, name: 'パーマ', duration: 120, is_active: true)
+          visit weekly_customers_stylist_menus_path(stylist_id: card_display_stylist.id,
+            menu_ids: [menu_long_active.id])
+          expect(page).to have_selector(guide_card_selector, text: guide_card_title_text)
+        end
+      end
+
+      context 'with 30-minute-or-less menus existing but all being inactive' do
+        it 'displays the reservation symbols guide card' do
+          create(:menu, stylist: card_display_stylist, name: 'クイックトリートメント(非掲載)', duration: 30, is_active: false)
+          menu_for_navigation = create(:menu, stylist: card_display_stylist, name: 'カラー', duration: 90,
+            is_active: true)
+
+          visit weekly_customers_stylist_menus_path(stylist_id: card_display_stylist.id,
+            menu_ids: [menu_for_navigation.id])
+          expect(page).to have_selector(guide_card_selector, text: guide_card_title_text)
+        end
+      end
+    end
+
+    describe 'when the card should NOT be displayed' do
+      context 'with an active menu of 30 minutes or less' do
+        it 'does NOT display the reservation symbols guide card' do
+          create(:menu, stylist: card_display_stylist, name: 'ショートスパ(掲載中)', duration: 30, is_active: true)
+          menu_for_navigation_two = create(:menu, stylist: card_display_stylist, name: 'カット', duration: 60,
+            is_active: true)
+
+          visit weekly_customers_stylist_menus_path(stylist_id: card_display_stylist.id,
+            menu_ids: [menu_for_navigation_two.id])
+          expect(page).to have_no_selector(guide_card_selector, text: guide_card_title_text)
+        end
       end
     end
   end
