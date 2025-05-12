@@ -2,7 +2,7 @@
 - content_for :meta_description, '新しいパスワードを設定します。パスワードを入力し、確認のためもう一度入力してください。'
 
 .w-full.max-w-md.mx-auto.px-4.sm:px-6.md:px-0
-  h2.text-xl.sm:text-2xl.font-bold.mt-6.mb-6.text-center パスワード再設定
+  h1.text-xl.sm:text-2xl.font-bold.mt-6.mb-6.text-center パスワード再設定
 
   .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8.mt-6
     = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: 'space-y-6' }) do |f|
