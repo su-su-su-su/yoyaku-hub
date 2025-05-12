@@ -13,6 +13,13 @@ module Customers
       helper_method :within_reservation_limits?, :total_duration, :within_working_hours?
 
       def index
+        all_stylist_menus = @stylist.menus
+        @show_reservation_symbol_guide = if all_stylist_menus.present?
+                                           all_stylist_menus.none? { |menu| menu.duration <= 30 && menu.is_active }
+                                         else
+                                           false
+                                         end
+
         @time_slots = build_time_slots_for_week(@dates)
       end
 
