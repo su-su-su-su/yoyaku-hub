@@ -41,3 +41,6 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
           - @time_slots.each do |time_str|
             - slot_idx = to_slot_index(time_str)
             = render 'reservation_row', slot_idx: slot_idx
+
+.flex.px-2.mt-6.items-center.justify-between
+    = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
