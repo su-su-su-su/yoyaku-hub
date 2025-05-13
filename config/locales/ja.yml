@@ -220,8 +220,8 @@ ja:
   stylists:
     shift_settings:
       defaults:
-        update_success: "勤務のデフォルトを保存しました。"
-        update_failure: "勤務のデフォルトの保存に失敗しました。入力内容を確認してください。"
+        update_success: "シフトの基本情報を保存しました。"
+        update_failure: "シフトの基本情報の保存に失敗しました。入力内容を確認してください。"
     menus:
       name: "メニュー名"
       price: "価格"
