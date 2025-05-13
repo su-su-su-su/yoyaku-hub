@@ -47,16 +47,16 @@ RSpec.describe 'User login' do
   end
 
   context 'when logging out' do
-    it 'successfully logs out a customer' do
+    it 'successfully logs out a customer and redirects to the login page' do
       sign_in customer
-      visit '/customers/dashboard'
+      visit customers_dashboard_path
 
       first('.dropdown .btn-ghost.btn-circle').click
-
       click_on 'ログアウト'
 
-      expect(page).to have_content("予約・顧客管理・会計を\nシンプルに。")
-      expect(page).to have_current_path('/', url: false)
+      expect(page).to have_content('ログアウトしました。')
+
+      expect(page).to have_current_path(new_user_session_path, ignore_query: true)
     end
   end
 
