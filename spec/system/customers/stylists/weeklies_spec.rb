@@ -5,6 +5,72 @@ require 'rails_helper'
 RSpec.describe 'Customers::Stylists::Weeklies' do
   include RSpec::Rails::SystemExampleGroup
 
+  def find_cell(time, day)
+    time_header = first('tbody th', text: time)
+    return nil unless time_header
+    day_index = nil
+    date_str = day.day.to_s
+    day_char = %w[日 月 火 水 木 金 土][day.wday]
+    within('thead') do
+      all('th').each_with_index do |th, i|
+        if th.text.include?("#{date_str} (#{day_char})")
+          day_index = i
+          break
+        end
+      end
+    end
+    return nil unless day_index
+    row = time_header.find(:xpath, './parent::tr')
+    td_elements = row.all('td')
+    return nil if day_index - 1 < 0 || day_index - 1 >= td_elements.count
+    td_elements[day_index - 1]
+  end
+
+  def check_time_slot(day, time, expected_mark)
+    cell = find_cell(time, day)
+    return unless cell
+
+    if expected_mark == '×'
+      expect(cell).to have_content('×')
+    elsif cell.has_css?('a')
+      link_text = cell.find('a').text
+      if expected_mark == '◎'
+        expect(link_text).to eq('◎')
+      else
+        expect(link_text).to eq('△')
+      end
+    else
+      expect(cell.text).to eq(expected_mark), "Expected cell for #{time} on #{day.strftime('%Y-%m-%d')} to be '#{expected_mark}', but found '#{cell.text}' and it was not a link as expected for ◎/△."
+    end
+  end
+
+  def setup_slot_test_schedule(stylist_user, date_to_setup, start_hour: 10, end_hour: 19, default_max_reservations: 1)
+    create(:working_hour,
+           stylist: stylist_user,
+           target_date: date_to_setup,
+           start_time: Time.zone.parse("#{date_to_setup} #{format('%02d:00', start_hour)}"),
+           end_time: Time.zone.parse("#{date_to_setup} #{format('%02d:00', end_hour)}"))
+
+    start_slot_index = start_hour * 2
+    end_slot_index = end_hour * 2
+
+    (start_slot_index...end_slot_index).each do |slot_idx|
+      create(:reservation_limit,
+             stylist: stylist_user,
+             target_date: date_to_setup,
+             time_slot: slot_idx,
+             max_reservations: default_max_reservations)
+    end
+  end
+
+  def create_slot_test_reservation(cust, sty, day, start_time_str, end_time_str)
+    create(:reservation, :before_visit,
+           customer: cust,
+           stylist: sty,
+           start_at: Time.zone.parse("#{day} #{start_time_str}"),
+           end_at: Time.zone.parse("#{day} #{end_time_str}"))
+  end
+
   let(:base_date) { Date.new(2025, 3, 17) }
 
   let(:stylist) { create(:stylist) }
@@ -298,6 +364,117 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           visit weekly_customers_stylist_menus_path(stylist_id: card_display_stylist.id,
             menu_ids: [menu_for_navigation_two.id])
           expect(page).to have_no_selector(guide_card_selector, text: guide_card_title_text)
+        end
+      end
+    end
+
+    describe 'Reservation slot symbol display logic' do
+      let(:slot_test_stylist) { create(:stylist, email: 'slot_logic_stylist@example.com') }
+      let(:slot_test_customer) { create(:customer, email: 'slot_logic_customer@example.com') }
+      let(:card_test_base_date) { Date.new(2025, 3, 17) }
+
+      before do
+        allow(Date).to receive(:current).and_return(card_test_base_date)
+        allow(Time).to receive(:current).and_return(Time.zone.parse("#{card_test_base_date} 08:00:00"))
+        sign_in slot_test_customer
+      end
+
+      context 'when min_active_menu_duration is 60 minutes' do
+        before do
+          allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(60)
+          setup_slot_test_schedule(slot_test_stylist, card_test_base_date)
+        end
+
+        context 'and selected menu is 60 minutes' do
+          let(:menu_60_min) { create(:menu, stylist: slot_test_stylist, duration: 60, name: 'TestCut 60min') }
+
+          context 'with no existing reservations' do
+            it 'shows ◎ for most slots, and × for slots too late' do
+              visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_60_min.id])
+              check_time_slot(card_test_base_date, '10:00', '◎')
+              check_time_slot(card_test_base_date, '17:30', '△')
+              check_time_slot(card_test_base_date, '18:00', '◎')
+              check_time_slot(card_test_base_date, '18:30', '×')
+            end
+          end
+
+          context 'with an existing reservation at 10:30-11:30 (Scenario A like)' do
+            before do
+              create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '10:30', '11:30')
+            end
+
+            it 'shows correct symbols around the reservation' do
+              visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_60_min.id])
+              check_time_slot(card_test_base_date, '10:00', '×')
+              check_time_slot(card_test_base_date, '10:30', '×')
+              check_time_slot(card_test_base_date, '11:00', '×')
+              check_time_slot(card_test_base_date, '11:30', '◎')
+              check_time_slot(card_test_base_date, '12:00', '△')
+              check_time_slot(card_test_base_date, '12:30', '◎')
+            end
+          end
+
+          context 'with reservations at 10:30-11:30 and 13:00-14:00 (Scenario B like)' do
+            before do
+              create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '10:30', '11:30')
+              create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '13:00', '14:00')
+            end
+            it 'shows ◎ at 11:30, ◎ at 12:00, and × at 12:30' do
+              visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_60_min.id])
+              check_time_slot(card_test_base_date, '11:30', '◎')
+              check_time_slot(card_test_base_date, '12:00', '◎')
+              check_time_slot(card_test_base_date, '12:30', '×')
+            end
+          end
+        end
+      end
+
+      context 'when min_active_menu_duration is 30 minutes' do
+        before do
+          allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(30)
+          setup_slot_test_schedule(slot_test_stylist, card_test_base_date)
+        end
+
+        context 'and selected menu is 30 minutes' do
+          let(:menu_30_min) { create(:menu, stylist: slot_test_stylist, duration: 30, name: 'TestQuick 30min') }
+
+          it 'shows ◎ for most slots, and no △' do
+            visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_30_min.id])
+            check_time_slot(card_test_base_date, '10:00', '◎')
+            check_time_slot(card_test_base_date, '18:00', '◎')
+            check_time_slot(card_test_base_date, '18:30', '◎')
+          end
+
+          context 'with an existing reservation at 10:30-11:00' do
+            before do
+              create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '10:30', '11:00')
+            end
+            it 'shows ◎ for adjacent slots' do
+              visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_30_min.id])
+              check_time_slot(card_test_base_date, '10:00', '◎')
+              check_time_slot(card_test_base_date, '10:30', '×')
+              check_time_slot(card_test_base_date, '11:00', '◎')
+            end
+          end
+        end
+      end
+
+      context 'when min_active_menu_duration is 60 minutes and selected menu is 120 minutes' do
+        let(:menu_120_min) { create(:menu, stylist: slot_test_stylist, duration: 120, name: 'TestLong 120min') }
+        before do
+          allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(60)
+          slot_test_stylist.working_hours.where(target_date: card_test_base_date).destroy_all
+          slot_test_stylist.reservation_limits.where(target_date: card_test_base_date).destroy_all
+          setup_slot_test_schedule(slot_test_stylist, card_test_base_date, start_hour: 11, end_hour: 20)
+
+          create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '16:00', '17:00')
+        end
+
+        it 'shows ◎ at 17:00, △ at 17:30, ◎ at 18:00' do
+          visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_120_min.id])
+          check_time_slot(card_test_base_date, '17:00', '◎')
+          check_time_slot(card_test_base_date, '17:30', '△')
+          check_time_slot(card_test_base_date, '18:00', '◎')
         end
       end
     end
