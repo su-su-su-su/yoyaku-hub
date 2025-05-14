@@ -85,6 +85,10 @@
                             = link_to "◎",
                               new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
                               class: "font-bold text-green-500 text-lg block min-h-[44px] flex items-center justify-center"
+                          - elsif (gap_from_prev > 0 && gap_from_prev < min_time) && (gap_to_next > 0 && gap_to_next < min_time) && ((gap_from_prev + gap_to_next) == min_time)
+                            = link_to "△",
+                              new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
+                              class: "text-green-400 text-lg block min-h-[44px] flex items-center justify-center"
                           - elsif gap_from_prev < min_time && gap_to_next < min_time
                             = link_to "◎",
                               new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
