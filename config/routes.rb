@@ -44,9 +44,6 @@ Rails.application.routes.draw do
         patch ':year/:month', to: 'shift_settings#update', as: 'update'
       end
     end
-      scope module: 'shift_settings' do
-      patch 'reservation_limits_slot', to: 'reservation_limits#update', as: :stylists_reservation_limits
-    end
   end
 
   get 'customers' => redirect('/customers/sign_up')
