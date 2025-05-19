@@ -1,4 +1,19 @@
 .simple-calendar
+  - if @show_reservation_symbol_guide
+    div class="px-4 mb-4"
+      .mt-6.p-4.border.rounded-lg.bg-white.shadow
+        h3.text-sm.font-semibold.mb-3 予約表の記号について
+        ul.space-y-2.text-xs
+          li
+            span.font-semibold ◎：
+            span.text-xs 予約可能
+          li
+            span.font-semibold △：
+            span.text-xs 予約可能ですが、時間に余裕がある方は◎にお願いします。
+          li
+            span.font-semibold ×：
+            span.text-xs 予約ができません。
+
   div class="grid grid-cols-3 items-center mb-4 px-2"
     div
       - if @can_go_previous
@@ -15,23 +30,7 @@
         weekly_customers_stylist_menus_path(stylist_id: @stylist.id, start_date: @start_date + 7.days, menu_ids: @selected_menu_ids ),
         class: "px-3 py-2 border rounded text-sm md:text-base inline-block hover:bg-gray-50 active:bg-gray-100"
 
-  - if @show_reservation_symbol_guide
-    div class="px-4"
-      .mt-6.p-4.border.rounded-lg.bg-white.shadow
-        h3.text-sm.font-semibold.mb-3 予約表の記号について
-        ul.space-y-2.text-xs
-          li
-            span.font-semibold ◎：
-            span.text-xs 予約可能
-          li
-            span.font-semibold △：
-            span.text-xs 予約可能ですが、時間に余裕がある方は◎にお願いします。
-          li
-            span.font-semibold ×：
-            span.text-xs 予約ができません。
-
   table.border.border-collapse.mt-4.w-full style="table-layout: fixed;"
-
     thead
       tr.bg-gray-100
         th.pl-2.pr-1.py-2.text-sm.md:text-base 時刻

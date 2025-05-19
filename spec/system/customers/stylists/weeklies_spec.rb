@@ -477,6 +477,58 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           check_time_slot(card_test_base_date, '18:00', '◎')
         end
       end
+
+      context 'when reservation_limit is 2 for a slot and one reservation exists' do
+        let(:test_target_date) { card_test_base_date }
+        let(:menu_for_this_test) { create(:menu, stylist: slot_test_stylist, duration: 30, name: 'Quick Test 30min', is_active: true) }
+        let(:target_time_str) { '10:00' }
+
+        before do
+          allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(30)
+
+          setup_slot_test_schedule(
+            slot_test_stylist,
+            test_target_date,
+            start_hour: 10,
+            end_hour: 19,
+            default_max_reservations: 1
+          )
+
+          hour, minute = target_time_str.split(':').map(&:to_i)
+          calculated_target_slot_number = (hour * 2) + (minute >= 30 ? 1 : 0)
+
+          reservation_limit_for_target_slot = ReservationLimit.find_by(
+            stylist: slot_test_stylist,
+            target_date: test_target_date,
+            time_slot: calculated_target_slot_number
+          )
+          if reservation_limit_for_target_slot
+            reservation_limit_for_target_slot.update!(max_reservations: 2)
+          else
+            create(:reservation_limit,
+              stylist: slot_test_stylist,
+              target_date: test_target_date,
+              time_slot: target_slot_number,
+              max_reservations: 2)
+          end
+
+          create_slot_test_reservation(
+            slot_test_customer,
+            slot_test_stylist,
+            test_target_date,
+            target_time_str,
+            '10:30'
+          )
+        end
+
+        it 'shows "◎" for the slot, indicating it is still available' do
+          visit weekly_customers_stylist_menus_path(
+            stylist_id: slot_test_stylist.id,
+            menu_ids: [menu_for_this_test.id]
+          )
+          check_time_slot(test_target_date, target_time_str, '◎')
+        end
+      end
     end
   end
 end
