@@ -55,7 +55,6 @@ module Customers
         build_working_hours_hash
         build_reservation_limits_hash
         build_reservation_counts
-        prepare_occupied_slots
       end
 
       def fetch_working_hours
@@ -137,36 +136,6 @@ module Customers
         end_time = start_time + total_minutes.minutes
 
         (time_str >= day_start_hm) && (end_time.strftime('%H:%M') <= day_end_hm)
-      end
-
-      def prepare_occupied_slots
-        @occupied_slots_hash = @dates.each_with_object({}) do |date, hash|
-          hash[date] = {}
-        end
-
-        fetch_reservations_for_week.each do |res|
-          date = res.start_at.to_date
-          next unless @occupied_slots_hash.key?(date)
-
-          mark_slots_as_occupied(date, res)
-        end
-      end
-
-      def mark_slots_as_occupied(date, reservation)
-        start_slot = slot_for_time(reservation.start_at)
-        end_slot = slot_for_time(reservation.end_at)
-
-        (start_slot...end_slot).each do |slot|
-          @occupied_slots_hash[date][slot] = true
-        end
-      end
-
-      def fetch_reservations_for_week
-        Reservation.where(
-          stylist_id: @stylist.id,
-          start_at: @dates.first.beginning_of_day..@dates.last.end_of_day,
-          status: [:before_visit, :paid]
-        )
       end
 
       def build_time_slots_for_week(_dates)
