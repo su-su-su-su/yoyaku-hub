@@ -60,70 +60,82 @@ RSpec.describe 'Stylists::Schedules' do
 
     describe 'changing available slots' do
       let(:slot_text) { '10:00' }
+      let(:slot_index_to_test) { to_slot_index(slot_text) }
 
-      it 'can increase available slots' do
-        within('tr', text: '残り受付可能数') do
-          all('td').each_with_index do |td, idx|
-            next unless page.all('thead tr th')[idx + 1]&.text == slot_text
-
-            within(td) do
-              click_on '▲'
-              break
-            end
+      def find_target_slot_elements(time_text_arg)
+        target_column_idx = -1
+        page.all('thead tr th').each_with_index do |th, idx|
+          if th.text.strip == time_text_arg.strip
+            target_column_idx = idx - 1
+            break
           end
         end
+        raise "Header for time '#{time_text_arg}' not found in thead" if target_column_idx == -1
 
-        visit current_path
+        target_row = find('tr', text: '残り受付可能数')
+        raise "Row with text '残り受付可能数' not found" unless target_row.present?
 
-        within('tr', text: '残り受付可能数') do
-          all('td').each_with_index do |td, idx|
-            next unless page.all('thead tr th')[idx + 1]&.text == slot_text
+        all_tds_in_row = target_row.all('td')
+        raise "No tds found in the target row" if all_tds_in_row.empty?
+        raise "Calculated td_index #{target_column_idx} is out of bounds for tds (count: #{all_tds_in_row.count})" if target_column_idx < 0 || target_column_idx >= all_tds_in_row.count
 
-            within(td) do
-              expect(page).to have_content('1')
-              break
-            end
-          end
-        end
+        target_td = all_tds_in_row[target_column_idx]
+        value_div = target_td.find('div.font-medium')
+        return target_td, value_div
       end
 
-      it 'can decrease available slots' do
-        within('tr', text: '残り受付可能数') do
-          all('td').each_with_index do |td, idx|
-            next unless page.all('thead tr th')[idx + 1]&.text == slot_text
-
-            within(td) do
-              click_on '▲'
-              break
-            end
-          end
+      it 'can increase available slots and updates the database' do
+        limit_record = ReservationLimit.find_or_create_by!(stylist: stylist, target_date: today, time_slot: slot_index_to_test) do |limit|
+          limit.max_reservations = 1
         end
+        initial_max_reservations = limit_record.max_reservations
+
+        calculated_expected_max_after_increase = [initial_max_reservations + 1, 2].min
+        expected_ui_text_after_increase = calculated_expected_max_after_increase.to_s
+
+        target_td, _initial_value_div = find_target_slot_elements(slot_text)
+
+        within(target_td) do
+          click_on '▲'
+        end
+
+        _updated_target_td, updated_value_div = find_target_slot_elements(slot_text)
+        expect(updated_value_div).to have_text(expected_ui_text_after_increase, wait: 5)
+
+        updated_limit_record_db = ReservationLimit.find_by!(stylist: stylist, target_date: today, time_slot: slot_index_to_test)
+        expect(updated_limit_record_db.max_reservations).to eq(calculated_expected_max_after_increase)
 
         visit current_path
+        _reloaded_target_td, reloaded_value_div = find_target_slot_elements(slot_text)
+        expect(reloaded_value_div).to have_text(calculated_expected_max_after_increase.to_s)
+      end
 
-        within('tr', text: '残り受付可能数') do
-          all('td').each_with_index do |td, idx|
-            next unless page.all('thead tr th')[idx + 1]&.text == slot_text
+      it 'can decrease available slots and updates the database' do
+        limit_record_setup = ReservationLimit.find_or_initialize_by(stylist: stylist, target_date: today, time_slot: slot_index_to_test)
+        limit_record_setup.max_reservations = 2
+        limit_record_setup.save!
 
-            within(td) do
-              click_on '▼'
-              break
-            end
-          end
+        visit stylists_schedules_path(date: today.strftime('%Y-%m-%d'))
+
+        current_max_reservations_before_decrease = 2
+
+        expected_db_value_after_decrease = [current_max_reservations_before_decrease - 1, 0].max
+        expected_ui_text_after_decrease = expected_db_value_after_decrease.to_s
+
+        target_td, _initial_value_div = find_target_slot_elements(slot_text)
+        within(target_td) do
+          click_on '▼'
         end
+
+        _updated_target_td_decrease, updated_value_div_decrease = find_target_slot_elements(slot_text)
+        expect(updated_value_div_decrease).to have_text(expected_ui_text_after_decrease, wait: 5)
+
+        updated_limit_record_db_after_decrease = ReservationLimit.find_by!(stylist: stylist, target_date: today, time_slot: slot_index_to_test)
+        expect(updated_limit_record_db_after_decrease.max_reservations).to eq(expected_db_value_after_decrease)
 
         visit current_path
-
-        within('tr', text: '残り受付可能数') do
-          all('td').each_with_index do |td, idx|
-            next unless page.all('thead tr th')[idx + 1]&.text == slot_text
-
-            within(td) do
-              expect(page).to have_content('0')
-              break
-            end
-          end
-        end
+        _reloaded_target_td, reloaded_value_div_after_decrease = find_target_slot_elements(slot_text)
+        expect(reloaded_value_div_after_decrease).to have_text(expected_ui_text_after_decrease)
       end
     end
   end
