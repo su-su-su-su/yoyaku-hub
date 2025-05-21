@@ -13,6 +13,14 @@ https://yoyakuhub.jp
 
 ## 使い方
 
+### ログイン
+
+美容師と予約を取る人（カスタマー）でログイン、新規登録が分かれています。<br>
+それぞれ用途に合ったログイン、新規登録をします。
+
+<img width="30%" alt="ログイン" src="https://github.com/user-attachments/assets/a30b7f88-6e70-4df0-9ac3-d5db7677a40b">
+
+
 ### 美容師側
 
 #### ダッシュボード
@@ -36,7 +44,6 @@ https://yoyakuhub.jp
 <img width="30%" alt="メニュ管理" src="https://github.com/user-attachments/assets/f5e0606b-3b71-4cb2-a5ea-3b4bbd147d53">
 
 
-
 #### シフト管理
 
 ##### 営業時間、休業日、受付可能数の基本情報を設定
@@ -53,7 +60,6 @@ https://yoyakuhub.jp
 <img width="30%" alt="シフト管理,毎月の受付設定" src="https://github.com/user-attachments/assets/2cb13619-7edc-42c5-8453-96f0e5558d71">
 
 
-
 #### 予約表
 毎月の受付設定で設定した休業日、営業時間、受付可能数が反映されています。<br>
 横スクロールすると営業終了時間まで見ることができます。<br>
@@ -62,7 +68,6 @@ https://yoyakuhub.jp
 予約が入るとカスタマーの名前、選択されたメニュー名、施術時間分のカードが表示され、施術時間分の予約数が1増えて、残り受付可能数が1減ります。<br>
 カードをクリックすると予約詳細に遷移します。<br>
 
-
 <img width="30%" alt="美容師予約表" src="https://github.com/user-attachments/assets/553d737e-1c9a-49eb-bdea-01111a7b1a5f">
 
 
@@ -70,8 +75,6 @@ https://yoyakuhub.jp
 変更するをクリックすると予約変更画面に遷移します。
 
 <img width="30%" alt="美容師予約表,予約詳細" src="https://github.com/user-attachments/assets/11ecb931-a8d4-45fa-b6fc-caaf3205e7ea">
-
-
 
 
 ##### 予約の変更
@@ -83,6 +86,54 @@ https://yoyakuhub.jp
 
 <img width="30%" alt="美容師予約表,予約変更" src="https://github.com/user-attachments/assets/5b0d6819-58b8-4064-bb92-31fb32bc118f">
 
+### カスタマー
+
+#### 予約
+
+##### スタイリスト選択
+
+過去3年以内に担当してもらった美容師が表示されています。<br>
+初めての予約をする場合は美容師にメニュー画面を教えてもらって予約をします。
+
+<img width="30%" alt="スタイリスト選択" src="https://github.com/user-attachments/assets/aea6cbf3-4f65-4488-b3a5-872b535e8286">
+
+
+##### メニュー選択
+
+美容師側で登録したメニューを選択します。<br>
+掲載のメニューのみ表示されています。
+
+<img width="30%" alt="メニュー選択" src="https://github.com/user-attachments/assets/8b498594-9ba2-4cef-9e11-56381fd30649">
+
+
+##### 予約表
+
+予約する日時を選択します。<br>
+美容師の毎月の受付設定で設定したものが反映されています。
+
+<img width="30%" alt="カスタマー予約表" src="https://github.com/user-attachments/assets/6c031783-0dc4-4a9b-b13b-7205de5ebdb5">
+
+
+##### 予約確認
+
+予約確定をクリックすると予約が確定されます。
+
+<img width="30%" alt="カスタマー予約確認" src="https://github.com/user-attachments/assets/835f424b-ee4d-4812-bebf-745f9d048441">
+
+
+
+##### 予約履歴
+
+現在の予約、過去の予約が分かれて表示されています。
+
+<img width="30%" alt="カスタマー予約履歴" src="https://github.com/user-attachments/assets/87ea5ae2-1e4e-4de5-99af-2979dcc65fa5">
+
+
+###### 予約詳細
+
+現在予約のみキャンセルボタンが表示されるようになっており、キャンセルすることができます。
+
+<img width="30%" alt="カスタマー予約詳細" src="https://github.com/user-attachments/assets/b0fa81dd-b071-4741-8752-afa9e24b9750">
 
 
 ## 開発環境
