@@ -123,10 +123,11 @@ class Schedule
 
     reservations.each do |res|
       start_idx = to_slot_index(res.start_at)
-      end_idx = to_slot_index(res.end_at)
-      (start_idx...end_idx).each do |slot_idx|
-        map[slot_idx] << res
-      end
+      map[start_idx] << res
+    end
+
+    map.each_value do |reservations_in_slot|
+      reservations_in_slot.sort_by!(&:created_at)
     end
     map
   end

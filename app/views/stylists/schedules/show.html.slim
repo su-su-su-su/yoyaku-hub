@@ -32,15 +32,70 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
         tr
           th.border.bg-gray-100.text-center 予約数
           - @time_slots.each do |time_str|
-            - slot_idx = to_slot_index(time_str)
+            - slot_idx_for_count = to_slot_index(time_str)
             td.text-center.border
-             = @reservation_counts[slot_idx].to_i
+             = @reservation_counts[slot_idx_for_count].to_i
         = render 'reservation_limits_row', time_slots: @time_slots
-        tr
+
+        - displayed_in_row1_ids = []
+
+        tr(data-testid="reservation-row-1")
           th.border.bg-gray-100.text-center
+          - occupied_slots_for_this_row1 = Hash.new(false)
           - @time_slots.each do |time_str|
-            - slot_idx = to_slot_index(time_str)
-            = render 'reservation_row', slot_idx: slot_idx
+            - current_absolute_slot = to_slot_index(time_str)
+            - unless occupied_slots_for_this_row1[current_absolute_slot]
+              - reservations_at_slot = @slotwise_reservations[current_absolute_slot]
+              - reservation_to_display = reservations_at_slot.present? ? reservations_at_slot[0] : nil
+              - condition_met = reservation_to_display.present? && (to_slot_index(reservation_to_display.start_at) == current_absolute_slot)
+
+              - if condition_met
+                - res = reservation_to_display
+                - displayed_in_row1_ids << res.id
+                - start_s = to_slot_index(res.start_at)
+                - end_s = to_slot_index(res.end_at)
+                - col_span = end_s - start_s
+
+                - if col_span > 0
+                  - (start_s + 1...end_s).each do |slot_to_mark|
+                    - occupied_slots_for_this_row1[slot_to_mark] = true
+
+                  = render 'reservation_row', reservation: res, colspan: col_span
+                - else
+                  td.border &nbsp;
+              - else
+                td.border &nbsp;
+
+        - should_display_second_row_flag = @reservation_limits.values.any? { |limit_value| limit_value.to_i >= 2 }
+        - if should_display_second_row_flag
+          tr(data-testid="reservation-row-2")
+            th.border.bg-gray-100.text-center
+            - occupied_slots_for_row2 = Hash.new(false)
+            - @time_slots.each do |time_str|
+              - current_absolute_slot = to_slot_index(time_str)
+              - unless occupied_slots_for_row2[current_absolute_slot]
+                - reservations_at_slot = @slotwise_reservations[current_absolute_slot]
+
+                - reservation_to_display_row2 = reservations_at_slot.present? ? reservations_at_slot.find { |res_candidate| !displayed_in_row1_ids.include?(res_candidate.id) } : nil
+                - condition_met_row2 = reservation_to_display_row2.present? && (to_slot_index(reservation_to_display_row2.start_at) == current_absolute_slot)
+
+                - if condition_met_row2
+                  - res = reservation_to_display_row2
+                  - start_s = to_slot_index(res.start_at)
+                  - end_s = to_slot_index(res.end_at)
+                  - col_span = end_s - start_s
+
+                  - if col_span > 0
+                    - (start_s + 1...end_s).each do |slot_to_mark|
+                      - occupied_slots_for_row2[slot_to_mark] = true
+                    = render 'reservation_row', reservation: res, colspan: col_span
+                  - else
+                    td.border &nbsp;
+                - else
+                  - if @reservation_limits[current_absolute_slot].to_i >= 2
+                    td.border &nbsp;
+                  - else
+                    td.border &nbsp;
 
 .mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
   = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"

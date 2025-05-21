@@ -1,16 +1,6 @@
-- reservations_here = @slotwise_reservations[slot_idx]
-- if reservations_here.present?
-  - res = reservations_here.first
-  - start_slot = to_slot_index(res.start_at)
-  - end_slot = to_slot_index(res.end_at)
-  - if slot_idx == start_slot
-    - col_span = end_slot - start_slot
-    td.border.p-1(colspan=col_span)
-      = link_to stylists_reservation_path(res), class: "block w-full h-full" do
-        .st-reservation-card
-          - menu_names = res.menus.map(&:name).join(", ")
-          p.st-trim-magic.text-xs.md:text-sm #{menu_names}
-          p.st-trim-magic.text-xs.md:text-sm #{res.customer.family_name} #{res.customer.given_name} 様
-  - else
-- else
-  td.border
+td.border.p-1(colspan=colspan)
+  = link_to stylists_reservation_path(reservation), class: "block w-full h-full" do
+    .st-reservation-card
+      - menu_names = reservation.menus.map(&:name).join(", ")
+      p.st-trim-magic.text-xs.md:text-sm #{menu_names}
+      p.st-trim-magic.text-xs.md:text-sm #{reservation.customer.family_name} #{reservation.customer.given_name} 様
