@@ -302,9 +302,15 @@ RSpec.describe Schedule do
     let(:reservations) do
       [
         instance_double(Reservation,
-          start_at: Time.zone.parse("#{date} 10:00"),end_at: Time.zone.parse("#{date} 11:30")),
+                        id: 1,
+                        start_at: Time.zone.parse("#{date} 10:00"),
+                        end_at: Time.zone.parse("#{date} 11:30"),
+                        created_at: Time.current - 2.hours),
         instance_double(Reservation,
-          start_at: Time.zone.parse("#{date} 11:00"), end_at: Time.zone.parse("#{date} 12:00"))
+                        id: 2,
+                        start_at: Time.zone.parse("#{date} 11:00"),
+                        end_at: Time.zone.parse("#{date} 12:00"),
+                        created_at: Time.current - 1.hour)
       ]
     end
 
@@ -338,10 +344,22 @@ RSpec.describe Schedule do
       map = schedule.reservations_map
 
       expect(map).to be_a(Hash)
+      expect(map.default_proc).not_to be_nil
+      expect(map[999]).to eq([])
+
+      expect(map[20]).to be_an(Array)
       expect(map[20]).to include(reservations[0])
-      expect(map[21]).to include(reservations[0])
-      expect(map[22]).to include(reservations[0], reservations[1])
-      expect(map[23]).to include(reservations[1])
+      expect(map[20].size).to eq(1)
+
+      expect(map[21]).to be_an(Array)
+      expect(map[21]).to be_empty
+
+      expect(map[22]).to be_an(Array)
+      expect(map[22]).to include(reservations[1])
+      expect(map[22].size).to eq(1)
+
+      expect(map[23]).to be_an(Array)
+      expect(map[23]).to be_empty
     end
 
     it 'memoizes the result' do
