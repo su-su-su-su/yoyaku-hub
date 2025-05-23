@@ -36,15 +36,15 @@ module Customers
       end
 
       def set_dates_and_time_slots
-        if params[:start_date].present?
-          parsed_date = Date.parse(params[:start_date])
-          parsed_start_date = parsed_date.beginning_of_week
-          current_week_start = Date.current.beginning_of_week
-          @start_date = [parsed_start_date, current_week_start].max
-        else
-          @start_date = Date.current.beginning_of_week
-        end
+        target_date = if params[:start_date].present?
+                        Date.parse(params[:start_date])
+                      else
+                        Date.current
+                      end
+                @start_date = [target_date, Date.current].max
+
         @dates = (@start_date..(@start_date + 6.days)).to_a
+
         set_can_go_previous
       end
 
@@ -113,8 +113,7 @@ module Customers
       end
 
       def set_can_go_previous
-        current_week_start = Date.current.beginning_of_week
-        @can_go_previous = @start_date > current_week_start
+        @can_go_previous = @start_date > Date.current
       end
 
       def total_duration
