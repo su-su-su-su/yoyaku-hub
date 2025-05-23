@@ -17,11 +17,11 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
   - elsif @working_hour.nil?
     p.text-center 営業時間が設定されていません
   - else
-    table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: 1500px;"
+    table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: #{100 + @time_slots.size * 58}px;"
       colgroup
-        col style="width: 150px;"
+        col style="width: 100px;"
         - @time_slots.each do |_time_slot|
-          col style="width: 80px;"
+          col style="width: 58px;"
       thead
         tr
           th.bg-gray-100.border.border-gray-400
