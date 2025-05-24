@@ -21,7 +21,7 @@ RSpec.describe 'User signup' do
 
     it 'displays errors with invalid information' do
       visit new_customer_registration_path
-      find_button '登録'
+      click_on '登録'
 
       expect(page).to have_content('2 件のエラーが発生したため ユーザー は保存されませんでした。')
       expect(page).to have_content('メールアドレスを入力してください')
