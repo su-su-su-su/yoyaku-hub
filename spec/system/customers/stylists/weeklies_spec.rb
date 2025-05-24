@@ -187,6 +187,40 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       sign_in customer
     end
 
+    context 'when today is a Wednesday (to test calendar starting day)' do
+      let(:wednesday) { Date.new(2025, 3, 19) }
+
+      before do
+        allow(Date).to receive(:current).and_return(wednesday)
+
+
+        Holiday.find_by(target_date: wednesday)&.destroy
+        WorkingHour.find_by(stylist: stylist, target_date: wednesday)&.destroy
+        create(:working_hour, stylist: stylist, target_date: wednesday, start_time: Time.zone.parse("#{wednesday} 10:00"), end_time: Time.zone.parse("#{wednesday} 19:00"))
+        (20..38).each do |slot|
+          create(:reservation_limit, stylist: stylist, target_date: wednesday, time_slot: slot, max_reservations: 1)
+        end
+
+        visit weekly_customers_stylist_menus_path(
+          stylist_id: stylist.id,
+          menu_ids: [menu.id]
+        )
+        sleep 1
+      end
+
+      it 'starts the calendar from today (Wednesday), not from Monday' do
+        expected_start_date = wednesday.strftime('%-m月%-d日')
+        expected_end_date = (wednesday + 6.days).strftime('%-m月%-d日')
+        expect(page).to have_content("#{expected_start_date}〜#{expected_end_date}")
+
+        headers = all('thead th').map(&:text)
+        expect(headers[1]).to include("#{wednesday.day} (水)")
+
+        monday = wednesday.beginning_of_week
+        expect(headers[1]).not_to include("#{monday.day} (月)")
+      end
+    end
+
     context 'when viewing weekly calendar after menu selection' do
       before do
         visit weekly_customers_stylist_menus_path(
