@@ -112,3 +112,10 @@ jobs:
         run: |
           bundle binstubs rspec-core
           bin/rspec
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec-failure-screenshots
+          path: tmp/capybara/
