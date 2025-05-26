@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/models/schedule_spec.rb
     - spec/system/stylists/shift_settings/defaults_spec.rb
     - spec/system/stylists/dashboards_spec.rb
     - spec/system/customers/stylists/weeklies_spec.rb
@@ -39,15 +38,16 @@ RSpec/MultipleExpectations:
 
 RSpec/MultipleMemoizedHelpers:
   Exclude:
-    - "spec/system/stylists/schedules_spec.rb"
+    - spec/system/stylists/schedules_spec.rb
+    - spec/models/schedule_spec.rb
 
 RSpec/NestedGroups:
   Exclude:
-    - "spec/system/stylists/schedules_spec.rb"
+    - spec/system/stylists/schedules_spec.rb
 
 RSpec/LetSetup:
   Exclude:
-    - "spec/system/stylists/schedules_spec.rb"
+    - spec/system/stylists/schedules_spec.rb
 
 Metrics/ClassLength:
   Exclude:
