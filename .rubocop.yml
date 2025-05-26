@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/system/stylists/schedules_spec.rb
     - spec/system/stylists/reservations_spec.rb
     - spec/system/customers/reservations_history_spec.rb
     - spec/models/schedule_spec.rb
@@ -40,12 +39,25 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Exclude:
+    - "spec/system/stylists/schedules_spec.rb"
+
+RSpec/NestedGroups:
+  Exclude:
+    - "spec/system/stylists/schedules_spec.rb"
+
+RSpec/LetSetup:
+  Exclude:
+    - "spec/system/stylists/schedules_spec.rb"
+
 Metrics/ClassLength:
   Exclude:
     - app/controllers/stylists/shift_settings_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
     - app/models/reservation.rb
     - app/models/schedule.rb
+    - app/controllers/stylists/shift_settings_controller.rb
 
 Metrics/CyclomaticComplexity:
   Exclude:
