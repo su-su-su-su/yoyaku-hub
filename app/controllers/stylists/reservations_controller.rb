@@ -12,14 +12,16 @@ module Stylists
 
     def cancel
       @reservation.canceled!
-      redirect_to stylists_schedules_path(date: @reservation.start_at.to_date), notice: t('stylists.reservations.cancelled')
+      redirect_to stylists_schedules_path(date: @reservation.start_at.to_date),
+        notice: t('stylists.reservations.cancelled')
     end
 
     def edit; end
 
     def update
       if @reservation.update(reservation_params)
-        redirect_to stylists_reservation_path(date: @reservation.start_at.to_date), notice: t('stylists.reservations.updated')
+        redirect_to stylists_reservation_path(date: @reservation.start_at.to_date),
+          notice: t('stylists.reservations.updated')
       else
         render :edit, status: :unprocessable_entity
       end

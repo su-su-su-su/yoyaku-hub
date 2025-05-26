@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - app/controllers/stylists/reservations_controller.rb
     - app/models/reservation.rb
     - app/models/menu.rb
     - app/models/schedule.rb
