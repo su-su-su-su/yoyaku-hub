@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - app/controllers/stylists/shift_settings_controller.rb
     - app/controllers/customers/reservations_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
     - app/controllers/stylists/schedules_controller.rb
@@ -50,18 +49,35 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Enabled: false
 
+Metrics/ClassLength:
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+
 Metrics/AbcSize:
   Max: 20
   Exclude:
-    - "app/models/user.rb"
-    - "app/controllers/stylists/shift_settings/holidays_controller.rb"
+    - app/models/user.rb
+    - app/controllers/stylists/shift_settings/holidays_controller.rb
+    - app/controllers/stylists/shift_settings_controller.rb
+
 Metrics/MethodLength:
   Max: 20
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
 
 Metrics/BlockLength:
   Exclude:
-    - "config/environments/development.rb"
-    - "config/routes.rb"
+    - config/environments/development.rb
+    - config/routes.rb
+    - app/controllers/stylists/shift_settings_controller.rb
 
 Style/MultilineIfModifier:
   Enabled: false
