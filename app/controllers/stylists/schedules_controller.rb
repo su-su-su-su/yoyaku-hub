@@ -26,11 +26,7 @@ module Stylists
       schedule = Schedule.new(stylist_id, @date)
       schedule.update_reservation_limit(slot_idx, direction)
 
-      @is_holiday = schedule.holiday?
-      @working_hour = schedule.working_hour
-      @time_slots = schedule.time_slots
-      @reservation_counts = schedule.reservation_counts
-      @reservation_limits = schedule.reservation_limits
+      load_schedule_data(schedule)
 
       respond_to do |format|
         format.turbo_stream do
@@ -55,6 +51,14 @@ module Stylists
 
     def to_slot_index(time_or_str)
       Schedule.to_slot_index(time_or_str)
+    end
+
+    def load_schedule_data(schedule)
+      @is_holiday = schedule.holiday?
+      @working_hour = schedule.working_hour
+      @time_slots = schedule.time_slots
+      @reservation_counts = schedule.reservation_counts
+      @reservation_limits = schedule.reservation_limits
     end
   end
 end
