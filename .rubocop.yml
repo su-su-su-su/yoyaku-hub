@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/system/stylists/shift_settings/defaults_spec.rb
     - spec/system/stylists/dashboards_spec.rb
     - spec/system/customers/stylists/weeklies_spec.rb
 
@@ -32,6 +31,7 @@ RSpec/ExampleLength:
   Max: 20
   Exclude:
     - spec/system/stylists/shift_settings/shift_settings_spec.rb
+    - spec/system/stylists/shift_settings/defaults_spec.rb
 
 RSpec/MultipleExpectations:
   Enabled: false

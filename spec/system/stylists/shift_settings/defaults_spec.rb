@@ -41,6 +41,8 @@ RSpec.describe 'Stylist Default Shift Settings' do
       sign_out stylist
       sign_in customer
       visit settings_path
+      expect(page).to have_current_path(root_path)
+
       expect(page).to have_no_current_path(settings_path, ignore_query: true)
     end
   end
@@ -157,7 +159,8 @@ RSpec.describe 'Stylist Default Shift Settings' do
       expect(wh_hol.start_time.strftime('%H:%M')).to eq '10:00'
       expect(wh_hol.end_time.strftime('%H:%M')).to eq '16:00'
 
-      expect(Holiday.where(stylist_id: stylist.id, target_date: nil).where.not(day_of_week: nil).pluck(:day_of_week)).to contain_exactly(0, 5)
+      expect(Holiday.where(stylist_id: stylist.id,
+        target_date: nil).where.not(day_of_week: nil).pluck(:day_of_week)).to contain_exactly(0, 5)
 
       limit = ReservationLimit.find_by!(stylist_id: stylist.id, target_date: nil, time_slot: nil)
       expect(limit.max_reservations).to eq 0
@@ -214,7 +217,6 @@ RSpec.describe 'Stylist Default Shift Settings' do
 
       visit settings_path
       within('#default_holiday_settings') do
-
         weekdays = { 1 => '月曜日', 2 => '火曜日', 3 => '水曜日', 4 => '木曜日', 5 => '金曜日', 6 => '土曜日', 0 => '日曜日', 7 => '祝祭日' }
         weekdays.each_value do |label_text|
           expect(find_field(label_text, type: 'checkbox', visible: true)).not_to be_checked
