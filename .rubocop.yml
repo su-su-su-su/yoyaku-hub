@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/system/stylists/shift_settings/shift_settings_spec.rb
     - spec/system/stylists/schedules_spec.rb
     - spec/system/stylists/reservations_spec.rb
     - spec/system/customers/reservations_history_spec.rb
@@ -35,6 +34,8 @@ Style/Documentation:
 
 RSpec/ExampleLength:
   Max: 20
+  Exclude:
+    - spec/system/stylists/shift_settings/shift_settings_spec.rb
 
 RSpec/MultipleExpectations:
   Enabled: false
