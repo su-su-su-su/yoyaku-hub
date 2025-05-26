@@ -257,11 +257,8 @@ RSpec.describe Schedule do
     end
 
     it 'memoizes the result' do
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_call_original
-
+      expect(schedule).to receive(:slotwise_reservation_counts).once.and_call_original
       2.times { schedule.reservation_counts }
-
-      expect(Reservation).to have_received(:where).with(stylist_id: stylist_id).once
     end
   end
 
@@ -290,11 +287,9 @@ RSpec.describe Schedule do
     end
 
     it 'memoizes the result' do
-      allow(ReservationLimit).to receive(:where).with(stylist_id: stylist_id, target_date: date).and_call_original
+      expect(schedule).to receive(:slotwise_reservation_limits).once.and_call_original
 
       2.times { schedule.reservation_limits }
-
-      expect(ReservationLimit).to have_received(:where).with(stylist_id: stylist_id, target_date: date).once
     end
   end
 
@@ -314,26 +309,28 @@ RSpec.describe Schedule do
       ]
     end
 
-    before do
-      relation1 = instance_double('ActiveRecord::RelationMock')
-      relation2 = instance_double('ActiveRecord::RelationMock')
-      relation3 = instance_double('ActiveRecord::RelationMock')
-      where_chain = instance_double('ActiveRecord::WhereChainMock')
-      relation4 = instance_double('ActiveRecord::RelationMock')
+    let(:relation1) { instance_double('ActiveRecord::RelationMock', where: relation2) }
+    let(:relation2) { instance_double('ActiveRecord::RelationMock', where: relation3) }
+    let(:relation3) { instance_double('ActiveRecord::RelationMock', where: where_chain_for_not1) }
+    let(:where_chain_for_not1) { instance_double('ActiveRecord::WhereChainMock', not: relation_after_first_not) }
+    let(:relation_after_first_not) { instance_double('ActiveRecord::RelationMock', where: where_chain_for_not2) }
+    let(:where_chain_for_not2) { instance_double('ActiveRecord::WhereChainMock', not: relation4) }
+    let(:relation4) { instance_double('ActiveRecord::RelationMock', includes: reservations) }
 
+    before do
       allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_return(relation1)
-      allow(relation1).to receive(:where).with(status: [:before_visit, :paid]).and_return(relation2)
-      allow(relation2).to receive(:where).with(
-        'start_at >= ? AND end_at <= ?',
-        kind_of(ActiveSupport::TimeWithZone),
-        kind_of(ActiveSupport::TimeWithZone)
-      ).and_return(relation3)
-      allow(relation3).to receive(:where).and_return(where_chain)
-      allow(where_chain).to receive(:not).with(start_at: nil, end_at: nil).and_return(relation4)
+      allow(relation1).to receive(:where).with(status: %i[before_visit paid]).and_return(relation2)
+      allow(relation2).to receive(:where).with(start_at: date.all_day).and_return(relation3)
+
+      allow(relation3).to receive(:where).with(no_args).and_return(where_chain_for_not1)
+      allow(where_chain_for_not1).to receive(:not).with(start_at: nil).and_return(relation_after_first_not)
+
+      allow(relation_after_first_not).to receive(:where).with(no_args).and_return(where_chain_for_not2)
+      allow(where_chain_for_not2).to receive(:not).with(end_at: nil).and_return(relation4)
+
       allow(relation4).to receive(:includes).with(:menus, :customer).and_return(reservations)
 
       allow(reservations).to receive(:each).and_yield(reservations[0]).and_yield(reservations[1])
-
       allow(schedule).to receive(:to_slot_index).with(reservations[0].start_at).and_return(20)
       allow(schedule).to receive(:to_slot_index).with(reservations[0].end_at).and_return(23)
       allow(schedule).to receive(:to_slot_index).with(reservations[1].start_at).and_return(22)
@@ -363,11 +360,8 @@ RSpec.describe Schedule do
     end
 
     it 'memoizes the result' do
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_call_original
-
+      expect(schedule).to receive(:slotwise_reservations_map).once.and_call_original
       2.times { schedule.reservations_map }
-
-      expect(Reservation).to have_received(:where).with(stylist_id: stylist_id).once
     end
   end
 end

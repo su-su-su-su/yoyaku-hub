@@ -72,9 +72,7 @@ class Schedule
     (hour * 2) + (minute >= 30 ? 1 : 0)
   end
 
-  def to_slot_index(time_or_str)
-    self.class.to_slot_index(time_or_str)
-  end
+  delegate :to_slot_index, to: :class
 
   def self.safe_parse_date(date_string)
     Date.parse(date_string.to_s)
@@ -109,26 +107,31 @@ class Schedule
   end
 
   def slotwise_reservations_map
-    reservations = Reservation.where(stylist_id: stylist_id)
+    reservations_for_day = fetch_reservations_for_map
+
+    build_reservations_map(reservations_for_day)
+  end
+
+  def fetch_reservations_for_map
+    Reservation.where(stylist_id: stylist_id)
       .where(status: %i[before_visit paid])
       .where(
         'start_at >= ? AND end_at <= ?',
         date.beginning_of_day.in_time_zone,
         date.end_of_day.in_time_zone
       )
-      .where.not(start_at: nil, end_at: nil)
+      .where.not(start_at: nil).where.not(end_at: nil)
       .includes(:menus, :customer)
+  end
 
-    map = Hash.new { |h, k| h[k] = [] }
-
-    reservations.each do |res|
-      start_idx = to_slot_index(res.start_at)
-      map[start_idx] << res
-    end
+  def build_reservations_map(reservations)
+    map = reservations.group_by { |r| to_slot_index(r.start_at) }
 
     map.each_value do |reservations_in_slot|
       reservations_in_slot.sort_by!(&:created_at)
     end
+
+    map.default_proc = ->(h, k) { h[k] = [] }
     map
   end
 end

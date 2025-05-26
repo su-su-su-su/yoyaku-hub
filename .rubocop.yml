@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - app/models/schedule.rb
     - db/seeds/shift_settings_date_based.rb
     - spec/system/stylists/shift_settings/working_hours_spec.rb
     - spec/system/stylists/shift_settings/holidays_spec.rb
@@ -48,6 +47,7 @@ Metrics/ClassLength:
     - app/controllers/stylists/shift_settings_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
     - app/models/reservation.rb
+    - app/models/schedule.rb
 
 Metrics/CyclomaticComplexity:
   Exclude:
