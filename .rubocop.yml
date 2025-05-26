@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - db/seeds/shift_settings_date_based.rb
     - spec/system/stylists/shift_settings/working_hours_spec.rb
     - spec/system/stylists/shift_settings/holidays_spec.rb
     - spec/system/stylists/shift_settings/shift_settings_spec.rb
@@ -77,6 +76,7 @@ Metrics/BlockLength:
     - config/environments/development.rb
     - config/routes.rb
     - app/controllers/stylists/shift_settings_controller.rb
+    - db/seeds/shift_settings_date_based.rb
 
 Style/MultilineIfModifier:
   Enabled: false
