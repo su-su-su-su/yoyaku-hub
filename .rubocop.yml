@@ -21,8 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/system/stylists/shift_settings/working_hours_spec.rb
-    - spec/system/stylists/shift_settings/holidays_spec.rb
     - spec/system/stylists/shift_settings/shift_settings_spec.rb
     - spec/system/stylists/schedules_spec.rb
     - spec/system/stylists/reservations_spec.rb
