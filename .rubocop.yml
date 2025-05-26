@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - app/models/menu.rb
     - app/models/schedule.rb
     - db/seeds/shift_settings_date_based.rb
     - spec/system/stylists/shift_settings/working_hours_spec.rb
