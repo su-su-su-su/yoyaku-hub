@@ -1,10 +1,12 @@
-require:
+plugins:
   - rubocop-rails
-  - rubocop-fjord
   - rubocop-performance
   - rubocop-rspec
   - rubocop-rspec_rails
   - rubocop-capybara
+
+require:
+  - rubocop-fjord
 
 AllCops:
   NewCops: enable
@@ -20,7 +22,6 @@ AllCops:
     - tmp/**/*
     - bin/**/*
     - app/controllers/stylists/shift_settings_controller.rb
-    - app/controllers/stylists/shift_settings/working_hours_controller.rb
     - app/controllers/customers/reservations_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
     - app/controllers/stylists/schedules_controller.rb
