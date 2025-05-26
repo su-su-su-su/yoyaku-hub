@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/system/stylists/dashboards_spec.rb
     - spec/system/customers/stylists/weeklies_spec.rb
 
 Style/Documentation:
