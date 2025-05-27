@@ -4,7 +4,7 @@ class Menu < ApplicationRecord
   MAX_MENUS_PER_STYLIST = 30
 
   belongs_to :stylist, class_name: 'User'
-  has_many :reservation_menu_selections, dependent: :destroy
+  has_many :reservation_menu_selections, dependent: :restrict_with_error
   has_many :reservations, through: :reservation_menu_selections
 
   validates :name, presence: true, uniqueness: { scope: :stylist_id }
