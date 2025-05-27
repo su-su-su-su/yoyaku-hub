@@ -3,29 +3,34 @@
 require 'rails_helper'
 
 RSpec.describe Schedule do
-  let(:stylist_id) { 1 }
+  let!(:stylist) { create(:user, :stylist) }
   let(:date) { Date.new(2025, 3, 25) }
-  let(:schedule) { described_class.new(stylist_id, date) }
+  let(:schedule) { described_class.new(stylist.id, date) }
+
+  before do
+    allow(User).to receive(:find).with(stylist.id).and_return(stylist)
+    allow(stylist).to receive(:holiday?).with(date).and_return(false)
+  end
 
   describe 'initialization' do
-    it 'sets stylist_id and date' do
-      expect(schedule.stylist_id).to eq(stylist_id)
+    it 'sets stylist object and date' do
+      expect(schedule.stylist).to eq(stylist)
       expect(schedule.date).to eq(date)
     end
 
-    it 'checks for holiday on initialization' do
-      allow(Holiday).to receive(:default_for).with(stylist_id, date)
+    it 'checks for holiday on initialization by calling stylist.holiday?' do
+      allow(stylist).to receive(:holiday?).with(date).and_return(false)
 
-      described_class.new(stylist_id, date)
+      described_class.new(stylist.id, date)
 
-      expect(Holiday).to have_received(:default_for).with(stylist_id, date)
+      expect(stylist).to have_received(:holiday?).with(date)
     end
   end
 
   describe '#holiday?' do
-    context 'when it is a holiday' do
+    context 'when it is a holiday (based on stylist.holiday? during init)' do
       before do
-        allow(Holiday).to receive(:default_for).with(stylist_id, date).and_return(true)
+        allow(stylist).to receive(:holiday?).with(date).and_return(true)
       end
 
       it 'returns true' do
@@ -33,11 +38,7 @@ RSpec.describe Schedule do
       end
     end
 
-    context 'when it is not a holiday' do
-      before do
-        allow(Holiday).to receive(:default_for).with(stylist_id, date).and_return(nil)
-      end
-
+    context 'when it is not a holiday (based on stylist.holiday? during init)' do
       it 'returns false' do
         expect(schedule).not_to be_holiday
       end
@@ -60,7 +61,7 @@ RSpec.describe Schedule do
 
       before do
         allow(schedule).to receive(:holiday?).and_return(false)
-        allow(WorkingHour).to receive(:date_only_for).with(stylist_id, date).and_return(working_hour)
+        allow(WorkingHour).to receive(:date_only_for).with(stylist.id, date).and_return(working_hour)
       end
 
       it 'returns the working hour' do
@@ -128,7 +129,7 @@ RSpec.describe Schedule do
 
     before do
       allow(ReservationLimit).to receive(:find_or_initialize_by)
-        .with(stylist_id: stylist_id, target_date: date, time_slot: slot_idx)
+        .with(stylist_id: stylist.id, target_date: date, time_slot: slot_idx)
         .and_return(limit)
     end
 
@@ -241,7 +242,7 @@ RSpec.describe Schedule do
       relation2 = instance_double(ActiveRecord::Relation)
       where_chain = instance_double(ActiveRecord::QueryMethods::WhereChain)
 
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_return(relation1)
+      allow(Reservation).to receive(:where).with(stylist_id: stylist.id).and_return(relation1)
       allow(relation1).to receive(:where).with(start_at: date.all_day).and_return(relation2)
       allow(relation2).to receive(:where).and_return(where_chain)
       allow(where_chain).to receive(:not).with(status: %i[canceled no_show]).and_return(reservations)
@@ -285,7 +286,7 @@ RSpec.describe Schedule do
       allow(limits).to receive(:each).and_yield(limits[0]).and_yield(limits[1])
       relation = instance_double(ActiveRecord::Relation)
       allow(relation).to receive(:find_each) { |&block| limits.each(&block) }
-      allow(ReservationLimit).to receive(:where).with(stylist_id: stylist_id, target_date: date).and_return(relation)
+      allow(ReservationLimit).to receive(:where).with(stylist_id: stylist.id, target_date: date).and_return(relation)
     end
 
     it 'returns a hash of slot indices to reservation limits' do
@@ -335,7 +336,7 @@ RSpec.describe Schedule do
     let(:relation_without_nil_end_at) { instance_double(ActiveRecord::Relation, includes: reservations) }
 
     before do
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_return(relation_with_stylist)
+      allow(Reservation).to receive(:where).with(stylist_id: stylist.id).and_return(relation_with_stylist)
       allow(relation_with_stylist).to receive(:where).with(status: %i[before_visit
                                                                       paid]).and_return(relation_with_status)
       allow(relation_with_status).to receive(:where).with(start_at: date.all_day).and_return(relation_with_date)
