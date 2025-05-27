@@ -28,7 +28,7 @@ RSpec.describe Menu do
     end
   end
 
-  describe 'バリデーション' do
+  describe 'validations' do
     context 'when it has basic validations' do
       it 'is valid with valid attributes' do
         menu = build(:menu)

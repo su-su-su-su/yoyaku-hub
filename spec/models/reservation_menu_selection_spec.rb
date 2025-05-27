@@ -23,7 +23,7 @@ RSpec.describe ReservationMenuSelection do
     )
   end
 
-  describe 'アソシエーション' do
+  describe 'associations' do
     let(:reservation) do
       create(:reservation, customer: customer, stylist: stylist,
         start_date_str: Date.current.to_s, start_time_str: '10:00')

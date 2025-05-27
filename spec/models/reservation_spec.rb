@@ -36,7 +36,7 @@ RSpec.describe Reservation do
     )
   end
 
-  describe 'アソシエーション' do
+  describe 'associations' do
     let(:reservation) { create(:reservation, customer: customer, stylist: stylist) }
 
     it 'belongs to customer' do
@@ -70,7 +70,7 @@ RSpec.describe Reservation do
     end
   end
 
-  describe 'バリデーション' do
+  describe 'validations' do
     context 'with valid attributes' do
       it 'is valid' do
         reservation = build_test_reservation
