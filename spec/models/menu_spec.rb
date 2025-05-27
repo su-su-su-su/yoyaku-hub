@@ -22,7 +22,7 @@ RSpec.describe Menu do
     )
   end
 
-  describe '定数' do
+  describe 'constants' do
     it 'has MAX_MENUS_PER_STYLIST constant' do
       expect(described_class::MAX_MENUS_PER_STYLIST).to eq(30)
     end
@@ -128,7 +128,7 @@ RSpec.describe Menu do
     end
   end
 
-  describe 'アソシエーション' do
+  describe 'associations' do
     let(:menu) { create(:menu, stylist: stylist) }
 
     it 'belongs to a stylist' do
@@ -150,7 +150,39 @@ RSpec.describe Menu do
     end
   end
 
-  describe 'スコープ' do
+  describe '#destroy' do
+    let!(:menu) { create(:menu, stylist: stylist) }
+
+    context 'when not associated with a reservation' do
+      it 'deletes the menu' do
+        expect { menu.destroy }.to change(described_class, :count).by(-1)
+      end
+    end
+
+    context 'when associated with a reservation' do
+      before do
+        reservation = create(:reservation, customer: customer, stylist: stylist,
+          start_date_str: Date.current.to_s, start_time_str: '10:00')
+        create(:reservation_menu_selection, reservation: reservation, menu: menu)
+      end
+
+      it 'does not delete the menu' do
+        expect { menu.destroy }.not_to change(described_class, :count)
+      end
+
+      it 'adds an error to the menu object' do
+        menu.destroy
+        expect(menu.errors).not_to be_empty
+        expect(menu.errors.full_messages.first).to include('存在しているので削除できません')
+      end
+
+      it 'does not raise an ActiveRecord::DeleteRestrictionError' do
+        expect { menu.destroy }.not_to raise_error
+      end
+    end
+  end
+
+  describe 'scopes' do
     let(:stylist2) { create(:user, :stylist) }
     let!(:stylist_menu) { create(:menu, stylist: stylist, name: 'メニューA') }
     let!(:other_stylist_menu) { create(:menu, stylist: stylist2, name: 'メニューB') }
@@ -163,7 +195,7 @@ RSpec.describe Menu do
     end
   end
 
-  describe 'コールバック' do
+  describe 'callbacks' do
     context 'when assign_sort_order_if_blank is triggered' do
       it 'assigns sort_order automatically if not specified' do
         menu = create(:menu, stylist: stylist, sort_order: nil)
@@ -205,7 +237,7 @@ RSpec.describe Menu do
     end
   end
 
-  describe 'ソート' do
+  describe 'sorting' do
     before do
       create(:menu, stylist: stylist, name: 'Cメニュー', sort_order: 3)
       create(:menu, stylist: stylist, name: 'Aメニュー', sort_order: 1)
