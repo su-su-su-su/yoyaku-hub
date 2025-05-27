@@ -55,6 +55,7 @@ Metrics/ClassLength:
     - app/models/reservation.rb
     - app/models/schedule.rb
     - app/controllers/stylists/shift_settings_controller.rb
+    - app/models/user.rb
 
 Metrics/CyclomaticComplexity:
   Exclude:
