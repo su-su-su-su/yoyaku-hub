@@ -15,6 +15,7 @@ RSpec.describe 'Stylist Menu Management' do
     it 'prevents access for customer users' do
       sign_in customer
       visit menus_settings_path
+      expect(page).to have_current_path(root_path)
       expect(page).to have_no_text('メニュー管理')
     end
   end
