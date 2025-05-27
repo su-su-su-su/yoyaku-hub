@@ -21,7 +21,6 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - spec/system/customers/stylists/weeklies_spec.rb
 
 Style/Documentation:
   Enabled: false
@@ -39,10 +38,12 @@ RSpec/MultipleMemoizedHelpers:
   Exclude:
     - spec/system/stylists/schedules_spec.rb
     - spec/models/schedule_spec.rb
+    - spec/system/customers/stylists/weeklies_spec.rb
 
 RSpec/NestedGroups:
   Exclude:
     - spec/system/stylists/schedules_spec.rb
+    - spec/system/customers/stylists/weeklies_spec.rb
 
 RSpec/LetSetup:
   Exclude:
@@ -85,6 +86,10 @@ Metrics/BlockLength:
     - config/routes.rb
     - app/controllers/stylists/shift_settings_controller.rb
     - db/seeds/shift_settings_date_based.rb
+
+RSpec/NoExpectationExample:
+  Exclude:
+    - spec/system/customers/stylists/weeklies_spec.rb
 
 Style/MultilineIfModifier:
   Enabled: false
