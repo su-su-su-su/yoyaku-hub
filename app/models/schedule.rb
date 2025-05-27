@@ -16,7 +16,7 @@ class Schedule
   def working_hour
     return nil if holiday?
 
-    @working_hour ||= @stylist.working_hour_for(@date)
+    @working_hour ||= WorkingHour.date_only_for(@stylist.id, date)
   end
 
   def time_slots
