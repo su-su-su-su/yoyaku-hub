@@ -17,7 +17,7 @@ class Reservation < ApplicationRecord
   attr_accessor :start_date_str, :start_time_str
 
   def combine_date_and_time
-    return unless start_date_str.present? && start_time_str.present?
+    return if start_date_str.blank? || start_time_str.blank?
 
     begin
       new_start_at = Time.zone.parse("#{start_date_str} #{start_time_str}")
