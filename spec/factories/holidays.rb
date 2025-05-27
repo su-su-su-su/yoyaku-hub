@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :holiday do
-    association :stylist, factory: :user, role: :stylist
+    stylist factory: %i[user], role: :stylist
     day_of_week { nil }
     target_date { nil }
     is_holiday { true }

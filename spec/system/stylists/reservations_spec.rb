@@ -6,15 +6,16 @@ RSpec.describe 'Stylists::Reservations' do
   let(:stylist) { create(:user, role: :stylist) }
   let(:customer) { create(:user, role: :customer) }
   let(:today) { Date.current }
-  let(:cut_menu) { create(:menu, :cut, stylist: stylist, name: 'カット') }
-  let(:color_menu) { create(:menu, :color, stylist: stylist, name: 'カラー') }
+  let(:menus) do
+    [create(:menu, :cut, stylist: stylist, name: 'カット'), create(:menu, :color, stylist: stylist, name: 'カラー')]
+  end
 
   before do
     create(:working_hour,
-           stylist: stylist,
-           target_date: today,
-           start_time: '10:00',
-           end_time: '18:00')
+      stylist: stylist,
+      target_date: today,
+      start_time: '10:00',
+      end_time: '18:00')
     sign_in stylist
   end
 
@@ -27,10 +28,10 @@ RSpec.describe 'Stylists::Reservations' do
     [10, 10.5].each do |hour|
       slot_time = hour == 10 ? '10:00' : '10:30'
       create(:reservation_limit,
-             stylist: stylist,
-             target_date: today,
-             time_slot: to_slot_index(slot_time),
-             max_reservations: 1)
+        stylist: stylist,
+        target_date: today,
+        time_slot: to_slot_index(slot_time),
+        max_reservations: 1)
     end
   end
 
@@ -44,8 +45,7 @@ RSpec.describe 'Stylists::Reservations' do
       end_at: Time.zone.parse("#{today} 11:00"),
       status: :before_visit
     )
-    r.menus << cut_menu
-    r.menus << color_menu
+    r.menus = menus
     r.save
     r
   end
@@ -75,6 +75,8 @@ RSpec.describe 'Stylists::Reservations' do
       end
 
       it 'displays total price' do
+        cut_menu = menus.find { |m| m.name == 'カット' }
+        color_menu = menus.find { |m| m.name == 'カラー' }
         total_price = cut_menu.price + color_menu.price
         expect(page).to have_content("¥#{total_price} (税込み)")
       end
@@ -124,6 +126,9 @@ RSpec.describe 'Stylists::Reservations' do
       end
 
       it 'displays existing reservation information on the edit screen' do
+        cut_menu = menus.find { |m| m.name == 'カット' }
+        color_menu = menus.find { |m| m.name == 'カラー' }
+
         click_on '変更する'
 
         expect(page).to have_field('reservation[start_date_str]', with: today.strftime('%Y-%m-%d'))
@@ -145,6 +150,9 @@ RSpec.describe 'Stylists::Reservations' do
       end
 
       it 'can modify and save reservation information' do
+        cut_menu = menus.find { |m| m.name == 'カット' }
+        color_menu = menus.find { |m| m.name == 'カラー' }
+
         if page.has_checked_field?('reservation[menu_ids][]', with: color_menu.id.to_s)
           uncheck 'reservation[menu_ids][]', with: color_menu.id.to_s
         end

@@ -4,15 +4,15 @@ module Customers
   class ReservationsController < ApplicationController
     before_action :authenticate_user!
     before_action -> { ensure_role(:customer) }
-    before_action :set_reservation, only: [:show, :cancel]
-    before_action :set_reservation_form_data, only: [:new, :create]
+    before_action :set_reservation, only: %i[show cancel]
+    before_action :set_reservation_form_data, only: %i[new create]
 
     def index
       user = current_user
 
       @upcoming_reservations = user.reservations
         .where(start_at: Time.zone.now..)
-        .where.not(status: [:canceled, :no_show])
+        .where.not(status: %i[canceled no_show])
         .order(:start_at)
 
       @past_reservations = user.reservations
@@ -21,13 +21,13 @@ module Customers
         .order(start_at: :desc)
     end
 
+    def show
+      load_reservation_details
+    end
+
     def new
       @user = current_user
       parse_start_time_for_display
-    end
-
-    def show
-      load_reservation_details
     end
 
     def create

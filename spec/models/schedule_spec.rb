@@ -14,8 +14,11 @@ RSpec.describe Schedule do
     end
 
     it 'checks for holiday on initialization' do
-      expect(Holiday).to receive(:default_for).with(stylist_id, date)
+      allow(Holiday).to receive(:default_for).with(stylist_id, date)
+
       described_class.new(stylist_id, date)
+
+      expect(Holiday).to have_received(:default_for).with(stylist_id, date)
     end
   end
 
@@ -53,7 +56,7 @@ RSpec.describe Schedule do
     end
 
     context 'when it is not a holiday' do
-      let(:working_hour) { double('WorkingHour') }
+      let(:working_hour) { instance_double(WorkingHour) }
 
       before do
         allow(schedule).to receive(:holiday?).and_return(false)
@@ -65,8 +68,11 @@ RSpec.describe Schedule do
       end
 
       it 'memoizes the result' do
-        expect(WorkingHour).to receive(:date_only_for).once.and_return(working_hour)
+        allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
+
         2.times { schedule.working_hour }
+
+        expect(WorkingHour).to have_received(:date_only_for).once
       end
     end
   end
@@ -93,7 +99,7 @@ RSpec.describe Schedule do
     end
 
     context 'when working_hour exists' do
-      let(:working_hour) { double('WorkingHour') }
+      let(:working_hour) { instance_double(WorkingHour) }
       let(:hours) { { start: '09:00', end: '17:00' } }
       let(:time_options) { [['09:00', 0], ['09:30', 1], ['10:00', 2]] }
       let(:start_time) { Time.zone.parse('09:00') }
@@ -118,7 +124,7 @@ RSpec.describe Schedule do
 
   describe '#update_reservation_limit' do
     let(:slot_idx) { 10 }
-    let(:limit) { double('ReservationLimit', max_reservations: nil, save: true) }
+    let(:limit) { instance_double(ReservationLimit, max_reservations: nil, save: true) }
 
     before do
       allow(ReservationLimit).to receive(:find_or_initialize_by)
@@ -130,18 +136,13 @@ RSpec.describe Schedule do
       it 'increments max_reservations' do
         stored_value = nil
 
-        allow(limit).to receive(:max_reservations) do
-          stored_value
-        end
-
-        allow(limit).to receive(:max_reservations=) do |val|
-          stored_value = val
-        end
-
-        expect(limit).to receive(:save)
+        allow(limit).to receive(:max_reservations) { stored_value }
+        allow(limit).to receive(:max_reservations=) { |val| stored_value = val }
+        allow(limit).to receive(:save)
 
         schedule.update_reservation_limit(slot_idx, 'up')
 
+        expect(limit).to have_received(:save)
         expect(stored_value).to eq(1)
       end
     end
@@ -152,8 +153,11 @@ RSpec.describe Schedule do
       end
 
       it 'does not decrement max_reservations' do
-        expect(limit).not_to receive(:max_reservations=)
+        allow(limit).to receive(:max_reservations=)
+
         schedule.update_reservation_limit(slot_idx, 'down')
+
+        expect(limit).not_to have_received(:max_reservations=)
       end
     end
 
@@ -163,8 +167,11 @@ RSpec.describe Schedule do
       end
 
       it 'decrements max_reservations' do
-        expect(limit).to receive(:max_reservations=).with(1)
+        allow(limit).to receive(:max_reservations=)
+
         schedule.update_reservation_limit(slot_idx, 'down')
+
+        expect(limit).to have_received(:max_reservations=).with(1)
       end
     end
   end
@@ -196,7 +203,8 @@ RSpec.describe Schedule do
   describe '#to_slot_index' do
     it 'delegates to the class method' do
       time_str = '10:30'
-      expect(described_class).to receive(:to_slot_index).with(time_str).and_return(21)
+      allow(described_class).to receive(:to_slot_index).with(time_str).and_return(21)
+
       expect(schedule.to_slot_index(time_str)).to eq(21)
     end
   end
@@ -229,9 +237,9 @@ RSpec.describe Schedule do
     end
 
     before do
-      relation1 = double('relation1')
-      relation2 = double('relation2')
-      where_chain = double('where_chain')
+      relation1 = instance_double(ActiveRecord::Relation)
+      relation2 = instance_double(ActiveRecord::Relation)
+      where_chain = instance_double(ActiveRecord::QueryMethods::WhereChain)
 
       allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_return(relation1)
       allow(relation1).to receive(:where).with(start_at: date.all_day).and_return(relation2)
@@ -257,11 +265,11 @@ RSpec.describe Schedule do
     end
 
     it 'memoizes the result' do
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_call_original
+      allow(schedule).to receive(:slotwise_reservation_counts).and_call_original
 
       2.times { schedule.reservation_counts }
 
-      expect(Reservation).to have_received(:where).with(stylist_id: stylist_id).once
+      expect(schedule).to have_received(:slotwise_reservation_counts).once
     end
   end
 
@@ -275,7 +283,7 @@ RSpec.describe Schedule do
 
     before do
       allow(limits).to receive(:each).and_yield(limits[0]).and_yield(limits[1])
-      relation = instance_double('ActiveRecord::RelationMock')
+      relation = instance_double(ActiveRecord::Relation)
       allow(relation).to receive(:find_each) { |&block| limits.each(&block) }
       allow(ReservationLimit).to receive(:where).with(stylist_id: stylist_id, target_date: date).and_return(relation)
     end
@@ -290,11 +298,11 @@ RSpec.describe Schedule do
     end
 
     it 'memoizes the result' do
-      allow(ReservationLimit).to receive(:where).with(stylist_id: stylist_id, target_date: date).and_call_original
+      allow(schedule).to receive(:slotwise_reservation_limits).and_call_original
 
       2.times { schedule.reservation_limits }
 
-      expect(ReservationLimit).to have_received(:where).with(stylist_id: stylist_id, target_date: date).once
+      expect(schedule).to have_received(:slotwise_reservation_limits).once
     end
   end
 
@@ -302,38 +310,45 @@ RSpec.describe Schedule do
     let(:reservations) do
       [
         instance_double(Reservation,
-                        id: 1,
-                        start_at: Time.zone.parse("#{date} 10:00"),
-                        end_at: Time.zone.parse("#{date} 11:30"),
-                        created_at: Time.current - 2.hours),
+          id: 1,
+          start_at: Time.zone.parse("#{date} 10:00"),
+          end_at: Time.zone.parse("#{date} 11:30"),
+          created_at: 2.hours.ago),
         instance_double(Reservation,
-                        id: 2,
-                        start_at: Time.zone.parse("#{date} 11:00"),
-                        end_at: Time.zone.parse("#{date} 12:00"),
-                        created_at: Time.current - 1.hour)
+          id: 2,
+          start_at: Time.zone.parse("#{date} 11:00"),
+          end_at: Time.zone.parse("#{date} 12:00"),
+          created_at: 1.hour.ago)
       ]
     end
 
-    before do
-      relation1 = instance_double('ActiveRecord::RelationMock')
-      relation2 = instance_double('ActiveRecord::RelationMock')
-      relation3 = instance_double('ActiveRecord::RelationMock')
-      where_chain = instance_double('ActiveRecord::WhereChainMock')
-      relation4 = instance_double('ActiveRecord::RelationMock')
+    let(:relation_with_stylist) { instance_double(ActiveRecord::Relation, where: relation_with_status) }
+    let(:relation_with_status) { instance_double(ActiveRecord::Relation, where: relation_with_date) }
+    let(:relation_with_date) { instance_double(ActiveRecord::Relation, where: where_chain_for_start_at) }
+    let(:where_chain_for_start_at) do
+      instance_double(ActiveRecord::QueryMethods::WhereChain, not: relation_without_nil_start_at)
+    end
+    let(:relation_without_nil_start_at) { instance_double(ActiveRecord::Relation, where: where_chain_for_end_at) }
+    let(:where_chain_for_end_at) do
+      instance_double(ActiveRecord::QueryMethods::WhereChain, not: relation_without_nil_end_at)
+    end
+    let(:relation_without_nil_end_at) { instance_double(ActiveRecord::Relation, includes: reservations) }
 
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_return(relation1)
-      allow(relation1).to receive(:where).with(status: [:before_visit, :paid]).and_return(relation2)
-      allow(relation2).to receive(:where).with(
-        'start_at >= ? AND end_at <= ?',
-        kind_of(ActiveSupport::TimeWithZone),
-        kind_of(ActiveSupport::TimeWithZone)
-      ).and_return(relation3)
-      allow(relation3).to receive(:where).and_return(where_chain)
-      allow(where_chain).to receive(:not).with(start_at: nil, end_at: nil).and_return(relation4)
-      allow(relation4).to receive(:includes).with(:menus, :customer).and_return(reservations)
+    before do
+      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_return(relation_with_stylist)
+      allow(relation_with_stylist).to receive(:where).with(status: %i[before_visit
+                                                                      paid]).and_return(relation_with_status)
+      allow(relation_with_status).to receive(:where).with(start_at: date.all_day).and_return(relation_with_date)
+
+      allow(relation_with_date).to receive(:where).with(no_args).and_return(where_chain_for_start_at)
+      allow(where_chain_for_start_at).to receive(:not).with(start_at: nil).and_return(relation_without_nil_start_at)
+
+      allow(relation_without_nil_start_at).to receive(:where).with(no_args).and_return(where_chain_for_end_at)
+      allow(where_chain_for_end_at).to receive(:not).with(end_at: nil).and_return(relation_without_nil_end_at)
+
+      allow(relation_without_nil_end_at).to receive(:includes).with(:menus, :customer).and_return(reservations)
 
       allow(reservations).to receive(:each).and_yield(reservations[0]).and_yield(reservations[1])
-
       allow(schedule).to receive(:to_slot_index).with(reservations[0].start_at).and_return(20)
       allow(schedule).to receive(:to_slot_index).with(reservations[0].end_at).and_return(23)
       allow(schedule).to receive(:to_slot_index).with(reservations[1].start_at).and_return(22)
@@ -363,11 +378,11 @@ RSpec.describe Schedule do
     end
 
     it 'memoizes the result' do
-      allow(Reservation).to receive(:where).with(stylist_id: stylist_id).and_call_original
+      allow(schedule).to receive(:slotwise_reservations_map).and_call_original
 
       2.times { schedule.reservations_map }
 
-      expect(Reservation).to have_received(:where).with(stylist_id: stylist_id).once
+      expect(schedule).to have_received(:slotwise_reservations_map).once
     end
   end
 end

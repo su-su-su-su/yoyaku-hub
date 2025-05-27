@@ -41,7 +41,7 @@ module Customers
                       else
                         Date.current
                       end
-                @start_date = [target_date, Date.current].max
+        @start_date = [target_date, Date.current].max
 
         @dates = (@start_date..(@start_date + 6.days)).to_a
 
@@ -76,12 +76,13 @@ module Customers
 
       def build_reservation_limits_hash
         limits = ReservationLimit.where(stylist_id: @stylist.id, target_date: @dates)
-        @reservation_limits_hash = @dates.each_with_object({}) do |date, hash|
-          hash[date] = {}
+        @reservation_limits_hash = @dates.index_with do |_date|
+          {}
         end
 
         limits.each do |limit|
           next if limit.time_slot.nil?
+
           @reservation_limits_hash[limit.target_date][limit.time_slot] = limit
         end
       end
@@ -107,8 +108,8 @@ module Customers
       def fetch_active_reservations_for_date(date)
         Reservation.where(
           stylist_id: @stylist.id,
-          start_at: date.beginning_of_day..date.end_of_day,
-          status: [:before_visit, :paid]
+          start_at: date.all_day,
+          status: %i[before_visit paid]
         )
       end
 
@@ -139,7 +140,7 @@ module Customers
 
       def build_time_slots_for_week(_dates)
         valid_working_hours = @wh_non_holiday.reject do |wh|
-          wh.start_time.hour == 0 && wh.end_time.hour == 0
+          wh.start_time.hour.zero? && wh.end_time.hour.zero?
         end
 
         if valid_working_hours.empty?

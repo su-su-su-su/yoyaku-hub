@@ -34,10 +34,10 @@ RSpec.describe 'Stylists::Schedules' do
   describe 'With Business Hours' do
     let(:working_hour) do
       create(:working_hour,
-             stylist: stylist,
-             target_date: today,
-             start_time: '10:00',
-             end_time: '18:00')
+        stylist: stylist,
+        target_date: today,
+        start_time: '10:00',
+        end_time: '18:00')
     end
 
     before do
@@ -62,30 +62,26 @@ RSpec.describe 'Stylists::Schedules' do
       let(:slot_text) { '10:00' }
       let(:slot_index_to_test) { to_slot_index(slot_text) }
 
-      def find_target_slot_elements(time_text_arg)
-        target_column_idx = -1
-        page.all('thead tr th').each_with_index do |th, idx|
-          if th.text.strip == time_text_arg.strip
-            target_column_idx = idx - 1
-            break
-          end
-        end
-        raise "Header for time '#{time_text_arg}' not found in thead" if target_column_idx == -1
+      def find_time_column_index(time_text)
+        header_cells = page.all('thead tr th')
+        target_index = header_cells.find_index { |th| th.text.strip == time_text.strip }
 
+        raise "Header for time '#{time_text}' not found in thead" unless target_index
+
+        target_index - 1
+      end
+
+      def find_target_slot_elements(time_text)
+        column_index = find_time_column_index(time_text)
         target_row = find('tr', text: '残り受付可能数')
-        raise "Row with text '残り受付可能数' not found" unless target_row.present?
-
-        all_tds_in_row = target_row.all('td')
-        raise "No tds found in the target row" if all_tds_in_row.empty?
-        raise "Calculated td_index #{target_column_idx} is out of bounds for tds (count: #{all_tds_in_row.count})" if target_column_idx < 0 || target_column_idx >= all_tds_in_row.count
-
-        target_td = all_tds_in_row[target_column_idx]
+        target_td = target_row.all('td')[column_index]
         value_div = target_td.find('div.font-medium')
-        return target_td, value_div
+        [target_td, value_div]
       end
 
       it 'can increase available slots and updates the database' do
-        limit_record = ReservationLimit.find_or_create_by!(stylist: stylist, target_date: today, time_slot: slot_index_to_test) do |limit|
+        limit_record = ReservationLimit.find_or_create_by!(stylist: stylist, target_date: today,
+          time_slot: slot_index_to_test) do |limit|
           limit.max_reservations = 1
         end
         initial_max_reservations = limit_record.max_reservations
@@ -102,7 +98,8 @@ RSpec.describe 'Stylists::Schedules' do
         _updated_target_td, updated_value_div = find_target_slot_elements(slot_text)
         expect(updated_value_div).to have_text(expected_ui_text_after_increase, wait: 5)
 
-        updated_limit_record_db = ReservationLimit.find_by!(stylist: stylist, target_date: today, time_slot: slot_index_to_test)
+        updated_limit_record_db = ReservationLimit.find_by!(stylist: stylist, target_date: today,
+          time_slot: slot_index_to_test)
         expect(updated_limit_record_db.max_reservations).to eq(calculated_expected_max_after_increase)
 
         visit current_path
@@ -111,7 +108,8 @@ RSpec.describe 'Stylists::Schedules' do
       end
 
       it 'can decrease available slots and updates the database' do
-        limit_record_setup = ReservationLimit.find_or_initialize_by(stylist: stylist, target_date: today, time_slot: slot_index_to_test)
+        limit_record_setup = ReservationLimit.find_or_initialize_by(stylist: stylist, target_date: today,
+          time_slot: slot_index_to_test)
         limit_record_setup.max_reservations = 2
         limit_record_setup.save!
 
@@ -130,7 +128,8 @@ RSpec.describe 'Stylists::Schedules' do
         _updated_target_td_decrease, updated_value_div_decrease = find_target_slot_elements(slot_text)
         expect(updated_value_div_decrease).to have_text(expected_ui_text_after_decrease, wait: 5)
 
-        updated_limit_record_db_after_decrease = ReservationLimit.find_by!(stylist: stylist, target_date: today, time_slot: slot_index_to_test)
+        updated_limit_record_db_after_decrease = ReservationLimit.find_by!(stylist: stylist, target_date: today,
+          time_slot: slot_index_to_test)
         expect(updated_limit_record_db_after_decrease.max_reservations).to eq(expected_db_value_after_decrease)
 
         visit current_path
@@ -141,9 +140,9 @@ RSpec.describe 'Stylists::Schedules' do
   end
 
   describe 'Reservation Display' do
-    let(:cut_menu) { create(:menu, :cut, stylist: stylist, name: 'カット') }
-    let(:color_menu) { create(:menu, :color, stylist: stylist, name: 'カラー') }
     let(:reservation) do
+      cut_menu = create(:menu, :cut, stylist: stylist, name: 'カット')
+      color_menu = create(:menu, :color, stylist: stylist, name: 'カラー')
       r = Reservation.new(
         stylist: stylist,
         customer: customer,
@@ -159,19 +158,18 @@ RSpec.describe 'Stylists::Schedules' do
 
     before do
       create(:working_hour,
-             stylist: stylist,
-             target_date: today,
-             start_time: '10:00',
-             end_time: '18:00')
+        stylist: stylist,
+        target_date: today,
+        start_time: '10:00',
+        end_time: '18:00')
 
-
-             [10, 10.5].each do |hour|
+      [10, 10.5].each do |hour|
         slot_time = hour == 10 ? '10:00' : '10:30'
         create(:reservation_limit,
-               stylist: stylist,
-               target_date: today,
-               time_slot: to_slot_index(slot_time),
-               max_reservations: 1)
+          stylist: stylist,
+          target_date: today,
+          time_slot: to_slot_index(slot_time),
+          max_reservations: 1)
       end
 
       sign_in stylist
@@ -213,7 +211,7 @@ RSpec.describe 'Stylists::Schedules' do
     end
 
     it 'navigates to the detail screen when a reservation is clicked' do
-      find('a', text: 'カット, カラー' ).click
+      find('a', text: 'カット, カラー').click
 
       expect(page).to have_current_path(%r{/stylists/reservations/#{reservation.id}})
     end
@@ -261,22 +259,21 @@ RSpec.describe 'Stylists::Schedules' do
     it 'prevents non-stylists from accessing the schedule screen' do
       visit stylists_schedules_path(date: today.strftime('%Y-%m-%d'))
 
-      expect(page).to have_no_css('h1', text: '予約表')
       expect(page).to have_current_path('/')
+      expect(page).to have_no_css('h1', text: '予約表')
     end
   end
 
   describe 'Two-tier Reservation Display' do
     let!(:working_hour) do
       create(:working_hour,
-             stylist: stylist,
-             target_date: today,
-             start_time: '09:00',
-             end_time: '12:00')
+        stylist: stylist,
+        target_date: today,
+        start_time: '09:00',
+        end_time: '12:00')
     end
-    let!(:customer1) { create(:user, role: :customer, family_name: '予約', given_name: '太郎') }
-    let!(:customer2) { create(:user, role: :customer, family_name: '予約', given_name: '花子') }
-    let!(:customer3) { create(:user, role: :customer, family_name: '予約', given_name: '次郎') }
+    let!(:taro_customer) { create(:user, role: :customer, family_name: '予約', given_name: '太郎') }
+    let!(:hanako_customer) { create(:user, role: :customer, family_name: '予約', given_name: '花子') }
     let!(:menu_cut) { create(:menu, stylist: stylist, name: 'カット', duration: 60) }
 
     before do
@@ -292,14 +289,15 @@ RSpec.describe 'Stylists::Schedules' do
       end
 
       it 'does not display the "予約2" row' do
-        expect(page).to have_selector("tr[data-testid='reservation-row-1']")
-        expect(page).not_to have_selector("tr[data-testid='reservation-row-2']")
+        expect(page).to have_css("tr[data-testid='reservation-row-1']")
+        expect(page).to have_no_css("tr[data-testid='reservation-row-2']")
       end
     end
 
     context 'when a slot has reservation limit of 2 or more' do
       before do
-        create(:reservation_limit, stylist: stylist, target_date: today, time_slot: to_slot_index('09:00'), max_reservations: 2)
+        create(:reservation_limit, stylist: stylist, target_date: today, time_slot: to_slot_index('09:00'),
+          max_reservations: 2)
         (to_slot_index('09:30')..to_slot_index('11:30')).each do |slot|
           create(:reservation_limit, stylist: stylist, target_date: today, time_slot: slot, max_reservations: 1)
         end
@@ -307,45 +305,55 @@ RSpec.describe 'Stylists::Schedules' do
 
       it 'displays the "予約2" row' do
         visit stylists_schedules_path(date: today.strftime('%Y-%m-%d'))
-        expect(page).to have_selector("tr[data-testid='reservation-row-1']")
-        expect(page).to have_selector("tr[data-testid='reservation-row-2']")
+        expect(page).to have_css("tr[data-testid='reservation-row-1']")
+        expect(page).to have_css("tr[data-testid='reservation-row-2']")
       end
 
       context 'with two reservations starting at the same time' do
-        let!(:reservation1) do
-          create(:reservation, stylist: stylist, customer: customer1, menus: [menu_cut],
-                               start_at: Time.zone.parse("#{today} 09:00"), end_at: Time.zone.parse("#{today} 10:00"))
+        let!(:taro_reservation) do
+          create(:reservation, stylist: stylist, customer: taro_customer, menus: [menu_cut],
+            start_at: Time.zone.parse("#{today} 09:00"), end_at: Time.zone.parse("#{today} 10:00"))
         end
-        let!(:reservation2) do
-          create(:reservation, stylist: stylist, customer: customer2, menus: [menu_cut],
-                               start_at: Time.zone.parse("#{today} 09:00"), end_at: Time.zone.parse("#{today} 09:30"))
+        let!(:hanako_reservation) do
+          create(:reservation, stylist: stylist, customer: hanako_customer, menus: [menu_cut],
+            start_at: Time.zone.parse("#{today} 09:00"), end_at: Time.zone.parse("#{today} 09:30"))
         end
 
         before do
-          create(:reservation_limit, stylist: stylist, target_date: today, time_slot: to_slot_index('09:30'), max_reservations: 1)
+          create(:reservation_limit, stylist: stylist, target_date: today, time_slot: to_slot_index('09:30'),
+            max_reservations: 1)
           visit stylists_schedules_path(date: today.strftime('%Y-%m-%d'))
         end
 
         it 'displays first reservation in "予約1" row and second in "予約2" row' do
           row1 = page.all('tbody tr')[2]
           within(row1) do
-            customer1_full_name_text = "#{reservation1.customer.family_name} #{reservation1.customer.given_name}"
-            expect(page).to have_content(customer1_full_name_text)
-            reservation1_cell = find('td', text: /#{Regexp.escape(customer1_full_name_text)}/)
-            expect(reservation1_cell['colspan'].to_i).to eq 2
+            taro_full_name = "#{taro_reservation.customer.family_name} #{taro_reservation.customer.given_name}"
+            expect(page).to have_content(taro_full_name)
+            taro_reservation_cell = find('td', text: /#{Regexp.escape(taro_full_name)}/)
+            expect(taro_reservation_cell['colspan'].to_i).to eq 2
           end
 
           row2 = page.all('tbody tr')[3]
           within(row2) do
-            customer2_full_name_text = "#{reservation2.customer.family_name} #{reservation2.customer.given_name}"
-            expect(page).to have_content(customer2_full_name_text)
-            reservation2_cell = find('td', text: /#{Regexp.escape(customer2_full_name_text)}/)
-            expect(reservation2_cell['colspan'].to_i).to eq 1
+            hanako_full_name = "#{hanako_reservation.customer.family_name} #{hanako_reservation.customer.given_name}"
+            expect(page).to have_content(hanako_full_name)
+            hanako_reservation_cell = find('td', text: /#{Regexp.escape(hanako_full_name)}/)
+            expect(hanako_reservation_cell['colspan'].to_i).to eq 1
           end
         end
       end
 
       context 'with overlapping reservations at different start times (10:30-11:30 and 11:00-12:00)' do
+        let(:reservation_taro) do
+          create(:reservation, stylist: stylist, customer: taro_customer, menus: [menu_cut],
+            start_at: Time.zone.parse("#{today} 10:30"), end_at: Time.zone.parse("#{today} 11:30"))
+        end
+        let(:reservation_hanako) do
+          create(:reservation, stylist: stylist, customer: hanako_customer, menus: [menu_cut],
+            start_at: Time.zone.parse("#{today} 11:00"), end_at: Time.zone.parse("#{today} 12:00"))
+        end
+
         before do
           limits_to_set = {
             to_slot_index('10:30') => 1,
@@ -364,11 +372,8 @@ RSpec.describe 'Stylists::Schedules' do
             limit.save!
           end
 
-          @reservation_A = create(:reservation, stylist: stylist, customer: customer1, menus: [menu_cut],
-                                 start_at: Time.zone.parse("#{today} 10:30"), end_at: Time.zone.parse("#{today} 11:30"))
-
-          @reservation_B = create(:reservation, stylist: stylist, customer: customer2, menus: [menu_cut],
-                                   start_at: Time.zone.parse("#{today} 11:00"), end_at: Time.zone.parse("#{today} 12:00"))
+          reservation_taro
+          reservation_hanako
 
           sign_in stylist
           visit stylists_schedules_path(date: today.strftime('%Y-%m-%d'))
@@ -377,16 +382,16 @@ RSpec.describe 'Stylists::Schedules' do
         it 'displays reservation A in "予約1" and reservation B in "予約2"' do
           row1 = find("tr[data-testid='reservation-row-1']")
           within(row1) do
-            customer1_full_name_text = "#{@reservation_A.customer.family_name} #{@reservation_A.customer.given_name}"
-            reservation_a_cell = find('td', text: /#{Regexp.escape(customer1_full_name_text)}/)
+            taro_full_name = "#{reservation_taro.customer.family_name} #{reservation_taro.customer.given_name}"
+            reservation_a_cell = find('td', text: /#{Regexp.escape(taro_full_name)}/)
             expect(reservation_a_cell).to be_visible
             expect(reservation_a_cell['colspan'].to_i).to eq 2
           end
 
           row2 = find("tr[data-testid='reservation-row-2']")
           within(row2) do
-            customer2_full_name_text = "#{@reservation_B.customer.family_name} #{@reservation_B.customer.given_name}"
-            reservation_b_cell = find('td', text: /#{Regexp.escape(customer2_full_name_text)}/)
+            hanako_full_name = "#{reservation_hanako.customer.family_name} #{reservation_hanako.customer.given_name}"
+            reservation_b_cell = find('td', text: /#{Regexp.escape(hanako_full_name)}/)
             expect(reservation_b_cell).to be_visible
             expect(reservation_b_cell['colspan'].to_i).to eq 2
           end

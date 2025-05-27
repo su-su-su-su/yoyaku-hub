@@ -145,8 +145,7 @@ RSpec.describe 'Customer Reservation History' do
     end
 
     context 'when customer has past reservations' do
-      let!(:past_reservation) { create_past_reservation }
-      let!(:canceled_reservation) { create_canceled_reservation }
+      let!(:past_reservations) { [create_past_reservation, create_canceled_reservation] }
 
       before do
         create_future_reservation
@@ -154,6 +153,9 @@ RSpec.describe 'Customer Reservation History' do
       end
 
       it 'displays past and canceled reservations in past section' do
+        past_reservation = past_reservations[0]
+        canceled_reservation = past_reservations[1]
+
         expect(page).to have_content('過去の予約')
         expect(page).to have_content(past_reservation.stylist.family_name)
         expect(page).to have_content(I18n.l(past_reservation.start_at, format: :wday_short))

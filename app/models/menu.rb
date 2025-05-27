@@ -20,9 +20,9 @@ class Menu < ApplicationRecord
   private
 
   def validate_stylist_menu_limit
-    if stylist && stylist.menus.count >= MAX_MENUS_PER_STYLIST
-      errors.add(:base, "メニューは最大#{MAX_MENUS_PER_STYLIST}件までです")
-    end
+    return unless stylist && stylist.menus.count >= MAX_MENUS_PER_STYLIST
+
+    errors.add(:base, "メニューは最大#{MAX_MENUS_PER_STYLIST}件までです")
   end
 
   def assign_sort_order_if_blank
@@ -34,6 +34,7 @@ class Menu < ApplicationRecord
     self.sort_order = available_order if available_order
   end
 
+  # rubocop:disable Rails/SkipsModelValidations
   def shift_others
     old_value = sort_order_was
     new_value = sort_order
@@ -44,10 +45,11 @@ class Menu < ApplicationRecord
       menus.where(sort_order: new_value..).update_all('sort_order = sort_order + 1')
     elsif new_value < old_value
       menus.where(sort_order: new_value...(old_value))
-           .update_all('sort_order = sort_order + 1')
+        .update_all('sort_order = sort_order + 1')
     elsif new_value > old_value
       menus.where(sort_order: (old_value + 1)..new_value)
-           .update_all('sort_order = sort_order - 1')
+        .update_all('sort_order = sort_order - 1')
     end
   end
+  # rubocop:enable Rails/SkipsModelValidations
 end

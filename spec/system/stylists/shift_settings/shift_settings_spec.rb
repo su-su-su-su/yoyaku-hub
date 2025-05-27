@@ -49,7 +49,7 @@ RSpec.describe 'Stylist shift settings' do
       find(".card a[href*='#{this_month_year}/#{this_month}']").click
 
       expect(page).to have_content("#{this_month_year}年#{this_month}月の受付設定")
-      expect(page).to have_css('table.table')
+      expect(page).to have_table
     end
   end
 
@@ -64,7 +64,7 @@ RSpec.describe 'Stylist shift settings' do
 
     it 'displays calendar with days of the month' do
       expect(page).to have_content("#{year}年#{month}月の受付設定")
-      expect(page).to have_css('table.table')
+      expect(page).to have_table
 
       expect(page).to have_css('th', count: 7)
 
@@ -73,7 +73,7 @@ RSpec.describe 'Stylist shift settings' do
     end
 
     it 'allows toggling holiday status for a day' do
-      first_day_cell = find('.day-cell', match: :first)
+      first_day_cell = first('.day-cell')
 
       within(first_day_cell) do
         check '休業日'
@@ -150,14 +150,14 @@ RSpec.describe 'Stylist shift settings' do
 
       visit stylists_shift_settings_path
 
-      expect(page).to have_no_current_path(stylists_shift_settings_path)
+      expect(page).to have_current_path(root_path)
     end
 
     it 'requires authentication' do
       visit stylists_shift_settings_path
 
+      expect(page).to have_current_path(root_path)
       expect(page).to have_no_content('シフト設定')
-      expect(page).to have_current_path(%r{\A/(login)?\z})
     end
   end
 end

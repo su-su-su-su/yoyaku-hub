@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :reservation_limit do
-    association :stylist, factory: :user, role: :stylist
+    stylist factory: %i[user], role: :stylist
     target_date { nil }
     max_reservations { 1 }
     time_slot { nil }

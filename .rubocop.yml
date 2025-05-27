@@ -1,10 +1,11 @@
 require:
   - rubocop-rails
-  - rubocop-fjord
   - rubocop-performance
   - rubocop-rspec
   - rubocop-rspec_rails
   - rubocop-capybara
+  - rubocop-fjord
+  - rubocop-factory_bot
 
 AllCops:
   NewCops: enable
@@ -19,48 +20,75 @@ AllCops:
     - storage/**/*
     - tmp/**/*
     - bin/**/*
-    - app/controllers/stylists/shift_settings_controller.rb
-    - app/controllers/stylists/shift_settings/working_hours_controller.rb
-    - app/controllers/customers/reservations_controller.rb
-    - app/controllers/customers/stylists/weeklies_controller.rb
-    - app/controllers/stylists/schedules_controller.rb
-    - app/controllers/stylists/reservations_controller.rb
-    - app/models/reservation.rb
-    - app/models/menu.rb
-    - app/models/schedule.rb
-    - db/seeds/shift_settings_date_based.rb
-    - spec/system/stylists/shift_settings/working_hours_spec.rb
-    - spec/system/stylists/shift_settings/holidays_spec.rb
-    - spec/system/stylists/shift_settings/shift_settings_spec.rb
-    - spec/system/stylists/schedules_spec.rb
-    - spec/system/stylists/reservations_spec.rb
-    - spec/system/customers/reservations_history_spec.rb
-    - spec/models/schedule_spec.rb
-    - spec/system/stylists/shift_settings/defaults_spec.rb
-    - spec/system/stylists/dashboards_spec.rb
-    - spec/system/customers/stylists/weeklies_spec.rb
 
 Style/Documentation:
   Enabled: false
 
 RSpec/ExampleLength:
   Max: 20
+  Exclude:
+    - spec/system/stylists/shift_settings/shift_settings_spec.rb
+    - spec/system/stylists/shift_settings/defaults_spec.rb
 
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Exclude:
+    - spec/system/stylists/schedules_spec.rb
+    - spec/models/schedule_spec.rb
+    - spec/system/customers/stylists/weeklies_spec.rb
+
+RSpec/NestedGroups:
+  Exclude:
+    - spec/system/stylists/schedules_spec.rb
+    - spec/system/customers/stylists/weeklies_spec.rb
+
+RSpec/LetSetup:
+  Exclude:
+    - spec/system/stylists/schedules_spec.rb
+
+Metrics/ClassLength:
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+    - app/controllers/customers/stylists/weeklies_controller.rb
+    - app/models/reservation.rb
+    - app/models/schedule.rb
+    - app/controllers/stylists/shift_settings_controller.rb
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+
 Metrics/AbcSize:
   Max: 20
   Exclude:
-    - "app/models/user.rb"
-    - "app/controllers/stylists/shift_settings/holidays_controller.rb"
+    - app/models/user.rb
+    - app/controllers/stylists/shift_settings/holidays_controller.rb
+    - app/controllers/stylists/shift_settings_controller.rb
+    - app/controllers/customers/stylists/weeklies_controller.rb
+    - app/models/reservation.rb
+
 Metrics/MethodLength:
   Max: 20
+  Exclude:
+    - app/controllers/stylists/shift_settings_controller.rb
+    - app/models/reservation.rb
 
 Metrics/BlockLength:
   Exclude:
-    - "config/environments/development.rb"
-    - "config/routes.rb"
+    - config/environments/development.rb
+    - config/routes.rb
+    - app/controllers/stylists/shift_settings_controller.rb
+    - db/seeds/shift_settings_date_based.rb
+
+RSpec/NoExpectationExample:
+  Exclude:
+    - spec/system/customers/stylists/weeklies_spec.rb
 
 Style/MultilineIfModifier:
   Enabled: false
