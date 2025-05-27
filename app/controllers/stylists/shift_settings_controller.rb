@@ -39,7 +39,7 @@ module Stylists
 
       @working_hours_for_month = {}
       (@start_date..@start_date.end_of_month).each do |date|
-        @working_hours_for_month[date] = current_user.working_hour_for(date)
+        @working_hours_for_month[date] = WorkingHour.default_for(current_user.id, date)
       end
 
       @holidays_for_month = {}
