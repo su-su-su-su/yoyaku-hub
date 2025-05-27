@@ -15,7 +15,7 @@ RSpec.describe User do
   let(:customer) { create(:user, role: :customer) }
   let(:stylist) { create(:user, role: :stylist) }
 
-  describe 'バリデーション' do
+  describe 'validations' do
     context 'when it has basic validations' do
       it 'is valid with valid attributes' do
         user = build(:customer)
@@ -76,7 +76,7 @@ RSpec.describe User do
     end
   end
 
-  describe 'アソシエーション' do
+  describe 'associations' do
     context 'when menu tests' do
       it 'has many menus' do
         expect(stylist).to respond_to(:menus)
@@ -204,7 +204,7 @@ RSpec.describe User do
     end
   end
 
-  describe 'OAuthログイン (.from_omniauth)' do
+  describe 'from_omniauth' do
     let(:auth) do
       OmniAuth::AuthHash.new({
         provider: 'google_oauth2',
@@ -301,7 +301,7 @@ RSpec.describe User do
     end
   end
 
-  describe 'Devise認証' do
+  describe 'Devise Authentication' do
     context 'when using basic authentication' do
       let(:user) { create(:customer, password: 'testtest', password_confirmation: 'testtest') }
 
@@ -315,7 +315,7 @@ RSpec.describe User do
     end
   end
 
-  describe 'セッション管理' do
+  describe 'Session Management' do
     let(:user) { create(:customer) }
 
     it 'can remember login state' do
@@ -327,7 +327,7 @@ RSpec.describe User do
     end
   end
 
-  describe 'パスワードリセット' do
+  describe 'Password Reset' do
     let(:user) { create(:customer) }
 
     it 'can send reset password instructions' do
@@ -543,6 +543,98 @@ RSpec.describe User do
         create(:working_hour, stylist: stylist, target_date: current_month_date)
         create(:holiday, stylist: stylist, target_date: next_next_month_date)
         expect(stylist.next_month_shifts_configured?).to be false
+      end
+    end
+  end
+
+  describe '#holiday?' do
+    let(:target_date) { Date.new(2025, 3, 5) }
+
+    context 'with specific date holiday settings' do
+      it 'when is_holiday is true, returns true' do
+        create(:holiday, stylist: stylist, target_date: target_date, is_holiday: true)
+        expect(stylist.holiday?(target_date)).to be true
+      end
+
+      it 'when is_holiday is false, returns false' do
+        create(:holiday, stylist: stylist, target_date: target_date, is_holiday: false)
+        expect(stylist.holiday?(target_date)).to be false
+      end
+    end
+
+    context 'when no specific date setting and the date is a Japanese holiday' do
+      let(:holiday_date) { Date.new(2025, 1, 1) }
+
+      before do
+        allow(HolidayJp).to receive(:holiday?).with(holiday_date).and_return(true)
+      end
+
+      it 'with holiday settings (day_of_week: 7), returns the holiday setting' do
+        create(:holiday, stylist: stylist, day_of_week: 7, target_date: nil, is_holiday: true)
+        expect(stylist.holiday?(holiday_date)).to be true
+      end
+
+      it 'with weekday settings but no holiday settings, returns true' do
+        wday = holiday_date.wday
+        create(:holiday, stylist: stylist, day_of_week: wday, target_date: nil)
+        expect(stylist.holiday?(holiday_date)).to be true
+      end
+    end
+
+    context 'when no specific date setting and the date is not a holiday' do
+      before do
+        allow(HolidayJp).to receive(:holiday?).with(target_date).and_return(false)
+      end
+
+      it 'with weekday settings, returns true' do
+        wday = target_date.wday
+        create(:holiday, stylist: stylist, day_of_week: wday, target_date: nil)
+        expect(stylist.holiday?(target_date)).to be true
+      end
+
+      it 'without weekday settings, returns false' do
+        expect(stylist.holiday?(target_date)).to be false
+      end
+    end
+  end
+
+  describe '#reservation_limit_for' do
+    let(:stylist) { create(:user, :stylist) }
+    let(:date) { Date.new(2025, 5, 28) }
+
+    context 'when a reservation limit for the specific date exists' do
+      let!(:specific_limit) do
+        create(:reservation_limit, stylist: stylist, target_date: date, max_reservations: 2)
+      end
+
+      it 'returns the specific reservation limit record' do
+        expect(stylist.reservation_limit_for(date)).to eq(specific_limit)
+      end
+    end
+
+    context 'when no specific date limit exists, but a global limit exists' do
+      let!(:global_limit) do
+        create(:reservation_limit, stylist: stylist, target_date: nil, max_reservations: 2)
+      end
+
+      it 'returns a new record with attributes from the global limit' do
+        result = stylist.reservation_limit_for(date)
+
+        expect(result).to be_a(ReservationLimit)
+        expect(result).to be_new_record # DBには保存されていない
+        expect(result.target_date).to eq(date)
+        expect(result.max_reservations).to eq(global_limit.max_reservations)
+      end
+    end
+
+    context 'when no specific or global limit exists' do
+      it 'returns a new record with the default max_reservations of 1' do
+        result = stylist.reservation_limit_for(date)
+
+        expect(result).to be_a(ReservationLimit)
+        expect(result).to be_new_record
+        expect(result.target_date).to eq(date)
+        expect(result.max_reservations).to eq(1)
       end
     end
   end

@@ -218,8 +218,11 @@ RSpec.describe 'Stylists::Schedules' do
   end
 
   describe 'Holiday Display' do
+    let(:today) { Date.new(2025, 5, 27) }
+    let!(:stylist) { create(:user, :stylist) }
+
     before do
-      allow(Holiday).to receive(:default_for).with(stylist.id, today).and_return(true)
+      create(:holiday, stylist: stylist, target_date: today, is_holiday: true)
       sign_in stylist
       visit stylists_schedules_path(date: today.strftime('%Y-%m-%d'))
     end

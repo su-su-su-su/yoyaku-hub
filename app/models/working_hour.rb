@@ -84,7 +84,7 @@ class WorkingHour < ApplicationRecord
   end
 
   def holiday_flag?
-    holiday_flag == '1' || holiday_flag == true
+    ['1', true].include?(holiday_flag)
   end
 
   private

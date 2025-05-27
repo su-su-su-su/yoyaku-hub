@@ -118,4 +118,35 @@ class User < ApplicationRecord
     }
     new(new_attrs)
   end
+
+  def holiday?(date)
+    holiday = holidays.find_by(target_date: date)
+    return holiday.is_holiday? if holiday.present?
+
+    if HolidayJp.holiday?(date)
+      holiday_setting = holidays.find_by(day_of_week: 7, target_date: nil)
+      return holiday_setting.is_holiday? if holiday_setting.present?
+    end
+
+    weekday_holiday = holidays.find_by(day_of_week: date.wday, target_date: nil)
+    return true if weekday_holiday.present?
+
+    false
+  end
+
+  def reservation_limit_for(date)
+    reservation_limit = reservation_limits.find_by(target_date: date)
+    return reservation_limit if reservation_limit.present?
+
+    global_limit = reservation_limits.find_by(target_date: nil)
+    if global_limit.present?
+      return reservation_limits.new(
+        target_date: date,
+        max_reservations: global_limit.max_reservations,
+        time_slot: global_limit.time_slot
+      )
+    end
+
+    reservation_limits.new(target_date: date, max_reservations: 1)
+  end
 end

@@ -7,13 +7,13 @@ RSpec.describe WorkingHour do
   let(:date) { Date.new(2023, 4, 1) }
   let(:working_hour) { build(:working_hour, stylist: stylist, target_date: date) }
 
-  describe 'アソシエーション' do
+  describe 'associations' do
     it 'belongs to a stylist' do
       expect(working_hour.stylist).to eq(stylist)
     end
   end
 
-  describe 'バリデーション' do
+  describe 'validations' do
     context 'when not a holiday' do
       before { working_hour.holiday_flag = '0' }
 
