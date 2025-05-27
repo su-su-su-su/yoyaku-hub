@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
 class Schedule
-  attr_reader :stylist_id, :date
+  attr_reader :stylist, :date
 
   def initialize(stylist_id, date)
-    @stylist_id = stylist_id
+    @stylist = User.find(stylist_id)
     @date = date
-    @is_holiday = Holiday.default_for(stylist_id, date)
+    @is_holiday = @stylist.holiday?(@date)
   end
 
   def holiday?
-    @is_holiday.present?
+    @is_holiday
   end
 
   def working_hour
     return nil if holiday?
 
-    @working_hour ||= WorkingHour.date_only_for(stylist_id, date)
+    @working_hour ||= @stylist.working_hour_for(@date)
   end
 
   def time_slots
@@ -43,7 +43,7 @@ class Schedule
 
   def update_reservation_limit(slot_idx, direction)
     limit = ReservationLimit.find_or_initialize_by(
-      stylist_id: stylist_id,
+      stylist_id: stylist.id,
       target_date: date,
       time_slot: slot_idx
     )
@@ -83,7 +83,7 @@ class Schedule
   private
 
   def slotwise_reservation_counts
-    reservations = Reservation.where(stylist_id: stylist_id)
+    reservations = Reservation.where(stylist_id: stylist.id)
       .where(start_at: date.all_day)
       .where.not(status: %i[canceled no_show])
 
@@ -100,7 +100,7 @@ class Schedule
 
   def slotwise_reservation_limits
     limits = Hash.new(0)
-    ReservationLimit.where(stylist_id: stylist_id, target_date: date).find_each do |lim|
+    ReservationLimit.where(stylist_id: stylist.id, target_date: date).find_each do |lim|
       limits[lim.time_slot] = lim.max_reservations
     end
     limits
@@ -113,7 +113,7 @@ class Schedule
   end
 
   def fetch_reservations_for_map
-    Reservation.where(stylist_id: stylist_id)
+    Reservation.where(stylist_id: stylist.id)
       .where(status: %i[before_visit paid])
       .where(
         'start_at >= ? AND end_at <= ?',
