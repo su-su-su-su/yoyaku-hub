@@ -75,6 +75,7 @@ group :development do
   gem 'ed25519', '~> 1.2'
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false
+  gem 'rubocop-factory_bot', require: false
   gem 'rubocop-fjord', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false

@@ -5,6 +5,7 @@ require:
   - rubocop-rspec_rails
   - rubocop-capybara
   - rubocop-fjord
+  - rubocop-factory_bot
 
 AllCops:
   NewCops: enable
