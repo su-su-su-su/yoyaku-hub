@@ -10,7 +10,7 @@ FactoryBot.define do
     is_active { true }
     sequence(:sort_order) { |n| n }
 
-    association :stylist, factory: %i[user stylist]
+    stylist factory: %i[user stylist]
 
     trait :low_price do
       price { 3000 }

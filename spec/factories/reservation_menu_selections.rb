@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :reservation_menu_selection do
-    association :reservation
-    association :menu
+    reservation
+    menu
   end
 end
