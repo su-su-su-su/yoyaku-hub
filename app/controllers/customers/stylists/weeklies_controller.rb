@@ -58,11 +58,11 @@ module Customers
       end
 
       def fetch_working_hours
-        @wh_list = WorkingHour.where(stylist_id: @stylist.id, target_date: @dates).order(:start_time)
+        @wh_list = @stylist.working_hours.where(target_date: @dates).order(:start_time)
       end
 
       def fetch_holidays
-        holiday_records = Holiday.where(stylist_id: @stylist.id, target_date: @dates, is_holiday: true)
+        holiday_records = @stylist.holidays.where(target_date: @dates, is_holiday: true)
         @holiday_days = holiday_records.pluck(:target_date).to_set
       end
 
@@ -75,7 +75,7 @@ module Customers
       end
 
       def build_reservation_limits_hash
-        limits = ReservationLimit.where(stylist_id: @stylist.id, target_date: @dates)
+        limits = @stylist.reservation_limits.where(target_date: @dates)
         @reservation_limits_hash = @dates.index_with do |_date|
           {}
         end
@@ -106,8 +106,7 @@ module Customers
       end
 
       def fetch_active_reservations_for_date(date)
-        Reservation.where(
-          stylist_id: @stylist.id,
+        @stylist.stylist_reservations.where(
           start_at: date.all_day,
           status: %i[before_visit paid]
         )

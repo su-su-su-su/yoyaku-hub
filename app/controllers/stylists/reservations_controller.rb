@@ -33,8 +33,7 @@ module Stylists
         default: Time.zone.today
       )
 
-      stylist_id = current_user.id
-      @time_options = WorkingHour.time_options_for(stylist_id, reservation_date)
+      @time_options = current_user.generate_time_options_for_date(reservation_date)
 
       render partial: 'time_select', locals: { f: nil, time_options: @time_options, selected_time: nil }
     end
@@ -55,8 +54,7 @@ module Stylists
         default: @reservation&.start_at&.to_date || Time.zone.today
       )
 
-      stylist_id = current_user.id
-      @time_options = WorkingHour.time_options_for(stylist_id, reservation_date)
+      @time_options = current_user.generate_time_options_for_date(reservation_date)
     end
 
     def load_active_menus
