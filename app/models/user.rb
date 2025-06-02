@@ -149,4 +149,42 @@ class User < ApplicationRecord
 
     reservation_limits.new(target_date: date, max_reservations: 1)
   end
+
+  def working_hour_for_target_date(date)
+    working_hours.find_by(target_date: date)
+  end
+
+  def working_hour_for(date)
+    working_hour = working_hour_for_target_date(date)
+    return working_hour if working_hour.present?
+
+    if HolidayJp.holiday?(date)
+      holiday_working_hour = working_hours.find_by(day_of_week: 7, target_date: nil)
+      return holiday_working_hour if holiday_working_hour.present?
+    end
+
+    wday = date.wday
+    default_weekday_working_hour = working_hours.find_by(day_of_week: wday, target_date: nil)
+    return default_weekday_working_hour if default_weekday_working_hour.present?
+
+    working_hours.build(
+      target_date: date,
+      start_time: Time.zone.parse(WorkingHour::DEFAULT_START_TIME),
+      end_time: Time.zone.parse(WorkingHour::DEFAULT_END_TIME)
+    )
+  end
+
+  def generate_time_options_for_date(date)
+    working_hour = working_hour_for_target_date(date)
+
+    if working_hour.present?
+      start_time = working_hour.start_time
+      end_time = working_hour.end_time
+    else
+      start_time = Time.zone.parse(WorkingHour::DEFAULT_START_TIME)
+      end_time = Time.zone.parse(WorkingHour::DEFAULT_END_TIME)
+    end
+
+    WorkingHour.generate_time_options_between(start_time, end_time)
+  end
 end
