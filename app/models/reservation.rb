@@ -100,7 +100,10 @@ class Reservation < ApplicationRecord
   def validate_not_holiday
     return if start_at.blank?
 
-    working_hour = WorkingHour.date_only_for(stylist_id, start_at.to_date)
+    stylist = self.stylist
+    return unless stylist
+
+    working_hour = stylist.working_hour_for_target_date(start_at.to_date)
     return unless working_hour.nil? || working_hour.start_time == working_hour.end_time
 
     errors.add(:base, '選択した日にちは休業日です')
@@ -110,7 +113,10 @@ class Reservation < ApplicationRecord
     return if start_at.blank? || end_at.blank?
     return if errors.present?
 
-    working_hour = WorkingHour.date_only_for(stylist_id, start_at.to_date)
+    stylist = self.stylist
+    return unless stylist
+
+    working_hour = stylist.working_hour_for_target_date(start_at.to_date)
     open_time  = working_hour.start_time.change(year: start_at.year, month: start_at.month, day: start_at.day)
     close_time = working_hour.end_time.change(year: start_at.year, month: start_at.month, day: start_at.day)
     errors.add(:base, '予約開始時刻が営業時間より早いです') if start_at < open_time
@@ -137,8 +143,10 @@ class Reservation < ApplicationRecord
   def calculate_slot_usage_for(day)
     usage = Hash.new(0)
 
-    existing_reservations = Reservation.where(stylist_id: stylist_id)
-      .where(status: %i[before_visit paid])
+    stylist = self.stylist
+    return unless stylist
+
+    existing_reservations = stylist.stylist_reservations.where(status: %i[before_visit paid])
       .where.not(id: id)
       .where(start_at: day.all_day)
 
@@ -155,8 +163,11 @@ class Reservation < ApplicationRecord
     start_slot = self.class.to_slot_index(start_at)
     end_slot   = self.class.to_slot_index(end_at)
 
+    stylist = self.stylist
+    return unless stylist
+
     (start_slot...end_slot).each do |slot|
-      limit_record = ReservationLimit.find_by(stylist_id: stylist_id, target_date: day, time_slot: slot)
+      limit_record = stylist.reservation_limits.find_by(target_date: day, time_slot: slot)
       capacity = limit_record&.max_reservations || 0
 
       if (usage[slot] + 1) > capacity
