@@ -39,7 +39,7 @@ module Stylists
 
       @working_hours_for_month = {}
       (@start_date..@start_date.end_of_month).each do |date|
-        @working_hours_for_month[date] = WorkingHour.default_for(current_user.id, date)
+        @working_hours_for_month[date] = current_user.working_hour_for(date)
       end
 
       @holidays_for_month = {}
@@ -81,17 +81,16 @@ module Stylists
         end_time_obj = Time.zone.parse(end_str)
 
         if is_holiday
-          holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, target_date: date)
+          holiday = current_user.holidays.find_or_initialize_by(target_date: date)
           holiday.is_holiday = true
           holiday.save!
         else
-          Holiday.where(stylist_id: current_user.id, target_date: date).destroy_all
+          current_user.holidays.where(target_date: date).destroy_all
 
-          Holiday.find_or_create_by!(stylist_id: current_user.id, target_date: date, is_holiday: false)
+          current_user.holidays.find_or_create_by!(target_date: date, is_holiday: false)
         end
 
-        wh = WorkingHour.find_or_initialize_by(
-          stylist_id: current_user.id,
+        wh = current_user.working_hours.find_or_initialize_by(
           target_date: date
         )
         wh.start_time = start_time_obj
@@ -128,8 +127,7 @@ module Stylists
     end
 
     def save_reservation_limits(date, start_time_obj, end_time_obj, max_reservations)
-      rl_day = ReservationLimit.find_or_initialize_by(
-        stylist_id: current_user.id,
+      rl_day = current_user.reservation_limits.find_or_initialize_by(
         target_date: date,
         time_slot: nil
       )
@@ -140,8 +138,7 @@ module Stylists
       end_slot = (end_time_obj.hour * 2) + (end_time_obj.min >= 30 ? 1 : 0)
 
       (start_slot...end_slot).each do |slot|
-        rl_slot = ReservationLimit.find_or_initialize_by(
-          stylist_id: current_user.id,
+        rl_slot = current_user.reservation_limits.find_or_initialize_by(
           target_date: date,
           time_slot: slot
         )
@@ -154,10 +151,9 @@ module Stylists
       start_date = Date.new(year, month, 1)
       end_date = start_date.end_of_month
 
-      working_hour_exists = WorkingHour.exists?(stylist_id: current_user.id, target_date: start_date..end_date)
-      holiday_exists = Holiday.exists?(stylist_id: current_user.id, target_date: start_date..end_date)
-      reservation_limit_exist = ReservationLimit.exists?(stylist_id: current_user.id,
-        target_date: start_date..end_date)
+      working_hour_exists = current_user.working_hours.exists?(target_date: start_date..end_date)
+      holiday_exists = current_user.holidays.exists?(target_date: start_date..end_date)
+      reservation_limit_exist = current_user.reservation_limits.exists?(target_date: start_date..end_date)
       working_hour_exists || holiday_exists || reservation_limit_exist
     end
 
@@ -190,26 +186,26 @@ module Stylists
       holiday_end = Time.zone.parse(working_hour_params[:holiday_end_time])
 
       (1..5).each do |wday|
-        weekday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday,
+        weekday_working_hour = current_user.working_hours.find_or_initialize_by(day_of_week: wday,
           target_date: nil)
         weekday_working_hour.start_time = weekday_start
         weekday_working_hour.end_time = weekday_end
         weekday_working_hour.save!
       end
 
-      saturday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: 6,
+      saturday_working_hour = current_user.working_hours.find_or_initialize_by(day_of_week: 6,
         target_date: nil)
       saturday_working_hour.start_time = saturday_start
       saturday_working_hour.end_time = saturday_end
       saturday_working_hour.save!
 
-      sunday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: 0,
+      sunday_working_hour = current_user.working_hours.find_or_initialize_by(day_of_week: 0,
         target_date: nil)
       sunday_working_hour.start_time = sunday_start
       sunday_working_hour.end_time = sunday_end
       sunday_working_hour.save!
 
-      holiday_working_hour = WorkingHour.find_or_initialize_by(stylist_id: current_user.id, day_of_week: 7,
+      holiday_working_hour = current_user.working_hours.find_or_initialize_by(day_of_week: 7,
         target_date: nil)
       holiday_working_hour.start_time = holiday_start
       holiday_working_hour.end_time = holiday_end
@@ -220,7 +216,7 @@ module Stylists
       return unless holiday_params
 
       chosen_wdays = holiday_params[:day_of_weeks].compact_blank.map(&:to_i)
-      existing_defaults = Holiday.where(stylist_id: current_user.id, target_date: nil).where.not(day_of_week: nil)
+      existing_defaults = current_user.holidays.where(target_date: nil).where.not(day_of_week: nil)
 
       if chosen_wdays.empty?
         existing_defaults.destroy_all
@@ -228,7 +224,7 @@ module Stylists
         existing_defaults.where.not(day_of_week: chosen_wdays).destroy_all
 
         chosen_wdays.each do |wday|
-          holiday = Holiday.find_or_initialize_by(stylist_id: current_user.id, day_of_week: wday, target_date: nil)
+          holiday = current_user.holidays.find_or_initialize_by(day_of_week: wday, target_date: nil)
           holiday.save! unless holiday.persisted?
         end
       end
@@ -237,7 +233,7 @@ module Stylists
     def save_default_reservation_limit(limit_params)
       return unless limit_params
 
-      limit = ReservationLimit.find_or_initialize_by(stylist_id: current_user.id, target_date: nil, time_slot: nil)
+      limit = current_user.reservation_limits.find_or_initialize_by(target_date: nil, time_slot: nil)
 
       limit.max_reservations = limit_params[:max_reservations].to_i
       limit.save!

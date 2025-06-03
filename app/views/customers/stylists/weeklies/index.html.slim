@@ -73,8 +73,8 @@
                       - if !within_reservation_limits?(limit_obj, date, slot, needed_slots)
                         | ×
                       - else
-                        - next_slot = Reservation.find_next_reservation_start_slot(@stylist.id, date, slot + needed_slots)
-                        - prev_slot = Reservation.find_previous_reservation_end_slot(@stylist.id, date, slot)
+                        - next_slot = @stylist.find_next_reservation_start_slot(date, slot + needed_slots)
+                        - prev_slot = @stylist.find_previous_reservation_end_slot(date, slot)
                         - gap_from_prev = (slot - prev_slot) * 30
                         - gap_to_next = (next_slot - (slot + needed_slots)) * 30
                         - if gap_from_prev == 0 || gap_to_next == 0

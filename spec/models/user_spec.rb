@@ -14,6 +14,7 @@ RSpec.describe User do
 
   let(:customer) { create(:user, role: :customer) }
   let(:stylist) { create(:user, role: :stylist) }
+  let(:date) { Date.new(2025, 6, 10) }
 
   describe 'validations' do
     context 'when it has basic validations' do
@@ -149,11 +150,24 @@ RSpec.describe User do
       let(:menu) { create(:menu, stylist: stylist) }
 
       before do
-        working_hour = setup_working_hour(stylist)
-        allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
-        allow(ReservationLimit).to receive(:find_by).and_return(
-          instance_double(ReservationLimit, max_reservations: 2)
-        )
+        allow(HolidayJp).to receive(:holiday?).with(Date.current).and_return(false)
+        stylist.holidays.where(target_date: Date.current).destroy_all
+        create(:working_hour,
+          stylist: stylist,
+          target_date: Date.current,
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('18:00'))
+
+        start_slot_index = (Time.zone.parse('09:00').hour * 2)
+        end_slot_index = (Time.zone.parse('18:00').hour * 2)
+
+        (start_slot_index...end_slot_index).each do |slot_idx|
+          create(:reservation_limit,
+            stylist: stylist,
+            target_date: Date.current,
+            time_slot: slot_idx,
+            max_reservations: 1)
+        end
       end
 
       it 'has many reservations' do
@@ -179,10 +193,45 @@ RSpec.describe User do
           menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
         expect(stylist.stylist_reservations.count).to eq(2)
       end
+    end
 
-      it 'can find reservations for a specific date' do
+    context 'when testing reservation date filtering' do
+      before do
+        menu = create(:menu, stylist: stylist)
         today = Date.current
         tomorrow = Date.current.tomorrow
+
+        # Setup for today
+        allow(HolidayJp).to receive(:holiday?).with(today).and_return(false)
+        stylist.holidays.where(target_date: today).destroy_all
+        create(:working_hour,
+          stylist: stylist,
+          target_date: today,
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('18:00'))
+
+        # Setup for tomorrow
+        create(:working_hour,
+          stylist: stylist,
+          target_date: tomorrow,
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('18:00'))
+        allow(HolidayJp).to receive(:holiday?).with(tomorrow).and_return(false)
+        stylist.holidays.where(target_date: tomorrow).destroy_all
+
+        # Setup reservation limits for both days
+        [today, tomorrow].each do |target_date|
+          start_slot_index = (Time.zone.parse('09:00').hour * 2)
+          end_slot_index = (Time.zone.parse('18:00').hour * 2)
+
+          (start_slot_index...end_slot_index).each do |slot_idx|
+            create(:reservation_limit,
+              stylist: stylist,
+              target_date: target_date,
+              time_slot: slot_idx,
+              max_reservations: 1)
+          end
+        end
 
         create(:reservation,
           customer: customer,
@@ -197,6 +246,11 @@ RSpec.describe User do
           menu_ids: [menu.id],
           start_date_str: tomorrow.to_s,
           start_time_str: '11:00')
+      end
+
+      it 'can find reservations for a specific date' do
+        today = Date.current
+        tomorrow = Date.current.tomorrow
 
         expect(stylist.stylist_reservations.where(start_at: today.all_day).count).to eq(1)
         expect(stylist.stylist_reservations.where(start_at: tomorrow.all_day).count).to eq(1)
@@ -217,10 +271,8 @@ RSpec.describe User do
       })
     end
 
-    context 'when the user is new (新規登録)' do
-      subject(:user_from_omniauth) { described_class.from_omniauth(auth, role) }
-
-      let(:role) { 'customer' }
+    describe 'new user creation' do
+      subject(:user_from_omniauth) { described_class.from_omniauth(auth, 'customer') }
 
       it 'returns a new user object' do
         expect(user_from_omniauth).to be_a(described_class)
@@ -244,13 +296,13 @@ RSpec.describe User do
       end
 
       it 'can be saved to create a new user' do
-        new_user = described_class.from_omniauth(auth, role)
+        new_user = described_class.from_omniauth(auth, 'customer')
         expect { new_user.save }.to change(described_class, :count).by(1)
         expect(new_user).to be_persisted
       end
     end
 
-    context 'when the user is new (ログインフで未登録)' do
+    context 'when role is nil' do
       it 'returns nil' do
         expect(described_class.from_omniauth(auth, nil)).to be_nil
       end
@@ -262,14 +314,13 @@ RSpec.describe User do
       end
     end
 
-    context 'when the user already exists' do
-      subject(:user_from_omniauth) { described_class.from_omniauth(auth, role_for_new_user_attempt) }
+    describe 'existing user handling' do
+      subject(:user_from_omniauth) { described_class.from_omniauth(auth, 'customer') }
 
       let!(:existing_user) do
         create(:user, provider: 'google_oauth2', uid: '123456', email: 'old@example.com', role: 'stylist',
           family_name: nil, given_name: nil)
       end
-      let(:role_for_new_user_attempt) { 'customer' }
 
       it 'does not create a new user' do
         expect { user_from_omniauth }.not_to change(described_class, :count)
@@ -294,7 +345,7 @@ RSpec.describe User do
       it 'does not update name if already present' do
         existing_user.update!(family_name: '田中', given_name: '太郎')
 
-        updated_user = described_class.from_omniauth(auth, role_for_new_user_attempt)
+        updated_user = described_class.from_omniauth(auth, 'customer')
         expect(updated_user.family_name).to eq('田中')
         expect(updated_user.given_name).to eq('太郎')
       end
@@ -433,9 +484,7 @@ RSpec.describe User do
 
   describe '#registered_menus?' do
     context 'when menus are registered for the stylist' do
-      before do
-        create(:menu, stylist: stylist)
-      end
+      before { create(:menu, stylist: stylist) }
 
       it 'returns true' do
         expect(stylist.registered_menus?).to be true
@@ -449,9 +498,8 @@ RSpec.describe User do
     end
 
     context 'when only other stylists have registered menus' do
-      let(:other_stylist) { create(:user, role: :stylist) }
-
       before do
+        other_stylist = create(:user, role: :stylist)
         create(:menu, stylist: other_stylist)
       end
 
@@ -464,23 +512,19 @@ RSpec.describe User do
   describe '#current_month_shifts_configured?' do
     before { travel_to Date.new(2025, 5, 10) }
 
-    let(:current_month_date) { Date.current }
-    let(:prev_month_date) { Date.current.prev_month }
-    let(:next_month_date) { Date.current.next_month }
-
     context 'when date-specific settings exist in the current month' do
       it 'returns true if a working hour exists' do
-        create(:working_hour, stylist: stylist, target_date: current_month_date)
+        create(:working_hour, stylist: stylist, target_date: Date.current)
         expect(stylist.current_month_shifts_configured?).to be true
       end
 
       it 'returns true if a holiday exists' do
-        create(:holiday, stylist: stylist, target_date: current_month_date)
+        create(:holiday, stylist: stylist, target_date: Date.current)
         expect(stylist.current_month_shifts_configured?).to be true
       end
 
       it 'returns true if a reservation limit exists' do
-        create(:reservation_limit, stylist: stylist, target_date: current_month_date)
+        create(:reservation_limit, stylist: stylist, target_date: Date.current)
         expect(stylist.current_month_shifts_configured?).to be true
       end
     end
@@ -497,8 +541,8 @@ RSpec.describe User do
       end
 
       it 'returns false if records exist only for other months' do
-        create(:working_hour, stylist: stylist, target_date: prev_month_date)
-        create(:holiday, stylist: stylist, target_date: next_month_date)
+        create(:working_hour, stylist: stylist, target_date: Date.current.prev_month)
+        create(:holiday, stylist: stylist, target_date: Date.current.next_month)
         expect(stylist.current_month_shifts_configured?).to be false
       end
     end
@@ -507,23 +551,19 @@ RSpec.describe User do
   describe '#next_month_shifts_configured?' do
     before { travel_to Date.new(2025, 5, 10) }
 
-    let(:current_month_date) { Date.current }
-    let(:next_month_date) { Date.current.next_month }
-    let(:next_next_month_date) { Date.current.next_month(2) }
-
     context 'when date-specific settings exist in the next month' do
       it 'returns true if a working hour exists' do
-        create(:working_hour, stylist: stylist, target_date: next_month_date)
+        create(:working_hour, stylist: stylist, target_date: Date.current.next_month)
         expect(stylist.next_month_shifts_configured?).to be true
       end
 
       it 'returns true if a holiday exists' do
-        create(:holiday, stylist: stylist, target_date: next_month_date)
+        create(:holiday, stylist: stylist, target_date: Date.current.next_month)
         expect(stylist.next_month_shifts_configured?).to be true
       end
 
       it 'returns true if a reservation limit exists' do
-        create(:reservation_limit, stylist: stylist, target_date: next_month_date)
+        create(:reservation_limit, stylist: stylist, target_date: Date.current.next_month)
         expect(stylist.next_month_shifts_configured?).to be true
       end
     end
@@ -540,8 +580,8 @@ RSpec.describe User do
       end
 
       it 'returns false if records exist only for other months' do
-        create(:working_hour, stylist: stylist, target_date: current_month_date)
-        create(:holiday, stylist: stylist, target_date: next_next_month_date)
+        create(:working_hour, stylist: stylist, target_date: Date.current)
+        create(:holiday, stylist: stylist, target_date: Date.current.next_month(2))
         expect(stylist.next_month_shifts_configured?).to be false
       end
     end
@@ -599,43 +639,281 @@ RSpec.describe User do
   end
 
   describe '#reservation_limit_for' do
-    let(:stylist) { create(:user, :stylist) }
-    let(:date) { Date.new(2025, 5, 28) }
+    let(:test_date) { Date.new(2025, 5, 28) }
 
     context 'when a reservation limit for the specific date exists' do
-      let!(:specific_limit) do
-        create(:reservation_limit, stylist: stylist, target_date: date, max_reservations: 2)
+      before do
+        create(:reservation_limit, stylist: stylist, target_date: test_date, max_reservations: 2)
       end
 
       it 'returns the specific reservation limit record' do
-        expect(stylist.reservation_limit_for(date)).to eq(specific_limit)
+        specific_limit = stylist.reservation_limits.find_by(target_date: test_date)
+        expect(stylist.reservation_limit_for(test_date)).to eq(specific_limit)
       end
     end
 
     context 'when no specific date limit exists, but a global limit exists' do
-      let!(:global_limit) do
+      before do
         create(:reservation_limit, stylist: stylist, target_date: nil, max_reservations: 2)
       end
 
       it 'returns a new record with attributes from the global limit' do
-        result = stylist.reservation_limit_for(date)
+        global_limit = stylist.reservation_limits.find_by(target_date: nil)
+        result = stylist.reservation_limit_for(test_date)
 
         expect(result).to be_a(ReservationLimit)
-        expect(result).to be_new_record # DBには保存されていない
-        expect(result.target_date).to eq(date)
+        expect(result).to be_new_record
+        expect(result.target_date).to eq(test_date)
         expect(result.max_reservations).to eq(global_limit.max_reservations)
       end
     end
 
     context 'when no specific or global limit exists' do
       it 'returns a new record with the default max_reservations of 1' do
-        result = stylist.reservation_limit_for(date)
+        result = stylist.reservation_limit_for(test_date)
 
         expect(result).to be_a(ReservationLimit)
         expect(result).to be_new_record
-        expect(result.target_date).to eq(date)
+        expect(result.target_date).to eq(test_date)
         expect(result.max_reservations).to eq(1)
       end
+    end
+  end
+
+  describe '#working_hour_for' do
+    let(:test_date) { Date.new(2023, 4, 1) }
+
+    context 'when a specific working hour exists for the date' do
+      let!(:specific_wh) do
+        create(:working_hour,
+          stylist: stylist,
+          target_date: test_date,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('19:00'))
+      end
+
+      it 'returns the specific working hour' do
+        result = stylist.working_hour_for(test_date)
+        expect(result).to eq(specific_wh)
+      end
+    end
+
+    context 'when no specific or template working hour exists (and not a public holiday)' do
+      before do
+        stylist.working_hours.destroy_all
+        allow(HolidayJp).to receive(:holiday?).with(test_date).and_return(false)
+      end
+
+      it 'returns a new working hour instance with default times' do
+        result = stylist.working_hour_for(test_date)
+        expect(result).to be_a_new_record
+        expect(result.stylist_id).to eq(stylist.id)
+        expect(result.target_date).to eq(test_date)
+        expect(result.start_time.strftime('%H:%M')).to eq(WorkingHour::DEFAULT_START_TIME)
+        expect(result.end_time.strftime('%H:%M')).to eq(WorkingHour::DEFAULT_END_TIME)
+      end
+    end
+  end
+
+  describe '#working_hour_for with holiday scenarios' do
+    context 'when the date is a holiday in Japan and a holiday working hour template exists' do
+      let(:holiday_date) { Date.new(2023, 1, 1) }
+
+      before do
+        create(:working_hour,
+          stylist: stylist,
+          day_of_week: 7,
+          target_date: nil,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('15:00'))
+        stylist.working_hours.where(target_date: holiday_date).destroy_all
+        allow(HolidayJp).to receive(:holiday?).with(holiday_date).and_return(true)
+      end
+
+      it 'returns the holiday working hour template' do
+        result = stylist.working_hour_for(holiday_date)
+        holiday_template_wh = stylist.working_hours.find_by(day_of_week: 7, target_date: nil)
+
+        expect(result.id).to eq(holiday_template_wh.id) if holiday_template_wh.persisted? && result.persisted?
+        expect(result.start_time.strftime('%H:%M')).to eq('10:00')
+        expect(result.end_time.strftime('%H:%M')).to eq('15:00')
+        expect(result.day_of_week).to eq(7)
+      end
+    end
+
+    context 'when a default working hour template exists for the day of week (and not a public holiday)' do
+      let(:test_date) { Date.new(2023, 4, 1) }
+
+      before do
+        create(:working_hour,
+          stylist: stylist,
+          day_of_week: test_date.wday,
+          target_date: nil,
+          start_time: Time.zone.parse('11:00'),
+          end_time: Time.zone.parse('20:00'))
+        stylist.working_hours.where(target_date: test_date).destroy_all
+        allow(HolidayJp).to receive(:holiday?).with(test_date).and_return(false)
+      end
+
+      it 'returns the default working hour template for that day of week' do
+        result = stylist.working_hour_for(test_date)
+        weekday_template_wh = stylist.working_hours.find_by(day_of_week: test_date.wday, target_date: nil)
+
+        expect(result.id).to eq(weekday_template_wh.id) if weekday_template_wh.persisted? && result.persisted?
+        expect(result.start_time.strftime('%H:%M')).to eq('11:00')
+        expect(result.end_time.strftime('%H:%M')).to eq('20:00')
+        expect(result.day_of_week).to eq(test_date.wday)
+      end
+    end
+  end
+
+  describe '#working_hour_for_target_date' do
+    let(:test_date) { Date.new(2024, 7, 10) }
+
+    context 'when a working hour for the specific target_date exists for the stylist' do
+      before do
+        create(:working_hour,
+          stylist: stylist,
+          target_date: test_date,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('19:00'))
+      end
+
+      it 'returns the working hour for that specific date' do
+        target_specific_wh = stylist.working_hours.find_by(target_date: test_date)
+        expect(stylist.working_hour_for_target_date(test_date)).to eq(target_specific_wh)
+      end
+    end
+
+    context 'when no working hour for the specific target_date exists for the stylist' do
+      before do
+        other_stylist = create(:user, role: :stylist)
+        create(:working_hour, stylist: other_stylist, target_date: test_date)
+        create(:working_hour, stylist: stylist, target_date: test_date + 1.day)
+        create(:working_hour, stylist: stylist, day_of_week: test_date.wday, target_date: nil)
+      end
+
+      it 'returns nil' do
+        expect(stylist.working_hour_for_target_date(test_date)).to be_nil
+      end
+    end
+  end
+
+  describe '#generate_time_options_for_date' do
+    context 'when a working hour exists for the date' do
+      before do
+        create(
+          :working_hour,
+          stylist: stylist,
+          target_date: date,
+          start_time: Time.zone.parse('10:00'),
+          end_time: Time.zone.parse('14:00')
+        )
+      end
+
+      it 'returns time options between the working hour start and end times' do
+        options = stylist.generate_time_options_for_date(date)
+        expect(options).to eq([
+                                ['10:00', '10:00'],
+                                ['10:30', '10:30'],
+                                ['11:00', '11:00'],
+                                ['11:30', '11:30'],
+                                ['12:00', '12:00'],
+                                ['12:30', '12:30'],
+                                ['13:00', '13:00'],
+                                ['13:30', '13:30'],
+                                ['14:00', '14:00']
+                              ])
+      end
+    end
+
+    context 'when no working hour exists for the date' do
+      before do
+        allow(stylist).to receive(:working_hour_for_target_date).with(date).and_return(nil)
+      end
+
+      it 'returns time options between DEFAULT_START_TIME and DEFAULT_END_TIME' do
+        options = stylist.generate_time_options_for_date(date)
+        first_option = options.first
+        last_option  = options.last
+
+        expect(first_option).to eq(['09:00', '09:00'])
+        expect(last_option).to eq(['18:00', '18:00'])
+        expect(options.size).to eq(((18 - 9) * 2) + 1)
+      end
+    end
+  end
+
+  describe '#find_next_reservation_start_slot' do
+    before do
+      create(:working_hour,
+        stylist: stylist,
+        target_date: date,
+        start_time: Time.zone.parse('09:00'),
+        end_time: Time.zone.parse('17:00'))
+    end
+
+    it 'returns the next reservation start slot from given time' do
+      mock_relation = instance_double(ActiveRecord::Relation)
+      allow(stylist.stylist_reservations).to receive(:where)
+        .with(status: %i[before_visit paid]).and_return(mock_relation)
+
+      reservations = [
+        instance_double(Reservation, start_at: Time.zone.parse("#{date} 10:00")),
+        instance_double(Reservation, start_at: Time.zone.parse("#{date} 14:00"))
+      ]
+      allow(mock_relation).to receive(:where)
+        .with(start_at: date.all_day).and_return(reservations)
+
+      expect(stylist.find_next_reservation_start_slot(date, 18)).to eq(20)
+      expect(stylist.find_next_reservation_start_slot(date, 22)).to eq(28)
+      expect(stylist.find_next_reservation_start_slot(date, 30)).to eq(34)
+    end
+
+    it 'returns the end of day slot when there are no reservations' do
+      mock_relation = instance_double(ActiveRecord::Relation)
+      allow(stylist.stylist_reservations).to receive(:where)
+        .with(status: %i[before_visit paid]).and_return(mock_relation)
+      allow(mock_relation).to receive(:where)
+        .with(start_at: date.all_day).and_return([])
+
+      expect(stylist.find_next_reservation_start_slot(date, 20)).to eq(34)
+    end
+  end
+
+  describe '#find_previous_reservation_end_slot' do
+    before do
+      create(:working_hour,
+        stylist: stylist,
+        target_date: date,
+        start_time: Time.zone.parse('09:00'),
+        end_time: Time.zone.parse('17:00'))
+    end
+
+    it 'returns the previous reservation end slot from given time' do
+      mock_relation = instance_double(ActiveRecord::Relation)
+      allow(stylist.stylist_reservations).to receive(:where)
+        .with(status: %i[before_visit paid]).and_return(mock_relation)
+
+      reservations = [
+        instance_double(Reservation, end_at: Time.zone.parse("#{date} 11:00")),
+        instance_double(Reservation, end_at: Time.zone.parse("#{date} 15:00"))
+      ]
+      allow(mock_relation).to receive(:where)
+        .with(start_at: date.all_day).and_return(reservations)
+
+      expect(stylist.find_previous_reservation_end_slot(date, 24)).to eq(22)
+      expect(stylist.find_previous_reservation_end_slot(date, 32)).to eq(30)
+    end
+
+    it 'returns the start of day slot when there are no reservations' do
+      mock_relation = instance_double(ActiveRecord::Relation)
+      allow(stylist.stylist_reservations).to receive(:where)
+        .with(status: %i[before_visit paid]).and_return(mock_relation)
+      allow(mock_relation).to receive(:where)
+        .with(start_at: date.all_day).and_return([])
+
+      expect(stylist.find_previous_reservation_end_slot(date, 24)).to eq(18)
     end
   end
 end

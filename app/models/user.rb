@@ -149,4 +149,88 @@ class User < ApplicationRecord
 
     reservation_limits.new(target_date: date, max_reservations: 1)
   end
+
+  def working_hour_for_target_date(date)
+    working_hours.find_by(target_date: date)
+  end
+
+  def working_hour_for(date)
+    working_hour = working_hour_for_target_date(date)
+    return working_hour if working_hour.present?
+
+    if HolidayJp.holiday?(date)
+      holiday_working_hour = working_hours.find_by(day_of_week: 7, target_date: nil)
+      return holiday_working_hour if holiday_working_hour.present?
+    end
+
+    wday = date.wday
+    default_weekday_working_hour = working_hours.find_by(day_of_week: wday, target_date: nil)
+    return default_weekday_working_hour if default_weekday_working_hour.present?
+
+    working_hours.build(
+      target_date: date,
+      start_time: Time.zone.parse(WorkingHour::DEFAULT_START_TIME),
+      end_time: Time.zone.parse(WorkingHour::DEFAULT_END_TIME)
+    )
+  end
+
+  def generate_time_options_for_date(date)
+    working_hour = working_hour_for_target_date(date)
+
+    if working_hour.present?
+      start_time = working_hour.start_time
+      end_time = working_hour.end_time
+    else
+      start_time = Time.zone.parse(WorkingHour::DEFAULT_START_TIME)
+      end_time = Time.zone.parse(WorkingHour::DEFAULT_END_TIME)
+    end
+
+    WorkingHour.generate_time_options_between(start_time, end_time)
+  end
+
+  def find_next_reservation_start_slot(date, from_slot)
+    working_hour = working_hour_for_target_date(date)
+    day_end_slot = if working_hour&.end_time
+                     Reservation.to_slot_index(working_hour.end_time)
+                   else
+                     48
+                   end
+
+    day_start = date.beginning_of_day
+    day_end   = date.end_of_day
+
+    reservations_in_day = stylist_reservations
+      .where(status: %i[before_visit paid])
+      .where(start_at: day_start..day_end)
+
+    start_slots = reservations_in_day.map do |res|
+      Reservation.to_slot_index(res.start_at)
+    end
+
+    next_start_slots = start_slots.select { |slot| slot >= from_slot }
+    next_start_slots.min || day_end_slot
+  end
+
+  def find_previous_reservation_end_slot(date, from_slot)
+    working_hour = working_hour_for_target_date(date)
+    day_start_slot = if working_hour&.start_time
+                       Reservation.to_slot_index(working_hour.start_time)
+                     else
+                       0
+                     end
+
+    day_start = date.beginning_of_day
+    day_end   = date.end_of_day
+
+    reservations_in_day = stylist_reservations
+      .where(status: %i[before_visit paid])
+      .where(start_at: day_start..day_end)
+
+    end_slots = reservations_in_day.map do |res|
+      Reservation.to_slot_index(res.end_at)
+    end
+
+    prev_end_slots = end_slots.select { |slot| slot <= from_slot }
+    prev_end_slots.max || day_start_slot
+  end
 end
