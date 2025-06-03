@@ -16,10 +16,13 @@ RSpec.describe Menu do
 
   before do
     working_hour = setup_working_hour
-    allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
-    allow(ReservationLimit).to receive(:find_by).and_return(
-      instance_double(ReservationLimit, max_reservations: 1)
-    )
+    allow(stylist).to receive(:working_hour_for_target_date)
+      .with(Date.current).and_return(working_hour)
+
+    fake_relation = instance_double(ActiveRecord::Relation)
+    allow(stylist).to receive(:reservation_limits).and_return(fake_relation)
+    allow(fake_relation).to receive(:find_by)
+      .and_return(instance_double(ReservationLimit, max_reservations: 1))
   end
 
   describe 'constants' do

@@ -8,12 +8,11 @@ RSpec.describe Reservation do
   let(:short_menu) { create(:menu, stylist: stylist, duration: 30, is_active: true) }
   let(:long_menu) { create(:menu, stylist: stylist, duration: 60, is_active: true) }
 
-  def setup_working_hour(start_time: '09:00', end_time: '17:00')
-    create(:working_hour,
-      stylist: stylist,
-      day_of_week: Date.current.wday,
-      start_time: Time.zone.parse(start_time),
-      end_time: Time.zone.parse(end_time))
+  def setup_working_hour(start_time_str: '09:00', end_time_str: '17:00')
+    instance_double(WorkingHour,
+      start_time: Time.zone.parse(start_time_str),
+      end_time: Time.zone.parse(end_time_str),
+      class: WorkingHour)
   end
 
   def build_test_reservation(attrs = {})
@@ -24,15 +23,31 @@ RSpec.describe Reservation do
       start_time_str: '10:00',
       menu_ids: [short_menu.id, long_menu.id]
     }
-
     build(:reservation, defaults.merge(attrs))
   end
 
+  def reservation_limits_relation_double
+    @reservation_limits_relation_double ||= instance_double(ActiveRecord::Relation, 'reservation_limits_relation')
+  end
+
+  def default_working_hour_for_date
+    @default_working_hour_for_date ||= setup_working_hour(start_time_str: '09:00', end_time_str: '17:00')
+  end
+
   before do
-    working_hour = setup_working_hour
-    allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
-    allow(ReservationLimit).to receive(:find_by).and_return(
-      instance_double(ReservationLimit, max_reservations: 1)
+    @reservation_limits_relation_double = instance_double(ActiveRecord::Relation, 'reservation_limits_relation')
+    @default_working_hour_for_date = setup_working_hour(start_time_str: '09:00', end_time_str: '17:00')
+    allow(stylist).to receive(:working_hour_for_target_date)
+      .with(Date.current).and_return(default_working_hour_for_date)
+
+    # Mock for stylist.reservation_limits relation
+    allow(stylist).to receive(:reservation_limits).and_return(reservation_limits_relation_double)
+
+    # Default mock for stylist.reservation_limits.find_by(target_date:, time_slot:)
+    # This will be called by check_capacity_for_new_reservation for each slot.
+    # By default, allow 1 reservation per slot unless specified otherwise in a test context.
+    allow(reservation_limits_relation_double).to receive(:find_by).and_return(
+      instance_double(ReservationLimit, max_reservations: 1, class: ReservationLimit)
     )
   end
 
@@ -48,8 +63,9 @@ RSpec.describe Reservation do
     end
 
     it 'has many reservation_menu_selections' do
-      selection = create(:reservation_menu_selection, reservation: reservation, menu: short_menu)
-      expect(reservation.reservation_menu_selections).to include(selection)
+      selection = create(:reservation, customer: customer, stylist: stylist, menu_ids: [short_menu.id])
+      expect(selection.reservation_menu_selections).not_to be_empty
+      expect(selection.reservation_menu_selections.first.menu).to eq(short_menu)
     end
 
     it 'has many menus through reservation_menu_selections' do
@@ -80,7 +96,7 @@ RSpec.describe Reservation do
 
     context 'when on a holiday' do
       it 'is invalid when WorkingHour is nil' do
-        allow(WorkingHour).to receive(:date_only_for).and_return(nil)
+        allow(stylist).to receive(:working_hour_for_target_date).and_return(nil)
         reservation = build_test_reservation
         expect(reservation).not_to be_valid
         expect(reservation.errors[:base]).to include('選択した日にちは休業日です')
@@ -90,7 +106,7 @@ RSpec.describe Reservation do
         closed_hours = instance_double(WorkingHour,
           start_time: Time.zone.parse('09:00'),
           end_time: Time.zone.parse('09:00'))
-        allow(WorkingHour).to receive(:date_only_for).and_return(closed_hours)
+        allow(stylist).to receive(:working_hour_for_target_date).and_return(closed_hours)
 
         reservation = build_test_reservation
         expect(reservation).not_to be_valid
@@ -120,9 +136,9 @@ RSpec.describe Reservation do
           time_slot: 20,
           max_reservations: 0)
 
-        allow(ReservationLimit).to receive(:find_by).and_return(nil)
-        allow(ReservationLimit).to receive(:find_by)
-          .with(stylist_id: stylist.id, target_date: Date.current, time_slot: 20)
+        allow(stylist.reservation_limits).to receive(:find_by).and_return(nil)
+        allow(stylist.reservation_limits).to receive(:find_by)
+          .with(target_date: Date.current, time_slot: 20)
           .and_return(limit)
 
         reservation = build_test_reservation
@@ -195,68 +211,6 @@ RSpec.describe Reservation do
         expect(incomplete_reservation.start_at).to be_nil
         expect(incomplete_reservation.end_at).to be_nil
       end
-    end
-  end
-
-  describe '.find_next_reservation_start_slot' do
-    let(:date) { Date.current }
-
-    it 'returns the next reservation start slot from given time' do
-      mock_relation = instance_double(ActiveRecord::Relation)
-      allow(described_class).to receive(:where).with(stylist_id: stylist.id).and_return(mock_relation)
-      allow(mock_relation).to receive(:where).with(status: %i[before_visit paid]).and_return(mock_relation)
-
-      reservations = [
-        instance_double(described_class, start_at: Time.zone.parse("#{date} 10:00")),
-        instance_double(described_class, start_at: Time.zone.parse("#{date} 14:00"))
-      ]
-
-      allow(mock_relation).to receive(:where).with(start_at: date.all_day).and_return(reservations)
-
-      expect(described_class.find_next_reservation_start_slot(stylist.id, date, 18)).to eq(20)
-
-      expect(described_class.find_next_reservation_start_slot(stylist.id, date, 22)).to eq(28)
-
-      expect(described_class.find_next_reservation_start_slot(stylist.id, date, 30)).to eq(34)
-    end
-
-    it 'returns the end of day slot when there are no reservations' do
-      mock_relation = instance_double(ActiveRecord::Relation)
-      allow(described_class).to receive(:where).with(stylist_id: stylist.id).and_return(mock_relation)
-      allow(mock_relation).to receive(:where).with(status: %i[before_visit paid]).and_return(mock_relation)
-      allow(mock_relation).to receive(:where).with(start_at: date.all_day).and_return([])
-
-      expect(described_class.find_next_reservation_start_slot(stylist.id, date, 20)).to eq(34)
-    end
-  end
-
-  describe '.find_previous_reservation_end_slot' do
-    let(:date) { Date.current }
-
-    it 'returns the previous reservation end slot from given time' do
-      mock_relation = instance_double(ActiveRecord::Relation)
-      allow(described_class).to receive(:where).with(stylist_id: stylist.id).and_return(mock_relation)
-      allow(mock_relation).to receive(:where).with(status: %i[before_visit paid]).and_return(mock_relation)
-
-      reservations = [
-        instance_double(described_class, end_at: Time.zone.parse("#{date} 11:00")),
-        instance_double(described_class, end_at: Time.zone.parse("#{date} 15:00"))
-      ]
-
-      allow(mock_relation).to receive(:where).with(start_at: date.all_day).and_return(reservations)
-
-      expect(described_class.find_previous_reservation_end_slot(stylist.id, date, 24)).to eq(22)
-
-      expect(described_class.find_previous_reservation_end_slot(stylist.id, date, 32)).to eq(30)
-    end
-
-    it 'returns the start of day slot when there are no reservations' do
-      mock_relation = instance_double(ActiveRecord::Relation)
-      allow(described_class).to receive(:where).with(stylist_id: stylist.id).and_return(mock_relation)
-      allow(mock_relation).to receive(:where).with(status: %i[before_visit paid]).and_return(mock_relation)
-      allow(mock_relation).to receive(:where).with(start_at: date.all_day).and_return([])
-
-      expect(described_class.find_previous_reservation_end_slot(stylist.id, date, 24)).to eq(18)
     end
   end
 

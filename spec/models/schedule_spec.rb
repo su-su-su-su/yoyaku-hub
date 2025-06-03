@@ -61,7 +61,7 @@ RSpec.describe Schedule do
 
       before do
         allow(schedule).to receive(:holiday?).and_return(false)
-        allow(WorkingHour).to receive(:date_only_for).with(stylist.id, date).and_return(working_hour)
+        allow(stylist).to receive(:working_hour_for_target_date).with(date).and_return(working_hour)
       end
 
       it 'returns the working hour' do
@@ -69,11 +69,9 @@ RSpec.describe Schedule do
       end
 
       it 'memoizes the result' do
-        allow(WorkingHour).to receive(:date_only_for).and_return(working_hour)
-
         2.times { schedule.working_hour }
 
-        expect(WorkingHour).to have_received(:date_only_for).once
+        expect(stylist).to have_received(:working_hour_for_target_date).with(date).once
       end
     end
   end
@@ -125,11 +123,13 @@ RSpec.describe Schedule do
 
   describe '#update_reservation_limit' do
     let(:slot_idx) { 10 }
-    let(:limit) { instance_double(ReservationLimit, max_reservations: nil, save: true) }
+    let(:limit) { instance_double(ReservationLimit, save: true) }
+    let(:reservation_limits_relation_double) { instance_double(ActiveRecord::Relation) }
 
     before do
-      allow(ReservationLimit).to receive(:find_or_initialize_by)
-        .with(stylist_id: stylist.id, target_date: date, time_slot: slot_idx)
+      allow(stylist).to receive(:reservation_limits).and_return(reservation_limits_relation_double)
+      allow(reservation_limits_relation_double).to receive(:find_or_initialize_by)
+        .with(target_date: date, time_slot: slot_idx)
         .and_return(limit)
     end
 
@@ -137,9 +137,10 @@ RSpec.describe Schedule do
       it 'increments max_reservations' do
         stored_value = nil
 
-        allow(limit).to receive(:max_reservations) { stored_value }
-        allow(limit).to receive(:max_reservations=) { |val| stored_value = val }
-        allow(limit).to receive(:save)
+        allow(limit).to receive(:max_reservations).and_return(nil, 0)
+        allow(limit).to receive(:max_reservations=) do |value|
+          stored_value = value
+        end
 
         schedule.update_reservation_limit(slot_idx, 'up')
 
@@ -151,13 +152,12 @@ RSpec.describe Schedule do
     context 'when direction is "down" and max_reservations is 0' do
       before do
         allow(limit).to receive(:max_reservations).and_return(0)
+        allow(limit).to receive(:max_reservations=)
       end
 
       it 'does not decrement max_reservations' do
-        allow(limit).to receive(:max_reservations=)
-
         schedule.update_reservation_limit(slot_idx, 'down')
-
+        allow(limit).to receive(:max_reservations=)
         expect(limit).not_to have_received(:max_reservations=)
       end
     end
@@ -165,14 +165,13 @@ RSpec.describe Schedule do
     context 'when direction is "down" and max_reservations is greater than 0' do
       before do
         allow(limit).to receive(:max_reservations).and_return(2)
+        allow(limit).to receive(:max_reservations=)
       end
 
       it 'decrements max_reservations' do
-        allow(limit).to receive(:max_reservations=)
-
         schedule.update_reservation_limit(slot_idx, 'down')
-
         expect(limit).to have_received(:max_reservations=).with(1)
+        expect(limit).to have_received(:save)
       end
     end
   end
@@ -238,16 +237,16 @@ RSpec.describe Schedule do
     end
 
     before do
-      relation1 = instance_double(ActiveRecord::Relation)
-      relation2 = instance_double(ActiveRecord::Relation)
-      where_chain = instance_double(ActiveRecord::QueryMethods::WhereChain)
+      relation_for_stylist_reservations = instance_double(ActiveRecord::Relation)
+      relation_after_date_filter = instance_double(ActiveRecord::Relation)
+      where_chain_for_status = instance_double(ActiveRecord::QueryMethods::WhereChain)
 
-      allow(Reservation).to receive(:where).with(stylist_id: stylist.id).and_return(relation1)
-      allow(relation1).to receive(:where).with(start_at: date.all_day).and_return(relation2)
-      allow(relation2).to receive(:where).and_return(where_chain)
-      allow(where_chain).to receive(:not).with(status: %i[canceled no_show]).and_return(reservations)
-
-      allow(reservations).to receive(:each).and_yield(reservations[0]).and_yield(reservations[1])
+      allow(stylist).to receive(:stylist_reservations).and_return(relation_for_stylist_reservations)
+      allow(relation_for_stylist_reservations)
+        .to receive(:where).with(start_at: date.all_day)
+        .and_return(relation_after_date_filter)
+      allow(relation_after_date_filter).to receive(:where).with(no_args).and_return(where_chain_for_status)
+      allow(where_chain_for_status).to receive(:not).with(status: %i[canceled no_show]).and_return(reservations)
 
       allow(schedule).to receive(:to_slot_index).with(reservations[0].start_at).and_return(20)
       allow(schedule).to receive(:to_slot_index).with(reservations[0].end_at).and_return(23)
@@ -283,10 +282,13 @@ RSpec.describe Schedule do
     end
 
     before do
-      allow(limits).to receive(:each).and_yield(limits[0]).and_yield(limits[1])
       relation = instance_double(ActiveRecord::Relation)
-      allow(relation).to receive(:find_each) { |&block| limits.each(&block) }
-      allow(ReservationLimit).to receive(:where).with(stylist_id: stylist.id, target_date: date).and_return(relation)
+
+      allow(stylist).to receive(:reservation_limits).and_return(relation)
+      allow(relation).to receive(:where).with(target_date: date).and_return(relation)
+      allow(relation).to receive(:find_each)
+        .and_yield(limits[0])
+        .and_yield(limits[1])
     end
 
     it 'returns a hash of slot indices to reservation limits' do
@@ -336,24 +338,32 @@ RSpec.describe Schedule do
     let(:relation_without_nil_end_at) { instance_double(ActiveRecord::Relation, includes: reservations) }
 
     before do
-      allow(Reservation).to receive(:where).with(stylist_id: stylist.id).and_return(relation_with_stylist)
-      allow(relation_with_stylist).to receive(:where).with(status: %i[before_visit
-                                                                      paid]).and_return(relation_with_status)
-      allow(relation_with_status).to receive(:where).with(start_at: date.all_day).and_return(relation_with_date)
+      relation_for_stylist_reservations = instance_double(ActiveRecord::Relation)
+      relation_after_status_filter = instance_double(ActiveRecord::Relation)
+      relation_after_date_filter = instance_double(ActiveRecord::Relation)
+      where_chain_for_start_at_not_nil = instance_double(ActiveRecord::QueryMethods::WhereChain)
+      relation_after_start_at_not_nil = instance_double(ActiveRecord::Relation)
+      where_chain_for_end_at_not_nil = instance_double(ActiveRecord::QueryMethods::WhereChain)
+      relation_after_end_at_not_nil = instance_double(ActiveRecord::Relation)
 
-      allow(relation_with_date).to receive(:where).with(no_args).and_return(where_chain_for_start_at)
-      allow(where_chain_for_start_at).to receive(:not).with(start_at: nil).and_return(relation_without_nil_start_at)
+      allow(stylist).to receive(:stylist_reservations).and_return(relation_for_stylist_reservations)
+      allow(relation_for_stylist_reservations)
+        .to receive(:where).with(status: %i[before_visit paid])
+        .and_return(relation_after_status_filter)
+      expected_start_time = date.beginning_of_day.in_time_zone
+      expected_end_time = date.end_of_day.in_time_zone
+      allow(relation_after_status_filter).to receive(:where)
+        .with('start_at >= ? AND end_at <= ?', expected_start_time, expected_end_time)
+        .and_return(relation_after_date_filter)
+      allow(relation_after_date_filter).to receive(:where).with(no_args).and_return(where_chain_for_start_at_not_nil)
+      allow(where_chain_for_start_at_not_nil)
+        .to receive(:not).with(start_at: nil).and_return(relation_after_start_at_not_nil)
+      allow(relation_after_start_at_not_nil).to receive(:where).with(no_args).and_return(where_chain_for_end_at_not_nil)
+      allow(where_chain_for_end_at_not_nil).to receive(:not).with(end_at: nil).and_return(relation_after_end_at_not_nil)
+      allow(relation_after_end_at_not_nil).to receive(:includes).with(:menus, :customer).and_return(reservations)
 
-      allow(relation_without_nil_start_at).to receive(:where).with(no_args).and_return(where_chain_for_end_at)
-      allow(where_chain_for_end_at).to receive(:not).with(end_at: nil).and_return(relation_without_nil_end_at)
-
-      allow(relation_without_nil_end_at).to receive(:includes).with(:menus, :customer).and_return(reservations)
-
-      allow(reservations).to receive(:each).and_yield(reservations[0]).and_yield(reservations[1])
       allow(schedule).to receive(:to_slot_index).with(reservations[0].start_at).and_return(20)
-      allow(schedule).to receive(:to_slot_index).with(reservations[0].end_at).and_return(23)
       allow(schedule).to receive(:to_slot_index).with(reservations[1].start_at).and_return(22)
-      allow(schedule).to receive(:to_slot_index).with(reservations[1].end_at).and_return(24)
     end
 
     it 'returns a hash of slot indices to arrays of reservations' do

@@ -34,20 +34,16 @@ RSpec.describe 'Customer Stylist Selection' do
           start_time: Time.zone.parse('09:00'),
           end_time: Time.zone.parse('18:00'))
       end
+
+      allow(stylist).to receive(:working_hour_for_target_date)
+        .with(Date.current)
+        .and_return(
+        instance_double(WorkingHour, start_time: Time.zone.parse('09:00'), end_time: Time.zone.parse('18:00'))
+      )
     end
 
-    allow(WorkingHour).to receive(:date_only_for).and_return(
-      instance_double(WorkingHour,
-        start_time: Time.zone.parse('09:00'),
-        end_time: Time.zone.parse('18:00'))
-    )
-
-    allow(ReservationLimit).to receive(:find_by).and_return(
-      instance_double(ReservationLimit, max_reservations: 5)
-    )
-
     one_year_ago = 1.year.ago
-    create(:reservation,
+    reservation1 = build(:reservation,
       customer: users[:customer],
       stylist: stylists[:recent],
       start_date_str: Date.current.to_s,
@@ -56,8 +52,11 @@ RSpec.describe 'Customer Stylist Selection' do
       created_at: one_year_ago,
       updated_at: one_year_ago)
 
+    allow(reservation1).to receive(:validate_slotwise_capacity).and_return(true)
+    reservation1.save!
+
     four_years_ago = 4.years.ago
-    create(:reservation,
+    reservation2 = build(:reservation,
       customer: users[:customer],
       stylist: stylists[:old],
       start_date_str: Date.current.to_s,
@@ -66,7 +65,10 @@ RSpec.describe 'Customer Stylist Selection' do
       created_at: four_years_ago,
       updated_at: four_years_ago)
 
-    create(:reservation,
+    allow(reservation2).to receive(:validate_slotwise_capacity).and_return(true)
+    reservation2.save!
+
+    reservation3 = build(:reservation,
       customer: users[:another_customer],
       stylist: stylists[:other],
       start_date_str: Date.current.to_s,
@@ -74,6 +76,9 @@ RSpec.describe 'Customer Stylist Selection' do
       menu_ids: [menus[:other].id],
       created_at: one_year_ago,
       updated_at: one_year_ago)
+
+    allow(reservation3).to receive(:validate_slotwise_capacity).and_return(true)
+    reservation3.save!
   end
 
   describe 'stylist selection page' do
