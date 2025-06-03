@@ -199,7 +199,7 @@ module Stylists
       saturday_working_hour.end_time = saturday_end
       saturday_working_hour.save!
 
-      sunday_working_hour = current_user.working_hours.find_or_initialize_by( day_of_week: 0,
+      sunday_working_hour = current_user.working_hours.find_or_initialize_by(day_of_week: 0,
         target_date: nil)
       sunday_working_hour.start_time = sunday_start
       sunday_working_hour.end_time = sunday_end

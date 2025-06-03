@@ -52,7 +52,6 @@ Metrics/ClassLength:
   Exclude:
     - app/controllers/stylists/shift_settings_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
-    - app/models/reservation.rb
     - app/models/schedule.rb
     - app/controllers/stylists/shift_settings_controller.rb
     - app/models/user.rb
@@ -69,7 +68,6 @@ Metrics/AbcSize:
   Max: 20
   Exclude:
     - app/models/user.rb
-    - app/controllers/stylists/shift_settings/holidays_controller.rb
     - app/controllers/stylists/shift_settings_controller.rb
     - app/controllers/customers/stylists/weeklies_controller.rb
     - app/models/reservation.rb
@@ -78,7 +76,6 @@ Metrics/MethodLength:
   Max: 20
   Exclude:
     - app/controllers/stylists/shift_settings_controller.rb
-    - app/models/reservation.rb
 
 Metrics/BlockLength:
   Exclude:
