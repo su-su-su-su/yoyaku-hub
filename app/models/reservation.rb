@@ -32,54 +32,6 @@ class Reservation < ApplicationRecord
     end
   end
 
-  def self.find_next_reservation_start_slot(stylist_id, date, from_slot)
-    working_hour = WorkingHour.date_only_for(stylist_id, date)
-    day_end_slot = if working_hour
-                     to_slot_index(working_hour.end_time)
-                   else
-                     48
-                   end
-
-    day_start = date.beginning_of_day
-    day_end   = date.end_of_day
-
-    reservations_in_day = where(stylist_id: stylist_id)
-      .where(status: %i[before_visit paid])
-      .where(start_at: day_start..day_end)
-
-    start_slots = reservations_in_day.map do |res|
-      to_slot_index(res.start_at)
-    end
-
-    next_start_slots = start_slots.select { |slot| slot >= from_slot }
-
-    next_start_slots.min || day_end_slot
-  end
-
-  def self.find_previous_reservation_end_slot(stylist_id, date, from_slot)
-    working_hour = WorkingHour.date_only_for(stylist_id, date)
-    day_start_slot = if working_hour
-                       to_slot_index(working_hour.start_time)
-                     else
-                       0
-                     end
-
-    day_start = date.beginning_of_day
-    day_end   = date.end_of_day
-
-    reservations_in_day = where(stylist_id: stylist_id)
-      .where(status: %i[before_visit paid])
-      .where(start_at: day_start..day_end)
-
-    end_slots = reservations_in_day.map do |res|
-      to_slot_index(res.end_at)
-    end
-
-    prev_end_slots = end_slots.select { |slot| slot <= from_slot }
-
-    prev_end_slots.max || day_start_slot
-  end
-
   def self.to_slot_index(time)
     (time.hour * 2) + (time.min >= 30 ? 1 : 0)
   end
