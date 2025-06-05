@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+ruby '3.4.4'
 gem 'devise'
 gem 'devise-i18n'
 gem 'dotenv-rails'
