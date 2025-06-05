@@ -1,69 +1,51 @@
 <!doctype html>
 <html>
   <head>
-    <title>The page you were looking for doesn't exist (404)</title>
+    <meta charset="UTF-8" />
+    <title>ページが見つかりません (404) | YOYAKU HUB</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
-      .rails-default-error-page {
-        background-color: #efefef;
-        color: #2e2f30;
-        text-align: center;
-        font-family: arial, sans-serif;
-        margin: 0;
-      }
-
-      .rails-default-error-page div.dialog {
-        width: 95%;
-        max-width: 33em;
-        margin: 4em auto 0;
-      }
-
-      .rails-default-error-page div.dialog > div {
-        border: 1px solid #ccc;
-        border-right-color: #999;
-        border-left-color: #999;
-        border-bottom-color: #bbb;
-        border-top: #b00100 solid 4px;
-        border-top-left-radius: 9px;
-        border-top-right-radius: 9px;
-        background-color: white;
-        padding: 7px 12% 0;
-        box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-      }
-
-      .rails-default-error-page h1 {
-        font-size: 100%;
-        color: #730e15;
-        line-height: 1.5em;
-      }
-
-      .rails-default-error-page div.dialog > p {
-        margin: 0 0 1em;
-        padding: 1em;
-        background-color: #f7f7f7;
-        border: 1px solid #ccc;
-        border-right-color: #999;
-        border-left-color: #999;
-        border-bottom-color: #999;
-        border-bottom-left-radius: 4px;
-        border-bottom-right-radius: 4px;
-        border-top-color: #dadada;
-        color: #666;
-        box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
   </head>
 
-  <body class="rails-default-error-page">
-    <!-- This file lives in public/404.html -->
-    <div class="dialog">
-      <div>
-        <h1>The page you were looking for doesn't exist.</h1>
-        <p>You may have mistyped the address or the page may have moved.</p>
+  <body class="bg-gray-50">
+    <!-- シンプルなナビゲーションバー -->
+    <div class="navbar bg-[#3e5cd7] text-white">
+      <div class="navbar-start">
+        <a class="btn btn-ghost text-xl" href="https://yoyakuhub.jp"
+          >YOYAKU HUB</a
+        >
       </div>
-      <p>
-        If you are the application owner check the logs for more information.
-      </p>
+      <div class="navbar-end">
+        <a class="btn btn-ghost" href="/users/sign_in">ログイン</a>
+      </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="min-h-screen flex items-center justify-center py-12">
+      <div class="max-w-lg p-8 text-center">
+        <img
+          src="/images/customers/Page Not Found 2.svg"
+          alt="Page Not Found"
+          class="w-full max-w-xs h-auto mx-auto mb-8"
+        />
+        <h1 class="text-3xl text-gray-800 mb-4 font-light">
+          ページが見つかりません
+        </h1>
+        <p class="text-lg text-gray-600 leading-relaxed mb-8">
+          お探しのページは存在しないか、移動した可能性があります。<br />
+          URLをご確認いただくか、トップページからお探しください。
+        </p>
+        <a
+          href="/login"
+          class="text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+          >ログインに戻る</a
+        >
+      </div>
     </div>
   </body>
 </html>
