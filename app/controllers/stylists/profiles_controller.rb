@@ -11,8 +11,8 @@ module Stylists
 
     def update
       @user = current_user
-      @user.validating_profile = true
-      if @user.update(stylist_params)
+      @user.assign_attributes(stylist_params)
+      if @user.save(context: :profile_completion)
         redirect_to stylists_dashboard_path, notice: t('stylists.profiles.updated')
       else
         render :edit, status: :unprocessable_entity
