@@ -27,7 +27,6 @@ class User < ApplicationRecord
   validates :family_name, :given_name, presence: true, if: :profile_validation_required?
   validates :family_name_kana, :given_name_kana, presence: true, if: :profile_validation_required?
   validates :gender, :date_of_birth, presence: true, if: :profile_validation_required?
-  attr_accessor :validating_profile
 
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
@@ -49,7 +48,7 @@ class User < ApplicationRecord
   end
 
   def profile_validation_required?
-    persisted? || validating_profile == true
+    persisted? || validation_context == :profile_completion
   end
 
   def profile_complete?
@@ -59,7 +58,7 @@ class User < ApplicationRecord
   end
 
   def trying_to_complete_profile?
-    validating_profile == true
+    validation_context == :profile_completion
   end
 
   def default_shift_settings_configured?

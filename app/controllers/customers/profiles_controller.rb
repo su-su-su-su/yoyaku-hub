@@ -11,8 +11,8 @@ module Customers
 
     def update
       @user = current_user
-      @user.validating_profile = true
-      if @user.update(customer_params)
+      @user.assign_attributes(customer_params)
+      if @user.save(context: :profile_completion)
         redirect_to customers_dashboard_path, notice: t('customers.profiles.updated')
       else
         render :edit, status: :unprocessable_entity
