@@ -37,12 +37,19 @@ set :keep_releases, 5
 
 # Uncomment the following to require manually verifying the host key before first deploy.
 set :ssh_options, verify_host_key: :secure
+set :rbenv_type, :user
+set :rbenv_ruby, '3.4.4'
+set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
 
 set :rbenv_map_bins, %w{rake gem bundle ruby rails puma pumactl yarn node}
 
 set :bundle_path, -> { shared_path.join('bundle') }
-set :bundle_without, %w{development test}.join(' ')
-set :bundle_flags, '--deployment --quiet'
+set :bundle_flags, '--quiet'
+set :bundle_jobs, 2
+set :bundle_config, {
+  'deployment' => 'true',
+  'without' => 'development test'
+}
 
 # Rails settings
 set :rails_env, 'production'
