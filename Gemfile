@@ -46,7 +46,6 @@ gem 'slim-rails'
 gem 'holiday_jp'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
-gem 'sassc-rails'
 gem 'simple_calendar'
 
 group :development, :test do
@@ -60,9 +59,6 @@ group :development, :test do
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem 'brakeman', require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem 'rubocop-rails-omakase', require: false
 end
 
 group :development do
