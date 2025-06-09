@@ -57,10 +57,6 @@ class User < ApplicationRecord
       gender.present? && date_of_birth.present?
   end
 
-  def trying_to_complete_profile?
-    validation_context == :profile_completion
-  end
-
   def default_shift_settings_configured?
     default_working_hour_exists = working_hours.exists?(target_date: nil)
     default_reservation_limit_exists = reservation_limits.exists?(target_date: nil, time_slot: nil)
