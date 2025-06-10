@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customer Reservation Confirmation' do
   let(:customer) { create(:customer) }
   let(:stylist) { create(:stylist) }
@@ -149,3 +150,4 @@ RSpec.describe 'Customer Reservation Confirmation' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

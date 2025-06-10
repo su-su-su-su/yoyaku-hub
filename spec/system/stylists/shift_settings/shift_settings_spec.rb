@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Stylist shift settings' do
   let(:stylist) { create(:user, role: :stylist) }
 
@@ -82,6 +83,7 @@ RSpec.describe 'Stylist shift settings' do
       end
     end
 
+    # rubocop:disable RSpec/ExampleLength
     it 'submits normal working hours and holiday settings and shows as configured on index page' do
       normal_day = 1
       holiday_day = 5
@@ -142,6 +144,7 @@ RSpec.describe 'Stylist shift settings' do
       expect(month_card).to have_no_content('未設定')
     end
   end
+  # rubocop:enable RSpec/ExampleLength
 
   describe 'Access restrictions' do
     it 'restricts access for non-stylist users' do
@@ -161,3 +164,4 @@ RSpec.describe 'Stylist shift settings' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

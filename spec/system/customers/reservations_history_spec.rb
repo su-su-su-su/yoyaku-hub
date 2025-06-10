@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customer Reservation History' do
   let(:customer) { create(:customer) }
   let(:stylist) { create(:stylist) }
@@ -264,3 +265,4 @@ RSpec.describe 'Customer Reservation History' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

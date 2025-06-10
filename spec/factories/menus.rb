@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/BlockLength
 FactoryBot.define do
   factory :menu do
     sequence(:name) { |n| "メニュー#{n}" }
@@ -61,3 +62,4 @@ FactoryBot.define do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

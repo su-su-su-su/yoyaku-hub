@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe User do
   def setup_working_hour(stylist, day: Date.current.wday, start_time: '09:00', end_time: '17:00')
     create(:working_hour,
@@ -917,3 +918,4 @@ RSpec.describe User do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Stylist Default Shift Settings' do
   let(:stylist) { create(:user, role: :stylist) }
   let(:settings_path) { stylists_shift_settings_path }
@@ -48,6 +49,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
   end
 
   describe 'Setting and updating default settings' do
+    # rubocop:disable RSpec/ExampleLength
     it 'can set new default settings for all items' do
       visit settings_path
 
@@ -101,7 +103,9 @@ RSpec.describe 'Stylist Default Shift Settings' do
       end
       expect(page).to have_select('default_settings[reservation_limit][max_reservations]', selected: '2')
     end
+    # rubocop:enable RSpec/ExampleLength
 
+    # rubocop:disable RSpec/ExampleLength
     it 'can update existing default settings for all items' do
       (1..5).each do |wd|
         create(:working_hour, stylist: stylist, day_of_week: wd, target_date: nil, start_time: Time.zone.parse('08:00'))
@@ -174,7 +178,9 @@ RSpec.describe 'Stylist Default Shift Settings' do
       end
       expect(page).to have_select('default_settings[reservation_limit][max_reservations]', selected: '0')
     end
+    # rubocop:enable RSpec/ExampleLength
 
+    # rubocop:disable RSpec/ExampleLength
     it 'can remove all holidays while setting other defaults' do
       create(:holiday, stylist: stylist, day_of_week: 0, target_date: nil)
       create(:holiday, stylist: stylist, day_of_week: 6, target_date: nil)
@@ -224,7 +230,9 @@ RSpec.describe 'Stylist Default Shift Settings' do
       end
       expect(page).to have_select('default_settings[reservation_limit][max_reservations]', selected: '1')
     end
+    # rubocop:enable RSpec/ExampleLength
 
+    # rubocop:disable RSpec/ExampleLength
     it 'can set national holidays as a holiday while setting other defaults' do
       Holiday.where(stylist_id: stylist.id, day_of_week: 7, target_date: nil).destroy_all
       (0..7).each do |wd|
@@ -275,5 +283,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       end
       expect(page).to have_select('default_settings[reservation_limit][max_reservations]', selected: '2')
     end
+    # rubocop:enable RSpec/ExampleLength
   end
 end
+# rubocop:enable Metrics/BlockLength

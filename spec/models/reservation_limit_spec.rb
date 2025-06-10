@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe ReservationLimit do
   describe 'associations' do
     let(:stylist) { create(:user, :stylist) }
@@ -58,3 +59,4 @@ RSpec.describe ReservationLimit do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

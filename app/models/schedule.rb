@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class Schedule
   attr_reader :stylist, :date
 
@@ -132,3 +133,4 @@ class Schedule
     map
   end
 end
+# rubocop:enable Metrics/ClassLength

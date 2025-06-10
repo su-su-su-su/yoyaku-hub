@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/BlockLength
 FactoryBot.define do
   factory :user do
     sequence(:email) { |n| "user#{n}@example.com" }
@@ -48,3 +49,4 @@ FactoryBot.define do
     factory :stylist, traits: [:stylist]
   end
 end
+# rubocop:enable Metrics/BlockLength

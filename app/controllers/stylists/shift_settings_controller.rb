@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 module Stylists
+  # rubocop:disable Metrics/ClassLength
   class ShiftSettingsController < StylistsController
     before_action :authenticate_user!
     before_action -> { ensure_role(:stylist) }
     before_action :set_date_info, only: %i[index]
     before_action :ensure_profile_complete
 
+    # rubocop:disable Metrics/AbcSize
     def index
       @weekday_hours = WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 1))
       @saturday_hours = WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 6))
@@ -31,7 +33,9 @@ module Stylists
 
       @time_options = WorkingHour.full_time_options
     end
+    # rubocop:enable Metrics/AbcSize
 
+    # rubocop:disable Metrics/AbcSize
     def show
       @year = params[:year].to_i
       @month = params[:month].to_i
@@ -54,10 +58,13 @@ module Stylists
 
       @time_options = WorkingHour.full_time_options
     end
+    # rubocop:enable Metrics/AbcSize
 
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
     def create
       shift_data_params = params[:shift_data] || {}
 
+      # rubocop:disable Metrics/BlockLength
       shift_data_params.each_value do |day_values|
         date_str = day_values[:date]
         date = begin
@@ -100,9 +107,11 @@ module Stylists
 
         save_reservation_limits(date, start_time_obj, end_time_obj, max_res_str.to_i)
       end
+      # rubocop:enable Metrics/BlockLength
 
       redirect_to stylists_shift_settings_path, notice: t('flash.batch_setting_success')
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
 
     def update_defaults
       settings_params = default_settings_params
@@ -126,6 +135,7 @@ module Stylists
       @next_next_month = next_next_month_date.month
     end
 
+    # rubocop:disable Metrics/AbcSize
     def save_reservation_limits(date, start_time_obj, end_time_obj, max_reservations)
       rl_day = current_user.reservation_limits.find_or_initialize_by(
         target_date: date,
@@ -146,6 +156,7 @@ module Stylists
         rl_slot.save!
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def month_configured?(year, month)
       start_date = Date.new(year, month, 1)
@@ -173,6 +184,7 @@ module Stylists
       )
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def save_default_working_hours(working_hour_params)
       return unless working_hour_params
 
@@ -211,7 +223,9 @@ module Stylists
       holiday_working_hour.end_time = holiday_end
       holiday_working_hour.save!
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
+    # rubocop:disable Metrics/AbcSize
     def save_default_holidays(holiday_params)
       return unless holiday_params
 
@@ -229,6 +243,7 @@ module Stylists
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def save_default_reservation_limit(limit_params)
       return unless limit_params
@@ -239,4 +254,5 @@ module Stylists
       limit.save!
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
