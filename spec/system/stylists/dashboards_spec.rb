@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe '/stylists/dashboards' do
   let(:stylist) { create(:user, :stylist) }
 
@@ -213,3 +214,4 @@ RSpec.describe '/stylists/dashboards' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

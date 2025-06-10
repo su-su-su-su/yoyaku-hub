@@ -2,6 +2,7 @@
 
 module Customers
   module Stylists
+    # rubocop:disable Metrics/ClassLength
     class WeekliesController < ApplicationController
       before_action :authenticate_user!
       before_action -> { ensure_role(:customer) }
@@ -137,6 +138,7 @@ module Customers
         (time_str >= day_start_hm) && (end_time.strftime('%H:%M') <= day_end_hm)
       end
 
+      # rubocop:disable Metrics/AbcSize
       def build_time_slots_for_week(_dates)
         valid_working_hours = @wh_non_holiday.reject do |wh|
           wh.start_time.hour.zero? && wh.end_time.hour.zero?
@@ -158,6 +160,7 @@ module Customers
         end
         slots
       end
+      # rubocop:enable Metrics/AbcSize
 
       def slot_for_time(time)
         (time.hour * 2) + (time.min >= 30 ? 1 : 0)
@@ -176,5 +179,6 @@ module Customers
         end
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

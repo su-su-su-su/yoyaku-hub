@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -90,6 +91,7 @@ class User < ApplicationRecord
       reservation_limits.exists?(target_date: month_range)
   end
 
+  # rubocop:disable Metrics/AbcSize
   def self.update_existing_user_with_omniauth(user, auth)
     user.email = auth.info.email
 
@@ -100,6 +102,7 @@ class User < ApplicationRecord
     user.save if user.changed?
     user
   end
+  # rubocop:enable Metrics/AbcSize
 
   def self.build_new_user_with_omniauth(auth, role)
     new_attrs = {
@@ -229,3 +232,4 @@ class User < ApplicationRecord
     prev_end_slots.max || day_start_slot
   end
 end
+# rubocop:enable Metrics/ClassLength

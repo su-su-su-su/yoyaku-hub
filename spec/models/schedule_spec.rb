@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe Schedule do
   let!(:stylist) { create(:user, :stylist) }
   let(:date) { Date.new(2025, 3, 25) }
@@ -97,6 +98,7 @@ RSpec.describe Schedule do
       end
     end
 
+    # rubocop:disable RSpec/MultipleMemoizedHelpers
     context 'when working_hour exists' do
       let(:working_hour) { instance_double(WorkingHour) }
       let(:hours) { { start: '09:00', end: '17:00' } }
@@ -119,8 +121,10 @@ RSpec.describe Schedule do
         expect(schedule.time_slots).to eq(['09:00', '09:30', '10:00'])
       end
     end
+    # rubocop:enable RSpec/MultipleMemoizedHelpers
   end
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
   describe '#update_reservation_limit' do
     let(:slot_idx) { 10 }
     let(:limit) { instance_double(ReservationLimit, save: true) }
@@ -175,6 +179,7 @@ RSpec.describe Schedule do
       end
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 
   describe '.to_slot_index' do
     context 'when given a string' do
@@ -309,6 +314,7 @@ RSpec.describe Schedule do
     end
   end
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
   describe '#reservations_map' do
     let(:reservations) do
       [
@@ -396,4 +402,6 @@ RSpec.describe Schedule do
       expect(schedule).to have_received(:slotwise_reservations_map).once
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
+# rubocop:enable Metrics/BlockLength

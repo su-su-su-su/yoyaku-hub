@@ -16,6 +16,7 @@ class Reservation < ApplicationRecord
 
   attr_accessor :start_date_str, :start_time_str
 
+  # rubocop:disable Metrics/AbcSize
   def combine_date_and_time
     return if start_date_str.blank? || start_time_str.blank?
 
@@ -31,6 +32,7 @@ class Reservation < ApplicationRecord
       errors.add(:start_time_str, :invalid)
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   def self.to_slot_index(time)
     (time.hour * 2) + (time.min >= 30 ? 1 : 0)
@@ -61,6 +63,7 @@ class Reservation < ApplicationRecord
     errors.add(:base, '選択した日にちは休業日です')
   end
 
+  # rubocop:disable Metrics/AbcSize
   def validate_within_operating_hours
     return if start_at.blank? || end_at.blank?
     return if errors.present?
@@ -74,6 +77,7 @@ class Reservation < ApplicationRecord
     errors.add(:base, '予約開始時刻が営業時間より早いです') if start_at < open_time
     errors.add(:base, '施術終了時刻が営業時間を超えています') if end_at > close_time
   end
+  # rubocop:enable Metrics/AbcSize
 
   def validate_slotwise_capacity
     return if start_at.blank? || end_at.blank?

@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Stylists::Profiles' do
   let(:stylist) { create(:stylist) }
   let(:valid_attributes) do
@@ -143,3 +144,4 @@ RSpec.describe 'Stylists::Profiles' do
     expect(user.date_of_birth).to eq(attributes[:date_of_birth])
   end
 end
+# rubocop:enable Metrics/BlockLength

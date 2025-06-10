@@ -5,6 +5,7 @@ require 'factory_bot_rails'
 start_date = Time.zone.today.beginning_of_month
 end_date = Time.zone.today.end_of_month
 
+# rubocop:disable Metrics/BlockLength
 User.where(role: 1).find_each do |stylist|
   (start_date..end_date).each do |date|
     effective_wday = date.wday
@@ -63,3 +64,4 @@ User.where(role: 1).find_each do |stylist|
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

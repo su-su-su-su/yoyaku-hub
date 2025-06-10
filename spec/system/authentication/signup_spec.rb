@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'User signup' do
   context 'when signing up as a customer' do
     it 'allows registration with valid information' do
@@ -44,3 +45,4 @@ RSpec.describe 'User signup' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

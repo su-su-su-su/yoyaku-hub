@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customer menu viewing and selection' do
   let(:stylist) { create(:user, :stylist) }
   let(:customer) { create(:user, :customer) }
@@ -201,3 +202,4 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

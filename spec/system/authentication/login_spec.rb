@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'User login' do
   let!(:customer) { create(:user, :customer) }
   let!(:stylist) { create(:user, :stylist) }
@@ -101,3 +102,4 @@ RSpec.describe 'User login' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

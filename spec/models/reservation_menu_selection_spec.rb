@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe ReservationMenuSelection do
   let(:stylist) { create(:user, :stylist) }
   let(:customer) { create(:user, :customer) }
@@ -42,3 +43,4 @@ RSpec.describe ReservationMenuSelection do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

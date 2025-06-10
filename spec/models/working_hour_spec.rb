@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe WorkingHour do
   let(:stylist) { create(:user, role: :stylist) }
   let(:date) { Date.new(2023, 4, 1) }
@@ -125,3 +126,4 @@ RSpec.describe WorkingHour do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

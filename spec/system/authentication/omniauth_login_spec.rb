@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'OmniAuth Google Authentication' do
   describe 'User logs in via Google' do
     context 'when the user is new and registers as a customer' do
@@ -83,3 +84,4 @@ RSpec.describe 'OmniAuth Google Authentication' do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

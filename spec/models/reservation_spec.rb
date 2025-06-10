@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe Reservation do
   let(:customer) { create(:user, role: :customer) }
   let(:stylist) { create(:user, role: :stylist) }
@@ -40,12 +41,8 @@ RSpec.describe Reservation do
     allow(stylist).to receive(:working_hour_for_target_date)
       .with(Date.current).and_return(default_working_hour_for_date)
 
-    # Mock for stylist.reservation_limits relation
     allow(stylist).to receive(:reservation_limits).and_return(reservation_limits_relation_double)
 
-    # Default mock for stylist.reservation_limits.find_by(target_date:, time_slot:)
-    # This will be called by check_capacity_for_new_reservation for each slot.
-    # By default, allow 1 reservation per slot unless specified otherwise in a test context.
     allow(reservation_limits_relation_double).to receive(:find_by).and_return(
       instance_double(ReservationLimit, max_reservations: 1, class: ReservationLimit)
     )
@@ -222,3 +219,4 @@ RSpec.describe Reservation do
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

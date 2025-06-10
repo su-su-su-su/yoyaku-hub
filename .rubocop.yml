@@ -27,66 +27,41 @@ Style/Documentation:
 RSpec/ExampleLength:
   Max: 20
   Exclude:
-    - spec/system/stylists/shift_settings/shift_settings_spec.rb
-    - spec/system/stylists/shift_settings/defaults_spec.rb
 
 RSpec/MultipleExpectations:
   Enabled: false
 
 RSpec/MultipleMemoizedHelpers:
   Exclude:
-    - spec/system/stylists/schedules_spec.rb
-    - spec/models/schedule_spec.rb
-    - spec/system/customers/stylists/weeklies_spec.rb
 
 RSpec/NestedGroups:
   Exclude:
-    - spec/system/stylists/schedules_spec.rb
-    - spec/system/customers/stylists/weeklies_spec.rb
 
 RSpec/LetSetup:
   Exclude:
-    - spec/system/stylists/schedules_spec.rb
 
 Metrics/ClassLength:
   Exclude:
-    - app/controllers/stylists/shift_settings_controller.rb
-    - app/controllers/customers/stylists/weeklies_controller.rb
-    - app/models/schedule.rb
-    - app/controllers/stylists/shift_settings_controller.rb
-    - app/models/user.rb
 
 Metrics/CyclomaticComplexity:
   Exclude:
-    - app/controllers/stylists/shift_settings_controller.rb
 
 Metrics/PerceivedComplexity:
   Exclude:
-    - app/controllers/stylists/shift_settings_controller.rb
 
 Metrics/AbcSize:
   Max: 20
   Exclude:
-    - app/models/user.rb
-    - app/controllers/stylists/shift_settings_controller.rb
-    - app/controllers/customers/stylists/weeklies_controller.rb
-    - app/models/reservation.rb
 
 Metrics/MethodLength:
   Max: 20
   Exclude:
-    - app/controllers/stylists/shift_settings_controller.rb
 
 Metrics/BlockLength:
   Exclude:
-    - config/environments/development.rb
-    - config/routes.rb
-    - app/controllers/stylists/shift_settings_controller.rb
-    - db/seeds/shift_settings_date_based.rb
 
 RSpec/NoExpectationExample:
   Exclude:
-    - spec/system/customers/stylists/weeklies_spec.rb
 
 Style/MultilineIfModifier:
   Enabled: false

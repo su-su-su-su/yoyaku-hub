@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customers::Profiles' do
   let(:customer) { create(:customer) }
   let(:valid_attributes) do
@@ -143,3 +144,4 @@ RSpec.describe 'Customers::Profiles' do
     expect(user.date_of_birth).to eq(attributes[:date_of_birth])
   end
 end
+# rubocop:enable Metrics/BlockLength

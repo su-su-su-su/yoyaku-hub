@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customers::Stylists::Weeklies' do
   include RSpec::Rails::SystemExampleGroup
 
@@ -375,6 +376,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     end
   end
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
   describe 'Reservation symbols guide card display' do
     let(:card_display_stylist) { create(:stylist, email: 'card_display_stylist_revised@example.com') }
     let(:card_display_customer) { create(:customer, email: 'card_display_customer_revised@example.com') }
@@ -386,6 +388,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       sign_in card_display_customer
     end
 
+    # rubocop:disable RSpec/NestedGroups
     describe 'when the card should be displayed' do
       context 'with all active menus being longer than 30 minutes' do
         it 'displays the reservation symbols guide card' do
@@ -409,8 +412,10 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
         end
       end
     end
+    # rubocop:enable RSpec/NestedGroups
 
     describe 'when the card should NOT be displayed' do
+      # rubocop:disable RSpec/NestedGroups
       context 'with an active menu of 30 minutes or less' do
         let!(:menu_short_active) do
           create(:menu, stylist: card_display_stylist, name: 'ショートスパ(掲載中)', duration: 30, is_active: true)
@@ -428,6 +433,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           expect(page).to have_no_selector(guide_card_selector, text: guide_card_title_text)
         end
       end
+      # rubocop:enable RSpec/NestedGroups
     end
 
     describe 'Reservation slot symbol display logic' do
@@ -441,6 +447,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
         sign_in slot_test_customer
       end
 
+      # rubocop:disable RSpec/NestedGroups
       context 'when min_active_menu_duration is 60 minutes' do
         before do
           allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(60)
@@ -451,6 +458,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           let(:menu_60_min) { create(:menu, stylist: slot_test_stylist, duration: 60, name: 'TestCut 60min') }
 
           context 'with no existing reservations' do
+            # rubocop:disable RSpec/NoExpectationExample
             it 'shows ◎ for most slots, and × for slots too late' do
               visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_60_min.id])
               check_time_slot(card_test_base_date, '10:00', '◎')
@@ -458,6 +466,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
               check_time_slot(card_test_base_date, '18:00', '◎')
               check_time_slot(card_test_base_date, '18:30', '×')
             end
+            # rubocop:enable RSpec/NoExpectationExample
           end
 
           context 'with an existing reservation at 10:30-11:30 (Scenario A like)' do
@@ -465,6 +474,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
               create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '10:30', '11:30')
             end
 
+            # rubocop:disable RSpec/NoExpectationExample
             it 'shows correct symbols around the reservation' do
               visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_60_min.id])
               check_time_slot(card_test_base_date, '10:00', '×')
@@ -474,6 +484,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
               check_time_slot(card_test_base_date, '12:00', '△')
               check_time_slot(card_test_base_date, '12:30', '◎')
             end
+            # rubocop:enable RSpec/NoExpectationExample
           end
 
           context 'with reservations at 10:30-11:30 and 13:00-14:00 (Scenario B like)' do
@@ -482,16 +493,20 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
               create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '13:00', '14:00')
             end
 
+            # rubocop:disable RSpec/NoExpectationExample
             it 'shows ◎ at 11:30, ◎ at 12:00, and × at 12:30' do
               visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_60_min.id])
               check_time_slot(card_test_base_date, '11:30', '◎')
               check_time_slot(card_test_base_date, '12:00', '◎')
               check_time_slot(card_test_base_date, '12:30', '×')
             end
+            # rubocop:enable RSpec/NoExpectationExample
           end
         end
       end
+      # rubocop:enable RSpec/NestedGroups
 
+      # rubocop:disable RSpec/NestedGroups
       context 'when min_active_menu_duration is 30 minutes' do
         before do
           allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(30)
@@ -501,28 +516,34 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
         context 'with a selected menu of 30 minutes' do
           let(:menu_30_min) { create(:menu, stylist: slot_test_stylist, duration: 30, name: 'TestQuick 30min') }
 
+          # rubocop:disable RSpec/NoExpectationExample
           it 'shows ◎ for most slots, and no △' do
             visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_30_min.id])
             check_time_slot(card_test_base_date, '10:00', '◎')
             check_time_slot(card_test_base_date, '18:00', '◎')
             check_time_slot(card_test_base_date, '18:30', '◎')
           end
+          # rubocop:enable RSpec/NoExpectationExample
 
           context 'with an existing reservation at 10:30-11:00' do
             before do
               create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '10:30', '11:00')
             end
 
+            # rubocop:disable RSpec/NoExpectationExample
             it 'shows ◎ for adjacent slots' do
               visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_30_min.id])
               check_time_slot(card_test_base_date, '10:00', '◎')
               check_time_slot(card_test_base_date, '10:30', '×')
               check_time_slot(card_test_base_date, '11:00', '◎')
             end
+            # rubocop:enable RSpec/NoExpectationExample
           end
         end
       end
+      # rubocop:enable RSpec/NestedGroups
 
+      # rubocop:disable RSpec/NestedGroups
       context 'when min_active_menu_duration is 60 minutes and selected menu is 120 minutes' do
         let(:menu_120_min) { create(:menu, stylist: slot_test_stylist, duration: 120, name: 'TestLong 120min') }
 
@@ -535,14 +556,18 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '16:00', '17:00')
         end
 
+        # rubocop:disable RSpec/NoExpectationExample
         it 'shows ◎ at 17:00, △ at 17:30, ◎ at 18:00' do
           visit weekly_customers_stylist_menus_path(stylist_id: slot_test_stylist.id, menu_ids: [menu_120_min.id])
           check_time_slot(card_test_base_date, '17:00', '◎')
           check_time_slot(card_test_base_date, '17:30', '△')
           check_time_slot(card_test_base_date, '18:00', '◎')
         end
+        # rubocop:enable RSpec/NoExpectationExample
       end
+      # rubocop:enable RSpec/NestedGroups
 
+      # rubocop:disable RSpec/NestedGroups
       context 'when reservation_limit is 2 for a slot and one reservation exists' do
         let(:test_target_date) { card_test_base_date }
         let(:menu_for_this_test) do
@@ -588,6 +613,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           )
         end
 
+        # rubocop:disable RSpec/NoExpectationExample
         it 'shows "◎" for the slot, indicating it is still available' do
           visit weekly_customers_stylist_menus_path(
             stylist_id: slot_test_stylist.id,
@@ -595,7 +621,11 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           )
           check_time_slot(test_target_date, target_time_str, '◎')
         end
+        # rubocop:enable RSpec/NoExpectationExample
       end
+      # rubocop:enable RSpec/NestedGroups
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
+# rubocop:enable Metrics/BlockLength

@@ -2,6 +2,7 @@
 
 require 'rails_helper'
 
+# rubocop:disable Metrics/BlockLength
 RSpec.describe 'Stylists::Schedules' do
   let(:stylist) { create(:user, role: :stylist) }
   let(:customer) { create(:user, role: :customer) }
@@ -58,6 +59,7 @@ RSpec.describe 'Stylists::Schedules' do
       expect(page).to have_css('th', text: '残り受付可能数')
     end
 
+    # rubocop:disable RSpec/MultipleMemoizedHelpers
     describe 'changing available slots' do
       let(:slot_text) { '10:00' }
       let(:slot_index_to_test) { to_slot_index(slot_text) }
@@ -137,6 +139,7 @@ RSpec.describe 'Stylists::Schedules' do
         expect(reloaded_value_div_after_decrease).to have_text(expected_ui_text_after_decrease)
       end
     end
+    # rubocop:enable RSpec/MultipleMemoizedHelpers
   end
 
   describe 'Reservation Display' do
@@ -267,7 +270,9 @@ RSpec.describe 'Stylists::Schedules' do
     end
   end
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
   describe 'Two-tier Reservation Display' do
+    # rubocop:disable RSpec/LetSetup
     let!(:working_hour) do
       create(:working_hour,
         stylist: stylist,
@@ -275,6 +280,7 @@ RSpec.describe 'Stylists::Schedules' do
         start_time: '09:00',
         end_time: '12:00')
     end
+    # rubocop:enable RSpec/LetSetup
     let!(:taro_customer) { create(:user, role: :customer, family_name: '予約', given_name: '太郎') }
     let!(:hanako_customer) { create(:user, role: :customer, family_name: '予約', given_name: '花子') }
     let!(:menu_cut) { create(:menu, stylist: stylist, name: 'カット', duration: 60) }
@@ -312,6 +318,7 @@ RSpec.describe 'Stylists::Schedules' do
         expect(page).to have_css("tr[data-testid='reservation-row-2']")
       end
 
+      # rubocop:disable RSpec/NestedGroups
       context 'with two reservations starting at the same time' do
         let!(:taro_reservation) do
           create(:reservation, stylist: stylist, customer: taro_customer, menus: [menu_cut],
@@ -346,7 +353,9 @@ RSpec.describe 'Stylists::Schedules' do
           end
         end
       end
+      # rubocop:enable RSpec/NestedGroups
 
+      # rubocop:disable RSpec/NestedGroups
       context 'with overlapping reservations at different start times (10:30-11:30 and 11:00-12:00)' do
         let(:reservation_taro) do
           create(:reservation, stylist: stylist, customer: taro_customer, menus: [menu_cut],
@@ -400,6 +409,9 @@ RSpec.describe 'Stylists::Schedules' do
           end
         end
       end
+      # rubocop:enable RSpec/NestedGroups
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
+# rubocop:enable Metrics/BlockLength
