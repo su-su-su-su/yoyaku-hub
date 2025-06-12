@@ -6,7 +6,7 @@
 
   .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8.space-y-6
     h2 Googleアカウントを使って新規登録
-    .social-login.space-y-4
+    .social-login.space-y-4.flex.justify-center
       = render 'devise/shared/google_auth_link', button_text: '美容師 新規登録', role: 'stylist'
 
     .my-6.border-t
@@ -16,5 +16,5 @@
 
       = render 'devise/shared/form', f: f
 
-      .actions.mt-8
-        button.btn.btn-primary.w-full.py-3.text-base.rounded-lg.min-h-12 = t('devise.registrations.new.sign_up')
+      .actions.mt-8.flex.justify-center
+        button.btn.btn-primary.w-72.py-3.text-base.rounded-lg.min-h-12 = t('devise.registrations.new.sign_up')
