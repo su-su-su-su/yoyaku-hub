@@ -3,7 +3,7 @@
 module Stylists
   class SchedulesController < ApplicationController
     before_action :authenticate_user!
-    before_action -> { ensure_role(:stylist) }
+    before_action :ensure_stylist_role
     before_action :set_date, only: %i[show reservation_limits]
     before_action :set_stylist, only: %i[show]
     helper_method :to_slot_index

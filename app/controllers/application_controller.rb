@@ -27,10 +27,18 @@ class ApplicationController < ActionController::Base
 
   def ensure_role(role)
     allowed_roles = %w[customer stylist]
-    return unless allowed_roles.include?(role.to_s)
-    return if current_user&.role == role.to_s
+    return unless allowed_roles.include?(role)
+    return if current_user&.role == role
 
     redirect_to root_path, alert: t('alerts.no_permission')
+  end
+
+  def ensure_stylist_role
+    ensure_role('stylist')
+  end
+
+  def ensure_customer_role
+    ensure_role('customer')
   end
 
   def after_sign_out_path_for(_resource_or_scope)

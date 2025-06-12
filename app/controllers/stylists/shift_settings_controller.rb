@@ -4,7 +4,7 @@ module Stylists
   # rubocop:disable Metrics/ClassLength
   class ShiftSettingsController < StylistsController
     before_action :authenticate_user!
-    before_action -> { ensure_role(:stylist) }
+    before_action :ensure_stylist_role
     before_action :set_date_info, only: %i[index]
     before_action :ensure_profile_complete
 

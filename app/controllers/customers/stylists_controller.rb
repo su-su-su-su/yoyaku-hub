@@ -3,7 +3,7 @@
 module Customers
   class StylistsController < ApplicationController
     before_action :authenticate_user!
-    before_action -> { ensure_role(:customer) }
+    before_action :ensure_customer_role
     before_action :ensure_profile_complete
 
     def index

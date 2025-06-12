@@ -159,7 +159,7 @@ RSpec.describe 'Stylist shift settings' do
     it 'requires authentication' do
       visit stylists_shift_settings_path
 
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path('/login')
       expect(page).to have_no_content('シフト設定')
     end
   end

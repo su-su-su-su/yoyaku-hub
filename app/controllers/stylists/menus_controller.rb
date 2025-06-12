@@ -3,7 +3,7 @@
 module Stylists
   class MenusController < ApplicationController
     before_action :authenticate_user!
-    before_action -> { ensure_role(:stylist) }
+    before_action :ensure_stylist_role
     before_action :set_menu, only: %i[edit update]
     before_action :load_menus, only: %i[index create update]
 

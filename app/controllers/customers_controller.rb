@@ -5,10 +5,4 @@ class CustomersController < ApplicationController
   before_action :ensure_customer_role
 
   def show; end
-
-  private
-
-  def ensure_customer_role
-    ensure_role('customer')
-  end
 end

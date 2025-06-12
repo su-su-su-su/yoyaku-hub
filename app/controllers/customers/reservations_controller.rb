@@ -3,7 +3,7 @@
 module Customers
   class ReservationsController < ApplicationController
     before_action :authenticate_user!
-    before_action -> { ensure_role(:customer) }
+    before_action :ensure_customer_role
     before_action :set_reservation, only: %i[show cancel]
     before_action :set_reservation_form_data, only: %i[new create]
 
