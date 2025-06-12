@@ -33,6 +33,15 @@ class ApplicationController < ActionController::Base
     redirect_to root_path, alert: t('alerts.no_permission')
   end
 
+  def ensure_stylist_role
+    ensure_role('stylist')
+  end
+
+  def ensure_customer_role
+    ensure_role('customer')
+  end
+
+
   def after_sign_out_path_for(_resource_or_scope)
     new_user_session_path
   end

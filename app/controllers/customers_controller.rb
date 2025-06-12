@@ -6,9 +6,4 @@ class CustomersController < ApplicationController
 
   def show; end
 
-  private
-
-  def ensure_customer_role
-    ensure_role('customer')
-  end
 end

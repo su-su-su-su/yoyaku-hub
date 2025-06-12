@@ -19,10 +19,6 @@ class StylistsController < ApplicationController
 
   private
 
-  def ensure_stylist_role
-    ensure_role('stylist')
-  end
-
   def set_date_info_for_dashboard
     today = Time.zone.today
     @this_month_year = today.year
