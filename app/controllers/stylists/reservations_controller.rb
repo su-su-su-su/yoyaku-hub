@@ -3,7 +3,7 @@
 module Stylists
   class ReservationsController < ApplicationController
     before_action :authenticate_user!
-    before_action -> { ensure_role(:stylist) }
+    before_action :ensure_stylist_role
     before_action :set_reservation, only: %i[show edit update cancel]
     before_action :load_time_options, only: %i[edit update]
     before_action :load_active_menus, only: %i[edit update]
