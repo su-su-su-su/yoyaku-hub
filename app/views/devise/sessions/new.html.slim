@@ -11,8 +11,8 @@
 
   .form-container.bg-white.rounded-lg.shadow-sm.p-4.sm:p-6.md:p-8.space-y-6
     h2.mb-4 Googleでログインする
-    .social-login.space-y-4
-      = link_to omniauth_authorize_path(resource_name, :google_oauth2), data: { turbo: false }, class: 'gsi-material-button w-full' do
+    .social-login.space-y-4.flex.justify-center
+      = link_to omniauth_authorize_path(resource_name, :google_oauth2), data: { turbo: false }, class: 'gsi-material-button w-72' do
         .gsi-material-button-state
         .gsi-material-button-content-wrapper
           .gsi-material-button-icon
@@ -54,8 +54,8 @@
           = f.check_box :remember_me, class: "w-5 h-5"
           = f.label :remember_me, class: "text-sm"
 
-      .actions.mt-8
-        button.btn.btn-primary.w-full.py-3.text-base.rounded-lg.min-h-12 = t('devise.sessions.new.sign_in')
+      .actions.mt-8.flex.justify-center
+        button.btn.btn-primary.w-72.py-3.text-base.rounded-lg.min-h-12 = t('devise.sessions.new.sign_in')
 
   .mt-6.mb-8
     = render "devise/shared/links"
