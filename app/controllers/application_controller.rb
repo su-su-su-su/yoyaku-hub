@@ -27,8 +27,8 @@ class ApplicationController < ActionController::Base
 
   def ensure_role(role)
     allowed_roles = %w[customer stylist]
-    return unless allowed_roles.include?(role.to_s)
-    return if current_user&.role == role.to_s
+    return unless allowed_roles.include?(role)
+    return if current_user&.role == role
 
     redirect_to root_path, alert: t('alerts.no_permission')
   end
