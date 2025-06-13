@@ -2,8 +2,7 @@
 
 module Customers
   module Stylists
-    class MenusController < ApplicationController
-      before_action :authenticate_user!
+    class MenusController < Customers::ApplicationController
       before_action :set_stylist
       before_action :authorize_menu_access
 

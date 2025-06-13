@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module Stylists
-  class ProfilesController < ApplicationController
-    before_action :authenticate_user!
-    before_action :ensure_stylist_role
-
+  class ProfilesController < Stylists::ApplicationController
     def edit
       @user = current_user
     end

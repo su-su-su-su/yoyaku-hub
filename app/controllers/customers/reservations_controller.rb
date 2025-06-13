@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Customers
-  class ReservationsController < ApplicationController
-    before_action :authenticate_user!
+  class ReservationsController < Customers::ApplicationController
     before_action :ensure_customer_role
     before_action :set_reservation, only: %i[show cancel]
     before_action :set_reservation_form_data, only: %i[new create]

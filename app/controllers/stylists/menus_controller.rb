@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module Stylists
-  class MenusController < ApplicationController
-    before_action :authenticate_user!
-    before_action :ensure_stylist_role
+  class MenusController < Stylists::ApplicationController
     before_action :set_menu, only: %i[edit update]
     before_action :load_menus, only: %i[index create update]
 
