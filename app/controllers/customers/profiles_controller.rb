@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Customers
-  class ProfilesController < ApplicationController
-    before_action :authenticate_user!
+  class ProfilesController < Customers::ApplicationController
     before_action :ensure_customer_role
 
     def edit

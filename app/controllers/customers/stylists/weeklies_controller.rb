@@ -3,8 +3,7 @@
 module Customers
   module Stylists
     # rubocop:disable Metrics/ClassLength
-    class WeekliesController < ApplicationController
-      before_action :authenticate_user!
+    class WeekliesController < Customers::ApplicationController
       before_action :ensure_customer_role
       before_action :set_stylist
       before_action :set_selected_menus

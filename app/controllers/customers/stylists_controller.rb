@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Customers
-  class StylistsController < ApplicationController
-    before_action :authenticate_user!
+  class StylistsController < Customers::ApplicationController
     before_action :ensure_customer_role
     before_action :ensure_profile_complete
 
