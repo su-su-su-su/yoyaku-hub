@@ -2,7 +2,6 @@
 
 module Stylists
   class ProfilesController < Stylists::ApplicationController
-
     def edit
       @user = current_user
     end
