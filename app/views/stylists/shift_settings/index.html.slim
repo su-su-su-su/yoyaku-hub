@@ -9,7 +9,7 @@
   = form_with(url: update_defaults_stylists_shift_settings_path, method: :patch, local: true, scope: :default_settings) do |f|
     .bg-white.rounded-lg.shadow-sm.p-4.md:p-6.mt-4
       .section-block.py-6
-        = render "working_hour_form", f: f, time_options: @time_options, weekday_start_str: @weekday_start_str, weekday_end_str: @weekday_end_str, saturday_start_str: @saturday_start_str, saturday_end_str: @saturday_end_str, sunday_start_str: @sunday_start_str, sunday_end_str: @sunday_end_str
+        = render "working_hour_form", f: f, time_options: @time_options, working_hours: @default_working_hours
       .section-block.py-6
         = render "holiday_form", f: f, chosen_wdays: @default_holidays.pluck(:day_of_week)
       .section-block.py-6
@@ -20,35 +20,19 @@
   h2.text-xl.md:text-2xl.font-bold.mt-8.mb-4 毎月の受付設定
 
   .grid.grid-cols-3.gap-4.mt-4
-    .card.bg-base-100
-      .card-body.flex.flex-col.items-center
-        p.text-lg.font-bold
-          = "#{@this_month_year}"
-          br
-          = "#{@this_month}月"
-        - button_label = @is_this_month_configured ? "設定済み" : "未設定"
-        - btn_class = @is_this_month_configured ? "btn btn-primary mt-2 px-4 min-w-[80px] whitespace-nowrap" : "btn btn-gray mt-2 px-4 min-w-[80px] whitespace-nowrap"
-        = link_to show_stylists_shift_settings_path(year: @this_month_year, month: @this_month), class: btn_class do
-          = button_label
-    .card.bg-base-100
-      .card-body.flex.flex-col.items-center
-        p.text-lg.font-bold
-          = "#{@next_month_year}"
-          br
-          = "#{@next_month}月"
-        - button_label = @is_next_month_configured ? "設定済み" : "未設定"
-        - btn_class = @is_next_month_configured ? "btn btn-primary mt-2 px-4 min-w-[80px] whitespace-nowrap" : "btn btn-gray mt-2 px-4 min-w-[80px] whitespace-nowrap"
-        = link_to show_stylists_shift_settings_path(year: @next_month_year, month: @next_month), class: btn_class do
-          = button_label
-    .card.bg-base-100
-      .card-body.flex.flex-col.items-center
-        p.text-lg.font-bold
-          = "#{@next_next_month_year}"
-          br
-          = "#{@next_next_month}月"
-        - button_label = @is_next_next_month_configured ? "設定済み" : "未設定"
-        - btn_class = @is_next_next_month_configured ? "btn btn-primary mt-2 px-4 min-w-[80px] whitespace-nowrap" : "btn btn-gray mt-2 px-4 min-w-[80px] whitespace-nowrap"
-        = link_to show_stylists_shift_settings_path(year: @next_next_month_year, month: @next_next_month), class: btn_class do
-          = button_label
+    - @monthly_configs.each do |config|
+      .card.bg-base-100
+        .card-body.flex.flex-col.items-center
+          p.text-lg.font-bold
+            = "#{config[:date].year}"
+            br
+            = "#{config[:date].month}月"
+
+          - button_label = config[:configured] ? "設定済み" : "未設定"
+          - btn_class = config[:configured] ? "btn btn-primary mt-2 px-4 min-w-[80px] whitespace-nowrap" : "btn btn-gray mt-2 px-4 min-w-[80px] whitespace-nowrap"
+          = link_to show_stylists_shift_settings_path(year: config[:date].year, month: config[:date].month), class: btn_class do
+            = button_label
+
+
   .mt-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
     = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
