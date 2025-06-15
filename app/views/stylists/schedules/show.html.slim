@@ -1,4 +1,4 @@
-- date_str = @date ? I18n.l(@date, format: :long) : ' '
+- date_str = @schedule.date ? I18n.l(@schedule.date, format: :long) : ' '
 - content_for :title, "#{date_str}の予約表 | スタイリスト管理 | YOYAKU HUB"
 - content_for :meta_description, "#{date_str}の予約状況と予約枠を確認できます。時間帯ごとの予約数や予約上限も表示されます。"
 
@@ -6,46 +6,46 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
 - if notice
   .alert.alert-info.flash-notice(data-controller="flash")= notice
 .flex.px-2.mt-4.items-center.justify-between
-  = link_to '前の日へ', stylists_schedules_path(date: (@date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
+  = link_to '前の日へ', stylists_schedules_path(date: (@schedule.date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
   span.font-bold
-    = I18n.l(@date, format: :long)
-  = link_to '後の日へ', stylists_schedules_path(date: (@date + 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
+    = I18n.l(@schedule.date, format: :long)
+  = link_to '後の日へ', stylists_schedules_path(date: (@schedule.date + 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
 
 .overflow-x-auto.whitespace-nowrap.mt-4
-  - if @is_holiday
+  - if @schedule.holiday?
     p.text-center 休業日です
-  - elsif @working_hour.nil?
+  - elsif @schedule.working_hour.nil?
     p.text-center 営業時間が設定されていません
   - else
-    table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: #{100 + @time_slots.size * 58}px;"
+    table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: #{100 + @schedule.time_slots.size * 58}px;"
       colgroup
         col style="width: 100px;"
-        - @time_slots.each do |_time_slot|
+        - @schedule.time_slots.each do |_time_slot|
           col style="width: 58px;"
       thead
         tr
           th.bg-gray-100.border.border-gray-400
-          - @time_slots.each do |time_slot|
+          - @schedule.time_slots.each do |time_slot|
             th.border.border-gray-400.bg-gray-100.text-center
               = time_slot
       tbody
         tr
           th.border.bg-gray-100.text-center 予約数
-          - @time_slots.each do |time_str|
+          - @schedule.time_slots.each do |time_str|
             - slot_idx_for_count = to_slot_index(time_str)
             td.text-center.border
-             = @reservation_counts[slot_idx_for_count].to_i
-        = render 'reservation_limits_row', time_slots: @time_slots
+             = @schedule.reservation_counts[slot_idx_for_count].to_i
+        = render 'reservation_limits_row', schedule: @schedule
 
         - displayed_in_row1_ids = []
 
         tr(data-testid="reservation-row-1")
           th.border.bg-gray-100.text-center
           - occupied_slots_for_this_row1 = Hash.new(false)
-          - @time_slots.each do |time_str|
+          - @schedule.time_slots.each do |time_str|
             - current_absolute_slot = to_slot_index(time_str)
             - unless occupied_slots_for_this_row1[current_absolute_slot]
-              - reservations_at_slot = @slotwise_reservations[current_absolute_slot]
+              - reservations_at_slot =  @schedule.reservations_map[current_absolute_slot]
               - reservation_to_display = reservations_at_slot.present? ? reservations_at_slot[0] : nil
               - condition_met = reservation_to_display.present? && (to_slot_index(reservation_to_display.start_at) == current_absolute_slot)
 
@@ -66,15 +66,15 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
               - else
                 td.border &nbsp;
 
-        - should_display_second_row_flag = @reservation_limits.values.any? { |limit_value| limit_value.to_i >= 2 }
+        - should_display_second_row_flag = @schedule.reservation_limits.values.any? { |limit_value| limit_value.to_i >= 2 }
         - if should_display_second_row_flag
           tr(data-testid="reservation-row-2")
             th.border.bg-gray-100.text-center
             - occupied_slots_for_row2 = Hash.new(false)
-            - @time_slots.each do |time_str|
+            - @schedule.time_slots.each do |time_str|
               - current_absolute_slot = to_slot_index(time_str)
               - unless occupied_slots_for_row2[current_absolute_slot]
-                - reservations_at_slot = @slotwise_reservations[current_absolute_slot]
+                - reservations_at_slot = @schedule.reservations_map[current_absolute_slot]
 
                 - reservation_to_display_row2 = reservations_at_slot.present? ? reservations_at_slot.find { |res_candidate| !displayed_in_row1_ids.include?(res_candidate.id) } : nil
                 - condition_met_row2 = reservation_to_display_row2.present? && (to_slot_index(reservation_to_display_row2.start_at) == current_absolute_slot)
@@ -92,7 +92,7 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
                   - else
                     td.border &nbsp;
                 - else
-                  - if @reservation_limits[current_absolute_slot].to_i >= 2
+                  - if @schedule.reservation_limits[current_absolute_slot].to_i >= 2
                     td.border &nbsp;
                   - else
                     td.border &nbsp;

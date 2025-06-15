@@ -8,12 +8,6 @@ module Stylists
 
     def show
       @schedule = Schedule.new(@stylist.id, @date)
-      @is_holiday = @schedule.holiday?
-      @working_hour = @schedule.working_hour
-      @time_slots = @schedule.time_slots
-      @reservation_counts = @schedule.reservation_counts
-      @reservation_limits = @schedule.reservation_limits
-      @slotwise_reservations = @schedule.reservations_map
     end
 
     def reservation_limits
@@ -24,12 +18,10 @@ module Stylists
       schedule = Schedule.new(stylist_id, @date)
       schedule.update_reservation_limit(slot_idx, direction)
 
-      load_schedule_data(schedule)
-
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace('reservation-limits-row',
-            partial: 'reservation_limits_row', locals: { time_slots: @time_slots })
+            partial: 'reservation_limits_row', locals: { schedule: schedule })
         end
         format.html do
           redirect_to stylists_schedules_path(date: @date.strftime('%Y-%m-%d'))
@@ -49,14 +41,6 @@ module Stylists
 
     def to_slot_index(time_or_str)
       Schedule.to_slot_index(time_or_str)
-    end
-
-    def load_schedule_data(schedule)
-      @is_holiday = schedule.holiday?
-      @working_hour = schedule.working_hour
-      @time_slots = schedule.time_slots
-      @reservation_counts = schedule.reservation_counts
-      @reservation_limits = schedule.reservation_limits
     end
   end
 end
