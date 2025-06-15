@@ -6,4 +6,4 @@ h2.text-lg.font-bold.mb-4 受付可能数
 
   .flex.flex-col.md:flex-row.md:items-center
     = rl_f.label :max_reservations, "最大予約枠数", class: 'w-full md:w-1/3 font-bold text-sm mb-1 md:mb-0'
-    = rl_f.select :max_reservations, options, { selected: @current_limit&.max_reservations }, class: 'input input-bordered w-32'
+    = rl_f.select :max_reservations, options, { selected: current_limit&.max_reservations }, class: 'input input-bordered w-32'

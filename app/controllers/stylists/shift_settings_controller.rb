@@ -3,31 +3,31 @@
 module Stylists
   # rubocop:disable Metrics/ClassLength
   class ShiftSettingsController < Stylists::ApplicationController
-    before_action :set_date_info, only: %i[index]
     before_action :ensure_profile_complete
 
     # rubocop:disable Metrics/AbcSize
     def index
-      @weekday_hours = WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 1))
-      @saturday_hours = WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 6))
-      @sunday_hours = WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 0))
-      @holiday_hours = WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 7))
+      @default_working_hours = {
+        weekday: WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 1)),
+        saturday: WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 6)),
+        sunday: WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 0)),
+        holiday: WorkingHour.formatted_hours(current_user.working_hours.find_by(day_of_week: 7))
+      }
 
-      @weekday_start_str = @weekday_hours[:start]
-      @weekday_end_str = @weekday_hours[:end]
-      @saturday_start_str = @saturday_hours[:start]
-      @saturday_end_str = @saturday_hours[:end]
-      @sunday_start_str = @sunday_hours[:start]
-      @sunday_end_str = @sunday_hours[:end]
-      @holiday_start_str = @holiday_hours[:start]
-      @holiday_end_str = @holiday_hours[:end]
+      @default_holidays = current_user.holidays.defaults
+      @default_reservation_limit = current_user.reservation_limits.defaults.first
 
-      @chosen_wdays = current_user.holidays.where(target_date: nil).where.not(day_of_week: nil).pluck(:day_of_week)
-      @current_limit = current_user.reservation_limits.find_by(target_date: nil)
+      today = Time.zone.today
+      this_month_date = today
+      next_month_date = today.next_month
+      next_next_month_date = today.next_month.next_month
 
-      @is_this_month_configured = month_configured?(@this_month_year, @this_month)
-      @is_next_month_configured = month_configured?(@next_month_year, @next_month)
-      @is_next_next_month_configured = month_configured?(@next_next_month_year, @next_next_month)
+      @monthly_configs = [
+        { date: this_month_date, configured: month_configured?(this_month_date.year, this_month_date.month) },
+        { date: next_month_date, configured: month_configured?(next_month_date.year, next_month_date.month) },
+        { date: next_next_month_date,
+          configured: month_configured?(next_next_month_date.year, next_next_month_date.month) }
+      ]
 
       @time_options = WorkingHour.full_time_options
     end
@@ -120,18 +120,6 @@ module Stylists
     end
 
     private
-
-    def set_date_info
-      today = Time.zone.today
-      @this_month_year = today.year
-      @this_month = today.month
-      next_month_date = today.next_month
-      @next_month_year = next_month_date.year
-      @next_month = next_month_date.month
-      next_next_month_date = next_month_date.next_month
-      @next_next_month_year = next_next_month_date.year
-      @next_next_month = next_next_month_date.month
-    end
 
     # rubocop:disable Metrics/AbcSize
     def save_reservation_limits(date, start_time_obj, end_time_obj, max_reservations)
