@@ -11,9 +11,9 @@
       .section-block.py-6
         = render "working_hour_form", f: f, time_options: @time_options, weekday_start_str: @weekday_start_str, weekday_end_str: @weekday_end_str, saturday_start_str: @saturday_start_str, saturday_end_str: @saturday_end_str, sunday_start_str: @sunday_start_str, sunday_end_str: @sunday_end_str
       .section-block.py-6
-        = render "holiday_form", f: f, chosen_wdays: @chosen_wdays
+        = render "holiday_form", f: f, chosen_wdays: @default_holidays.pluck(:day_of_week)
       .section-block.py-6
-        = render "reservation_limits_form", f: f, current_limit: @current_limit
+        = render "reservation_limits_form", f: f, current_limit: @default_reservation_limit
       .flex.justify-center.mt-8
         = f.submit "シフトの基本情報を保存", class: "btn-primary px-6"
 

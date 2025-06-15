@@ -22,8 +22,8 @@ module Stylists
       @holiday_start_str = @holiday_hours[:start]
       @holiday_end_str = @holiday_hours[:end]
 
-      @chosen_wdays = current_user.holidays.where(target_date: nil).where.not(day_of_week: nil).pluck(:day_of_week)
-      @current_limit = current_user.reservation_limits.find_by(target_date: nil)
+      @default_holidays = current_user.holidays.defaults
+      @default_reservation_limit = current_user.reservation_limits.defaults.first
 
       @is_this_month_configured = month_configured?(@this_month_year, @this_month)
       @is_next_month_configured = month_configured?(@next_month_year, @next_month)
