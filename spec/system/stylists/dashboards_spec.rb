@@ -84,57 +84,63 @@ RSpec.describe '/stylists/dashboards' do
     context "when this month's shifts are not configured" do
       before do
         allow(stylist).to receive_messages(current_month_shifts_configured?: false, next_month_shifts_configured?: true)
-        visit stylists_dashboard_path
       end
 
       it 'displays the prompt for this month but not for the next month' do
-        expect(page).to have_content(prompt_title)
-        expect(page).to have_content(this_month_prompt_text)
-        expect(page).to have_link '設定する',
-          href: show_stylists_shift_settings_path(year: Date.current.year, month: Date.current.month)
-        expect(page).to have_no_content(next_month_prompt_text)
+        travel_to Time.zone.local(2025, 6, 15) do
+          visit stylists_dashboard_path
+
+          expect(page).to have_content(prompt_title)
+          expect(page).to have_content(this_month_prompt_text)
+          expect(page).to have_link '設定する',
+            href: show_stylists_shift_settings_path(year: Date.current.year, month: Date.current.month)
+          expect(page).to have_no_content(next_month_prompt_text)
+        end
       end
     end
 
     context "when next month's shifts are not configured" do
-      let(:next_month_date) { Date.current.next_month }
-
       before do
         allow(stylist).to receive_messages(current_month_shifts_configured?: true, next_month_shifts_configured?: false)
       end
 
       it 'does not display the prompt for the next month when the date is on or before the 20th' do
-        travel_to Date.new(Date.current.year, Date.current.month, 19) do
+        travel_to Time.zone.local(2025, 6, 20) do
           visit stylists_dashboard_path
+
+          expect(page).to have_no_content(next_month_prompt_text)
+          expect(page).to have_no_content(prompt_title)
         end
-        expect(page).to have_no_content(next_month_prompt_text)
-        expect(page).to have_no_content(prompt_title)
       end
 
       it 'displays the prompt for the next month when the date is after the 20th' do
-        travel_to Date.new(Date.current.year, Date.current.month, 21) do
+        travel_to Time.zone.local(2025, 6, 21) do
           visit stylists_dashboard_path
+
+          expect(page).to have_content(prompt_title)
+          expect(page).to have_content(next_month_prompt_text)
+          expect(page).to have_no_content(this_month_prompt_text)
+
+          next_month_date = Date.current.next_month
+          expect(page).to have_link '設定する',
+            href: show_stylists_shift_settings_path(year: next_month_date.year, month: next_month_date.month)
         end
-        expect(page).to have_content(prompt_title)
-        expect(page).to have_content(next_month_prompt_text)
-        expect(page).to have_link '設定する',
-          href: show_stylists_shift_settings_path(year: next_month_date.year, month: next_month_date.month)
-        expect(page).to have_no_content(this_month_prompt_text)
       end
     end
 
     context "when both this month's and next month's shifts are configured" do
       before do
         allow(stylist).to receive_messages(current_month_shifts_configured?: true, next_month_shifts_configured?: true)
-        travel_to Date.new(Date.current.year, Date.current.month, 21) do
-          visit stylists_dashboard_path
-        end
       end
 
       it 'does not display any shift setup prompts' do
-        expect(page).to have_no_content(prompt_title)
-        expect(page).to have_no_content(this_month_prompt_text)
-        expect(page).to have_no_content(next_month_prompt_text)
+        travel_to Time.zone.local(2025, 6, 21) do
+          visit stylists_dashboard_path
+
+          expect(page).to have_no_content(prompt_title)
+          expect(page).to have_no_content(this_month_prompt_text)
+          expect(page).to have_no_content(next_month_prompt_text)
+        end
       end
     end
 
@@ -142,15 +148,16 @@ RSpec.describe '/stylists/dashboards' do
       before do
         allow(stylist).to receive_messages(current_month_shifts_configured?: false,
           next_month_shifts_configured?: false)
-        travel_to Date.new(Date.current.year, Date.current.month, 21) do
-          visit stylists_dashboard_path
-        end
       end
 
       it 'displays prompts for both this month and the next month' do
-        expect(page).to have_content(prompt_title)
-        expect(page).to have_content(this_month_prompt_text)
-        expect(page).to have_content(next_month_prompt_text)
+        travel_to Time.zone.local(2025, 6, 21) do
+          visit stylists_dashboard_path
+
+          expect(page).to have_content(prompt_title)
+          expect(page).to have_content(this_month_prompt_text)
+          expect(page).to have_content(next_month_prompt_text)
+        end
       end
     end
   end
