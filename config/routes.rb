@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   end
 
   namespace :stylists do
+    get 'dashboard', to: 'dashboards#show'
     get 'schedules/:date', to: 'schedules#show', as: :schedules
     patch 'schedules/:date/reservation_limits', to: 'schedules#reservation_limits', as: :reservation_limits
     resource :profile, only: [:edit, :update]
@@ -49,10 +50,8 @@ Rails.application.routes.draw do
   get 'customers' => redirect('/customers/sign_up')
   get 'login_with_google/:role', to: 'sessions#set_role', as: :set_role_and_auth
 
-  get 'customers/dashboard', to: 'customers#show', as: :customers_dashboard
-  get 'stylists/dashboard', to: 'stylists#show', as: :stylists_dashboard
-
   namespace :customers do
+    get 'dashboard', to: 'dashboards#show'
     get "stylists/index"
     resources :reservations, only: [:index, :show, :create, :new] do
       member do
@@ -78,7 +77,7 @@ Rails.application.routes.draw do
     post 'customers', to: 'users/registrations#create', as: :customer_registration
 
     get 'login', to: 'devise/sessions#new', as: :new_user_session
-    post 'login', to: 'devise/sessions#create', as: :user_session
+    post 'login', to: 'users/sessions#create', as: :user_session
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
