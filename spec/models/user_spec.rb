@@ -62,9 +62,9 @@ RSpec.describe User do
 
     context 'when validating passwords' do
       it 'is invalid with too short password' do
-        user = build(:customer, password: 'test', password_confirmation: '12345')
+        user = build(:customer, password: 'test', password_confirmation: '1234567')
         expect(user).not_to be_valid
-        expect(user.errors[:password]).to include(I18n.t('errors.messages.too_short', count: 6))
+        expect(user.errors[:password]).to include(I18n.t('errors.messages.too_short', count: 8))
       end
 
       it 'is invalid with password confirmation mismatch' do
