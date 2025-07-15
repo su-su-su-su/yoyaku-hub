@@ -9,7 +9,7 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
   = link_to '前の日へ', stylists_schedules_path(date: (@schedule.date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
   .relative.inline-block
     .font-bold.cursor-pointer.underline.hover:text-gray-500.active:text-gray-700.px-2.py-1(
-      onclick="document.getElementById('schedule_date_picker').showPicker()"
+      onclick="const picker = document.getElementById('schedule_date_picker'); try { if(picker.showPicker) { picker.showPicker(); } else { picker.focus(); picker.click(); } } catch(e) { picker.focus(); picker.click(); }"
     )
       = I18n.l(@schedule.date, format: :long)
     input(
@@ -18,7 +18,7 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
       id="schedule_date_picker"
       data-controller="schedule-date-picker"
       data-action="change->schedule-date-picker#navigate"
-      style="position: absolute; opacity: 0.01; pointer-events: none; width: 100%; height: 100%; top: 0; left: 0;"
+      style="position: absolute; opacity: 0.01; width: 10px; height: 10px; bottom: -5px; left: 50%; transform: translateX(-50%);"
     )
   = link_to '後の日へ', stylists_schedules_path(date: (@schedule.date + 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
 
