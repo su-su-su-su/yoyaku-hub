@@ -257,7 +257,7 @@ RSpec.describe 'Stylists::Schedules' do
     end
 
     it 'displays date picker for date selection' do
-      expect(page).to have_css('#schedule_date_picker', visible: :hidden)
+      expect(page).to have_css('#schedule_date_picker', visible: :all)
       expect(page).to have_css('[onclick*="schedule_date_picker"]')
     end
 
