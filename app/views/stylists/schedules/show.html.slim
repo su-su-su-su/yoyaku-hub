@@ -7,8 +7,16 @@ h1.px-2.text-xl.font-bold.mt-8 予約表
   .alert.alert-info.flash-notice(data-controller="flash")= notice
 .flex.px-2.mt-4.items-center.justify-between
   = link_to '前の日へ', stylists_schedules_path(date: (@schedule.date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
-  span.font-bold
-    = I18n.l(@schedule.date, format: :long)
+  .relative.inline-block
+    .font-bold.cursor-pointer.underline.hover:text-gray-500.active:text-gray-700.px-2.py-1(onclick="document.getElementById('schedule_date_picker').showPicker()")
+      = I18n.l(@schedule.date, format: :long)
+    input.opacity-0(
+      type="date"
+      value=@schedule.date.strftime("%Y-%m-%d")
+      id="schedule_date_picker"
+      data-controller="schedule-date-picker"
+      data-action="change->schedule-date-picker#navigate"
+    )
   = link_to '後の日へ', stylists_schedules_path(date: (@schedule.date + 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
 
 .overflow-x-auto.whitespace-nowrap.mt-4
