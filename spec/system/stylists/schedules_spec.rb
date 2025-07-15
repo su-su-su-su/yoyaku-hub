@@ -255,6 +255,46 @@ RSpec.describe 'Stylists::Schedules' do
       expect(page).to have_content(I18n.l(tomorrow, format: :long))
       expect(page).to have_current_path(%r{/stylists/schedules/#{tomorrow.strftime('%Y-%m-%d')}})
     end
+
+    it 'displays date picker for date selection' do
+      expect(page).to have_css('#schedule_date_picker', visible: :hidden)
+      expect(page).to have_css('[onclick*="schedule_date_picker"]')
+    end
+
+    it 'navigates to selected date when date picker value changes', :js do
+      target_date = today + 3.days
+
+      page.execute_script("
+        const datePicker = document.getElementById('schedule_date_picker');
+        datePicker.value = '#{target_date.strftime('%Y-%m-%d')}';
+        datePicker.dispatchEvent(new Event('change'));
+      ")
+
+      expect(page).to have_content(I18n.l(target_date, format: :long))
+      expect(page).to have_current_path(%r{/stylists/schedules/#{target_date.strftime('%Y-%m-%d')}})
+    end
+
+    it 'navigates to current stylist schedule when date picker changes', :js do
+      other_stylist = create(:user, role: :stylist)
+      target_date = today + 2.days
+
+      create(:working_hour,
+        stylist: other_stylist,
+        target_date: target_date,
+        start_time: '10:00',
+        end_time: '18:00')
+
+      page.execute_script("
+        const datePicker = document.getElementById('schedule_date_picker');
+        datePicker.value = '#{target_date.strftime('%Y-%m-%d')}';
+        datePicker.dispatchEvent(new Event('change'));
+      ")
+
+      expect(page).to have_content(I18n.l(target_date, format: :long))
+      expect(page).to have_current_path(%r{/stylists/schedules/#{target_date.strftime('%Y-%m-%d')}})
+
+      expect(page).to have_content('営業時間が設定されていません')
+    end
   end
 
   describe 'Access Restriction' do
