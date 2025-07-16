@@ -1,0 +1,69 @@
+- content_for :title, "#{@start_date.strftime('%Y年%m月%d日')}〜#{(@start_date + 6.days).strftime('%m月%d日')}の予約表"
+- content_for :meta_description, "#{@start_date.strftime('%Y年%m月%d日')}〜#{(@start_date + 6.days).strftime('%m月%d日')}の予約状況を確認できます。"
+
+.px-2.mt-8.flex.justify-between.items-center
+  h1.text-xl.font-bold 週間予約表
+  = link_to "日別表示", stylists_schedules_path(date: @start_date.strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
+
+
+.grid.grid-cols-3.items-center.mb-4.px-2.mt-4
+  .text-left
+    = link_to "前の週へ", stylists_weekly_schedules_path(start_date: (@start_date - 7.days).strftime("%Y-%m-%d")), class: "px-3 py-2 border rounded text-sm md:text-base inline-block hover:bg-gray-50 active:bg-gray-100"
+
+  .text-center
+    p.text-lg.font-bold.mt-1= @start_date.strftime("%Y年")
+    p.whitespace-nowrap.text-sm.md:text-base= "#{@start_date.strftime("%-m月%-d日")}〜#{(@start_date + 6.days).strftime("%-m月%-d日")}"
+
+  .text-right
+    = link_to "次の週へ", stylists_weekly_schedules_path(start_date: (@start_date + 7.days).strftime("%Y-%m-%d")), class: "px-3 py-2 border rounded text-sm md:text-base inline-block hover:bg-gray-50 active:bg-gray-100"
+
+table.border.border-collapse.mt-4.w-full style="table-layout: fixed;"
+  thead
+    tr.bg-gray-100
+      th.pl-2.pr-1.py-2.text-sm.md:text-base 時刻
+      - @dates.each do |date|
+        - wday = date.wday
+        - wday = 7 if HolidayJp.holiday?(date)
+        th.px-2.py-2.text-sm.md:text-base class="wday-#{wday}"
+          p.font-bold.mb-1
+            = "#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})"
+  tbody
+    - occupied_slots_by_date = {}
+    - @dates.each_with_index do |date, index|
+      - occupied_slots_by_date[index] = Hash.new(false)
+    - @time_slots.each_with_index do |time_str, time_index|
+      tr style="height: 60px;"
+        th.border.pl-1.pr-2.py-2.text-right.text-sm.md:text-base= time_str
+        - current_slot = to_slot_index(time_str)
+        - @dates.each_with_index do |date, date_index|
+          - schedule = @schedules[date_index]
+          - if occupied_slots_by_date[date_index][current_slot]
+            / Skip this cell - it's part of a rowspan - NO TD OUTPUT
+          - else
+            - if schedule.holiday?
+              td.border.text-center.px-1.py-1.bg-gray-200
+            - elsif schedule.working_hour.nil?
+              td.border.text-center.px-1.py-1.bg-gray-200
+            - else
+              - unless schedule.time_slots.include?(time_str)
+                td.border.text-center.px-1.py-1.bg-gray-200
+              - else
+                - reservations_at_slot = schedule.reservations_map[current_slot]
+                - reservation = reservations_at_slot.present? ? reservations_at_slot[0] : nil
+                - if reservation.present? && to_slot_index(reservation.start_at) == current_slot
+                  - start_slot = to_slot_index(reservation.start_at)
+                  - end_slot = to_slot_index(reservation.end_at)
+                  - rowspan_count = end_slot - start_slot
+                  - if rowspan_count > 1
+                    - (start_slot + 1...end_slot).each do |slot_to_mark|
+                      - occupied_slots_by_date[date_index][slot_to_mark] = true
+                    td.border.text-center.px-1.py-1(rowspan=rowspan_count style="height: #{rowspan_count * 60}px; vertical-align: top;")
+                      = render 'weekly_reservation_card', reservation: reservation
+                  - else
+                    td.border.text-center.px-1.py-1
+                      = render 'weekly_reservation_card', reservation: reservation
+                - else
+                  td.border.text-center.px-1.py-1
+
+.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
+  = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"

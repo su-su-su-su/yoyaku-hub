@@ -453,5 +453,114 @@ RSpec.describe 'Stylists::Schedules' do
     end
   end
   # rubocop:enable RSpec/MultipleMemoizedHelpers
+
+  describe 'Weekly Schedule View' do
+    let(:start_date) { Date.current }
+    let(:week_dates) { (start_date..start_date + 6.days).to_a }
+
+    before do
+      sign_in stylist
+      week_dates.each do |date|
+        create(:working_hour,
+          stylist: stylist,
+          target_date: date,
+          start_time: '10:00',
+          end_time: '18:00')
+      end
+    end
+
+    it 'displays weekly view with navigation links' do
+      visit stylists_schedules_path(date: start_date.strftime('%Y-%m-%d'))
+      click_on '週間表示'
+      expect(page).to have_content('週間予約表')
+      expect(page).to have_link('日別表示')
+      expect(page).to have_link('前の週へ')
+      expect(page).to have_link('次の週へ')
+    end
+
+    it 'displays all days of the week with proper headers' do
+      visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+      weekdays = %w[日 月 火 水 木 金 土]
+      week_dates.each do |date|
+        expect(page).to have_content("#{date.day} (#{weekdays[date.wday]})")
+      end
+    end
+
+    it 'displays time slots for the week' do
+      visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+      expect(page).to have_content('10:00')
+      expect(page).to have_content('10:30')
+      expect(page).to have_content('17:30')
+    end
+    # rubocop:disable RSpec/MultipleMemoizedHelpers
+
+    context 'with reservations' do
+      let!(:menu) { create(:menu, stylist: stylist, name: 'カット', duration: 90) }
+      let!(:reservation) do
+        (to_slot_index('11:00')..to_slot_index('12:30')).each do |slot|
+          create(:reservation_limit, stylist: stylist, target_date: start_date, time_slot: slot, max_reservations: 2)
+        end
+        create(:reservation,
+          stylist: stylist,
+          customer: customer,
+          menus: [menu],
+          start_at: Time.zone.parse("#{start_date} 11:00"),
+          end_at: Time.zone.parse("#{start_date} 12:30"))
+      end
+
+      it 'displays reservation cards with vertical text' do
+        visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+        expect(page).to have_content(customer.family_name)
+        expect(page).to have_content(customer.given_name)
+        expect(page).to have_content('カット')
+      end
+
+      it 'displays multi-slot reservations with proper rowspan' do
+        visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+        reservation_cell = page.find('td', text: /#{customer.family_name}/)
+        expect(reservation_cell['rowspan']).to eq('3')
+      end
+
+      it 'navigates to reservation detail when clicked' do
+        visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+        find('a[href*="/stylists/reservations/"]').click
+        expect(page).to have_current_path(%r{/stylists/reservations/#{reservation.id}})
+      end
+    end
+    # rubocop:enable RSpec/MultipleMemoizedHelpers
+
+    # rubocop:disable RSpec/MultipleMemoizedHelpers
+    context 'with holidays' do
+      let(:holiday_date) { start_date + 2.days }
+
+      before do
+        create(:holiday, stylist: stylist, target_date: holiday_date, is_holiday: true)
+      end
+
+      it 'displays holiday dates with gray background' do
+        visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+        holiday_cells = page.all('td.bg-gray-200')
+        expect(holiday_cells.count).to be > 0
+      end
+    end
+
+    # rubocop:enable RSpec/MultipleMemoizedHelpers
+
+    it 'navigates between weeks' do
+      visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+      click_on '次の週へ'
+      next_week_start = start_date + 7.days
+      expect(page).to have_current_path(%r{/stylists/schedules/weekly/#{next_week_start.strftime('%Y-%m-%d')}})
+      click_on '前の週へ'
+      expect(page).to have_current_path(%r{/stylists/schedules/weekly/#{start_date.strftime('%Y-%m-%d')}})
+    end
+
+    it 'navigates back to daily view' do
+      visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
+      click_on '日別表示'
+      expect(page).to have_current_path(%r{/stylists/schedules/#{start_date.strftime('%Y-%m-%d')}})
+      expect(page).to have_content('予約表')
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
