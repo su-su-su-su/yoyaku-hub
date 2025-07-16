@@ -2,7 +2,9 @@
 - content_for :title, "#{date_str}の予約表"
 - content_for :meta_description, "#{date_str}の予約状況と予約枠を確認できます。時間帯ごとの予約数や予約上限も表示されます。"
 
-h1.px-2.text-xl.font-bold.mt-8 予約表
+.px-2.mt-8.flex.justify-between.items-center
+  h1.text-xl.font-bold 予約表
+  = link_to "週間表示", stylists_weekly_schedules_path(start_date: @schedule.date.strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
 - if notice
   .alert.alert-info.flash-notice(data-controller="flash")= notice
 .flex.px-2.mt-4.items-center.justify-between
