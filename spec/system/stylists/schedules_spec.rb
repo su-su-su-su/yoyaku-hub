@@ -539,7 +539,7 @@ RSpec.describe 'Stylists::Schedules' do
 
       it 'displays holiday dates with gray background' do
         visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
-        holiday_cells = page.all('td.bg-gray-200')
+        holiday_cells = page.all('td.bg-gray-100')
         expect(holiday_cells.count).to be > 0
       end
     end
