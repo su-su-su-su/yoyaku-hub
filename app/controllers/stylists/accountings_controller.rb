@@ -10,7 +10,7 @@ module Stylists
     def new
       if @reservation.accounting&.completed?
         redirect_to edit_stylists_accounting_path(@reservation.accounting),
-                    notice: '会計は既に完了しています。修正画面に移動します。'
+          notice: t('stylists.accountings.already_completed')
         return
       end
 
@@ -38,7 +38,7 @@ module Stylists
 
       if @accounting.persisted?
         redirect_to stylists_reservation_path(@reservation),
-                    notice: '会計が完了しました'
+          notice: t('stylists.accountings.completed')
       else
         render :new, status: :unprocessable_entity
       end
@@ -50,7 +50,7 @@ module Stylists
 
       if @accounting.update_with_payments(total_amount, payment_attributes)
         redirect_to stylists_reservation_path(@accounting.reservation),
-                    notice: '会計が修正されました'
+          notice: t('stylists.accountings.updated')
       else
         render :edit, status: :unprocessable_entity
       end

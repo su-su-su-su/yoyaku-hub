@@ -5,8 +5,8 @@ class Accounting < ApplicationRecord
   has_many :accounting_payments, dependent: :destroy
 
   accepts_nested_attributes_for :accounting_payments,
-                                allow_destroy: true,
-                                reject_if: :all_blank
+    allow_destroy: true,
+    reject_if: :all_blank
 
   enum :status, { pending: 0, completed: 1 }
 
@@ -89,14 +89,14 @@ class Accounting < ApplicationRecord
 
     return if payment_method.present?
 
-      errors.add(:base, '支払い方法を選択してください')
-      raise ActiveRecord::RecordInvalid, self
+    errors.add(:base, '支払い方法を選択してください')
+    raise ActiveRecord::RecordInvalid, self
   end
 
   def validate_total_payment!(total_payments)
     return unless total_payments != total_amount
 
-      errors.add(:base, "支払い合計（¥#{total_payments}）が会計金額（¥#{total_amount}）と一致しません")
-      raise ActiveRecord::RecordInvalid, self
+    errors.add(:base, "支払い合計（¥#{total_payments}）が会計金額（¥#{total_amount}）と一致しません")
+    raise ActiveRecord::RecordInvalid, self
   end
 end
