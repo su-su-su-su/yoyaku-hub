@@ -59,7 +59,7 @@ module Stylists
     private
 
     def set_reservation
-      @reservation = current_user.stylist_reservations.find(params[:reservation_id])
+      @reservation = current_user.stylist_reservations.find(params[:id])
     end
 
     def set_accounting

@@ -48,11 +48,12 @@
 
   .mt-4.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
     - if @reservation.accounting&.completed?
-      = link_to "会計を修正", edit_stylists_accounting_path(@reservation.accounting), class: "btn-primary w-full md:w-auto text-center"
+      = link_to "会計詳細", stylists_accounting_path(@reservation.accounting), class: "btn-primary w-full md:w-auto text-center"
     - elsif @reservation.status == 'before_visit'
-      = link_to "会計", new_stylists_accounting_path(reservation_id: @reservation.id), class: "btn-primary w-full md:w-auto text-center"
-    = link_to "変更する", edit_stylists_reservation_path(@reservation), class: "btn-primary w-full md:w-auto text-center", method: :get
-    = link_to "キャンセル", cancel_stylists_reservation_path(@reservation),
-      data: { turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？" },
+      = link_to "会計", new_stylists_accounting_path(@reservation.id), class: "btn-primary w-full md:w-auto text-center"
+    - unless @reservation.accounting&.completed?
+      = link_to "変更する", edit_stylists_reservation_path(@reservation), class: "btn-primary w-full md:w-auto text-center", method: :get
+      = link_to "キャンセル", cancel_stylists_reservation_path(@reservation),
+        data: { turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？" },
       class: "btn-gray w-full md:w-auto text-center"
-    = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+    = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto whitespace-nowrap"
