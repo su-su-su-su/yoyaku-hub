@@ -5,6 +5,7 @@ class Reservation < ApplicationRecord
   belongs_to :stylist,  class_name: 'User', inverse_of: :stylist_reservations
   has_many :reservation_menu_selections, dependent: :destroy
   has_many :menus, through: :reservation_menu_selections
+  has_one :accounting, dependent: :destroy
 
   enum :status, { before_visit: 0, paid: 1, canceled: 2, no_show: 3 }
 
