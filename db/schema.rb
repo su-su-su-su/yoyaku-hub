@@ -10,9 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_10_062549) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_23_032830) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounting_payments", force: :cascade do |t|
+    t.bigint "accounting_id", null: false
+    t.integer "payment_method", null: false
+    t.decimal "amount", precision: 10, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["accounting_id"], name: "index_accounting_payments_on_accounting_id"
+  end
+
+  create_table "accountings", force: :cascade do |t|
+    t.bigint "reservation_id", null: false
+    t.decimal "total_amount", precision: 10, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reservation_id"], name: "index_accountings_on_reservation_id", unique: true
+  end
 
   create_table "holidays", force: :cascade do |t|
     t.bigint "stylist_id", null: false
@@ -111,6 +129,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_10_062549) do
     t.index ["target_date"], name: "index_working_hours_on_target_date"
   end
 
+  add_foreign_key "accounting_payments", "accountings"
+  add_foreign_key "accountings", "reservations"
   add_foreign_key "holidays", "users", column: "stylist_id"
   add_foreign_key "menus", "users", column: "stylist_id"
   add_foreign_key "reservation_limits", "users", column: "stylist_id"

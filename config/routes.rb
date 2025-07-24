@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     resources :reservations, only: [:show, :index, :new, :create, :edit, :update] do
       member do
         patch :cancel
+        resources :accountings, only: [:new, :create, :show, :edit, :update], shallow: true
       end
       collection do
         get :update_time_options

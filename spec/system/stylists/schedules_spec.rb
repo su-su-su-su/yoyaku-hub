@@ -456,7 +456,7 @@ RSpec.describe 'Stylists::Schedules' do
 
   describe 'Weekly Schedule View' do
     let(:start_date) { Date.current }
-    let(:week_dates) { (start_date..start_date + 6.days).to_a }
+    let(:week_dates) { (start_date..(start_date + 6.days)).to_a }
 
     before do
       sign_in stylist
