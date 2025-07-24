@@ -170,6 +170,65 @@ RSpec.describe 'Stylists::Reservations' do
         expect(page).to have_content("¥#{cut_menu.price} (税込み)")
       end
     end
+
+    context 'when displaying accounting action buttons' do
+      context 'with reservation before visit' do # rubocop:disable RSpec/NestedGroups
+        let(:reservation) { create_test_reservation }
+
+        before do
+          visit stylists_reservation_path(reservation)
+        end
+
+        it 'displays accounting button when no accounting exists' do
+          expect(page).to have_link('会計', href: new_stylists_accounting_path(reservation.id))
+          expect(page).to have_no_link('会計詳細')
+          expect(page).to have_link('変更する', href: edit_stylists_reservation_path(reservation))
+        end
+      end
+
+      context 'with completed accounting' do # rubocop:disable RSpec/NestedGroups, RSpec/MultipleMemoizedHelpers
+        let(:reservation) { create_test_reservation }
+        let!(:accounting) do
+          create(:accounting, reservation: reservation, total_amount: 8000, status: :completed)
+        end
+        let!(:payment) do # rubocop:disable RSpec/LetSetup
+          create(:accounting_payment, accounting: accounting, payment_method: :cash, amount: 8000)
+        end
+
+        before do
+          visit stylists_reservation_path(reservation)
+        end
+
+        it 'displays accounting detail button when accounting is completed' do
+          expect(page).to have_link('会計詳細', href: stylists_accounting_path(accounting))
+          expect(page).to have_no_link('会計', href: new_stylists_accounting_path(reservation.id))
+          expect(page).to have_no_link('変更する')
+        end
+
+        it 'allows navigation to accounting detail page' do
+          click_on '会計詳細'
+          expect(page).to have_current_path(stylists_accounting_path(accounting))
+          expect(page).to have_content('会計詳細')
+        end
+      end
+
+      context 'with pending accounting' do # rubocop:disable RSpec/NestedGroups, RSpec/MultipleMemoizedHelpers
+        let(:reservation) { create_test_reservation }
+        let!(:accounting) do # rubocop:disable RSpec/LetSetup
+          create(:accounting, reservation: reservation, total_amount: 8000, status: :pending)
+        end
+
+        before do
+          visit stylists_reservation_path(reservation)
+        end
+
+        it 'displays accounting modification button when accounting is pending' do
+          expect(page).to have_link('会計', href: new_stylists_accounting_path(reservation.id))
+          expect(page).to have_no_link('会計詳細')
+          expect(page).to have_link('変更する', href: edit_stylists_reservation_path(reservation))
+        end
+      end
+    end
   end
 end
 # rubocop:enable Metrics/BlockLength
