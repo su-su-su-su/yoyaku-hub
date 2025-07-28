@@ -12,6 +12,10 @@ class User < ApplicationRecord
     dependent: :destroy
   has_many :stylist_reservations, class_name: 'Reservation', foreign_key: :stylist_id, inverse_of: :stylist,
     dependent: :destroy
+  has_many :stylist_chartes, class_name: 'Charte', foreign_key: :stylist_id, inverse_of: :stylist,
+    dependent: :destroy
+  has_many :customer_chartes, class_name: 'Charte', foreign_key: :customer_id, inverse_of: :customer,
+    dependent: :destroy
 
   KATAKANA_REGEX = /\A[ァ-ヶー]+\z/
 

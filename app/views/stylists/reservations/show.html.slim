@@ -49,6 +49,10 @@
   .mt-4.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
     - if @reservation.accounting&.completed?
       = link_to "会計詳細", stylists_accounting_path(@reservation.accounting), class: "btn-primary w-full md:w-auto text-center"
+      - if @reservation.charte
+        = link_to "カルテを見る", stylists_customer_charte_path(@reservation.customer, @reservation.charte), class: "btn-primary w-full md:w-auto text-center"
+      - else
+        = link_to "カルテを作成", new_stylists_charte_path(reservation_id: @reservation.id), class: "btn-primary w-full md:w-auto text-center"
     - elsif @reservation.status == 'before_visit'
       = link_to "会計", new_stylists_accounting_path(@reservation.id), class: "btn-primary w-full md:w-auto text-center"
     - unless @reservation.accounting&.completed?

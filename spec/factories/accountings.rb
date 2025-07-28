@@ -5,5 +5,9 @@ FactoryBot.define do
     reservation
     total_amount { 5000 }
     status { :pending }
+
+    trait :completed do
+      status { :completed }
+    end
   end
 end

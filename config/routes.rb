@@ -33,10 +33,15 @@ Rails.application.routes.draw do
       member do
         patch :cancel
         resources :accountings, only: [:new, :create, :show, :edit, :update], shallow: true
+        resources :chartes, only: [:new, :create], shallow: true
       end
       collection do
         get :update_time_options
       end
+    end
+
+    resources :customers, only: [] do
+      resources :chartes, only: [:index, :show, :edit, :update, :destroy]
     end
 
     resources :shift_settings, only: [:index] do
