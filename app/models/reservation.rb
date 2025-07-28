@@ -6,6 +6,7 @@ class Reservation < ApplicationRecord
   has_many :reservation_menu_selections, dependent: :destroy
   has_many :menus, through: :reservation_menu_selections
   has_one :accounting, dependent: :destroy
+  has_one :charte, dependent: :destroy
 
   enum :status, { before_visit: 0, paid: 1, canceled: 2, no_show: 3 }
 
