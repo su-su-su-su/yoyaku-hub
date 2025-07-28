@@ -11,26 +11,27 @@
   - if notice
     .alert.alert-info.flash-notice(data-controller="flash")= notice
 
-  - if @chartes.any?
+  - if @paid_reservations.any?
     .space-y-4
-      - @chartes.each do |charte|
+      - @paid_reservations.each do |reservation|
+        - charte = @chartes.find { |c| c.reservation_id == reservation.id }
         .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
           .p-4
             .mb-3
               p.text-base.font-medium.mb-1
-                = I18n.l(charte.reservation_date, format: :wday_short)
+                = I18n.l(reservation.start_at, format: :wday_short)
               .text-sm.text-gray-600.space-y-1
                 p
                   | メニュー:
-                  = charte.menu_names.join(', ')
+                  = reservation.menus.pluck(:name).join(', ')
                 p
                   | 料金:
-                  - if charte.total_amount
-                    = "¥#{charte.total_amount}"
+                  - if reservation.accounting&.total_amount
+                    = "¥#{reservation.accounting.total_amount}"
                   - else
-                    span.text-gray-500 未会計
+                    span.text-gray-500 未設定
 
-            - if charte.treatment_memo.present? || charte.remarks.present?
+            - if charte&.treatment_memo.present? || charte&.remarks.present?
               .mt-3.pt-3.border-t.border-gray-200
                 - if charte.treatment_memo.present?
                   p.text-sm.mb-2.break-words
@@ -42,8 +43,11 @@
                     = truncate(charte.remarks, length: 100)
 
             .flex.justify-end.mt-3.space-x-2
-              = link_to '詳細', stylists_customer_charte_path(@customer, charte), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
-              = link_to '編集', edit_stylists_customer_charte_path(@customer, charte), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
+              - if charte
+                = link_to '詳細', stylists_customer_charte_path(@customer, charte), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
+                = link_to '編集', edit_stylists_customer_charte_path(@customer, charte), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
+              - else
+                = link_to 'カルテを作成', new_stylists_charte_path(reservation), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
   - else
     .border.border-gray-300.rounded-lg.bg-white.shadow-sm.p-8.text-center
       p.text-gray-500.mb-4

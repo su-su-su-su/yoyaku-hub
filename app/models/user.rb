@@ -235,5 +235,64 @@ class User < ApplicationRecord
     prev_end_slots = end_slots.select { |slot| slot <= from_slot }
     prev_end_slots.max || day_start_slot
   end
+
+  scope :customers_for_stylist, lambda { |stylist_id|
+    where(role: :customer)
+      .joins(:reservations)
+      .where(reservations: { stylist_id: stylist_id })
+      .distinct
+  }
+
+  def self.search_by_name(query)
+    return none if query.blank?
+
+    where(
+      'family_name ILIKE ? OR given_name ILIKE ? OR ' \
+      'family_name_kana ILIKE ? OR given_name_kana ILIKE ? OR ' \
+      'CONCAT(family_name, given_name) ILIKE ? OR ' \
+      'CONCAT(family_name_kana, given_name_kana) ILIKE ?',
+      "%#{query}%", "%#{query}%", "%#{query}%", "%#{query}%",
+      "%#{query}%", "%#{query}%"
+    )
+  end
+
+  def age
+    return nil unless date_of_birth
+
+    today = Date.current
+    age = today.year - date_of_birth.year
+    age -= 1 if today < date_of_birth + age.years
+    age
+  end
+
+  def visit_info_for_stylist(stylist_id)
+    completed_reservations = reservations
+      .joins(:stylist)
+      .where(stylist_id: stylist_id, status: [:paid])
+      .order(:start_at)
+
+    {
+      first_visit: completed_reservations.first&.start_at&.to_date,
+      last_visit: completed_reservations.last&.start_at&.to_date,
+      total_visits: completed_reservations.count,
+      visit_frequency: calculate_visit_frequency(completed_reservations)
+    }
+  end
+
+  private
+
+  def calculate_visit_frequency(reservations)
+    return nil if reservations.count < 2
+
+    first_visit = reservations.first.start_at.to_date
+    last_visit = reservations.last.start_at.to_date
+    total_days = (last_visit - first_visit).to_i
+    visits = reservations.count
+
+    return nil if total_days <= 0
+
+    frequency_days = (total_days.to_f / (visits - 1)).round
+    "#{frequency_days}日"
+  end
 end
 # rubocop:enable Metrics/ClassLength

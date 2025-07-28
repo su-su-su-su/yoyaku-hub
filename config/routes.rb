@@ -40,7 +40,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :customers, only: [] do
+    resources :customers, only: [:index, :show] do
       resources :chartes, only: [:index, :show, :edit, :update, :destroy]
     end
 

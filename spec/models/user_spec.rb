@@ -917,5 +917,319 @@ RSpec.describe User do
       expect(stylist.find_previous_reservation_end_slot(date, 24)).to eq(18)
     end
   end
+
+  describe '.customers_for_stylist' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    let(:stylist) { create(:user, role: :stylist) }
+    let(:yamada_customer) { create(:user, role: :customer, family_name: '山田', given_name: '太郎') }
+    let(:sato_customer) { create(:user, role: :customer, family_name: '佐藤', given_name: '花子') }
+    let(:tanaka_customer) { create(:user, role: :customer, family_name: '田中', given_name: '次郎') }
+    let(:other_stylist) { create(:user, role: :stylist) }
+    let(:menu) { create(:menu, stylist: stylist) }
+    let(:other_menu) { create(:menu, stylist: other_stylist) }
+
+    before do
+      [stylist, other_stylist].each do |s|
+        create(:working_hour,
+          stylist: s,
+          target_date: Date.current,
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('18:00'))
+
+        start_slot_index = (Time.zone.parse('09:00').hour * 2)
+        end_slot_index = (Time.zone.parse('18:00').hour * 2)
+
+        (start_slot_index...end_slot_index).each do |slot_idx|
+          create(:reservation_limit,
+            stylist: s,
+            target_date: Date.current,
+            time_slot: slot_idx,
+            max_reservations: 1)
+        end
+      end
+
+      create(:reservation, customer: yamada_customer, stylist: stylist, status: :paid,
+        menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
+      create(:reservation, customer: sato_customer, stylist: stylist, status: :paid,
+        menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '11:00')
+
+      create(:reservation, customer: tanaka_customer, stylist: other_stylist, status: :paid,
+        menu_ids: [other_menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
+    end
+
+    it 'returns customers who have reservations with the specified stylist' do
+      customers = described_class.customers_for_stylist(stylist.id)
+      expect(customers).to contain_exactly(yamada_customer, sato_customer)
+    end
+
+    it 'does not return customers of other stylists' do
+      customers = described_class.customers_for_stylist(stylist.id)
+      expect(customers).not_to include(tanaka_customer)
+    end
+
+    it 'returns distinct customers even with multiple reservations' do
+      create(:reservation, customer: yamada_customer, stylist: stylist, status: :paid,
+        menu_ids: [menu.id], start_date_str: Date.current.to_s, start_time_str: '14:00')
+      customers = described_class.customers_for_stylist(stylist.id)
+      expect(customers.count).to eq(2)
+    end
+
+    it 'returns empty when stylist has no customers' do
+      new_stylist = create(:user, role: :stylist)
+      customers = described_class.customers_for_stylist(new_stylist.id)
+      expect(customers).to be_empty
+    end
+  end
+
+  describe '.search_by_name' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    let!(:yamada_customer) do
+      create(:user, role: :customer,
+        family_name: '山田', given_name: '太郎',
+        family_name_kana: 'ヤマダ', given_name_kana: 'タロウ')
+    end
+    let!(:sato_customer) do
+      create(:user, role: :customer,
+        family_name: '佐藤', given_name: '花子',
+        family_name_kana: 'サトウ', given_name_kana: 'ハナコ')
+    end
+    let!(:tanaka_customer) do
+      create(:user, role: :customer,
+        family_name: '田中', given_name: '次郎',
+        family_name_kana: 'タナカ', given_name_kana: 'ジロウ')
+    end
+
+    context 'when searching by family name' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('山田')
+        expect(results).to include(yamada_customer)
+        expect(results).not_to include(sato_customer, tanaka_customer)
+      end
+    end
+
+    context 'when searching by given name' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('花子')
+        expect(results).to include(sato_customer)
+        expect(results).not_to include(yamada_customer, tanaka_customer)
+      end
+    end
+
+    context 'when searching by family name kana' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('ヤマダ')
+        expect(results).to include(yamada_customer)
+        expect(results).not_to include(sato_customer, tanaka_customer)
+      end
+    end
+
+    context 'when searching by given name kana' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('ハナコ')
+        expect(results).to include(sato_customer)
+        expect(results).not_to include(yamada_customer, tanaka_customer)
+      end
+    end
+
+    context 'when searching by full name' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('山田太郎')
+        expect(results).to include(yamada_customer)
+        expect(results).not_to include(sato_customer, tanaka_customer)
+      end
+    end
+
+    context 'when searching by full name kana' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('サトウハナコ')
+        expect(results).to include(sato_customer)
+        expect(results).not_to include(yamada_customer, tanaka_customer)
+      end
+    end
+
+    context 'when searching with partial match' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns matching customers' do
+        results = described_class.search_by_name('田')
+        expect(results).to contain_exactly(yamada_customer, tanaka_customer)
+      end
+    end
+
+    context 'when query is blank' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns none' do
+        expect(described_class.search_by_name('')).to eq(described_class.none)
+        expect(described_class.search_by_name(nil)).to eq(described_class.none)
+        expect(described_class.search_by_name('   ')).to eq(described_class.none)
+      end
+    end
+
+    context 'when no matches found' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns empty result' do
+        results = described_class.search_by_name('存在しない')
+        expect(results).to be_empty
+      end
+    end
+  end
+
+  describe '#age' do
+    context 'when date_of_birth is set' do
+      it 'calculates correct age' do
+        travel_to Date.new(2025, 5, 1)
+        user = create(:user, date_of_birth: Date.new(1990, 3, 15))
+        expect(user.age).to eq(35)
+      end
+
+      it 'calculates age correctly when birthday has not occurred this year' do
+        travel_to Date.new(2025, 2, 1)
+        user = create(:user, date_of_birth: Date.new(1990, 3, 15))
+        expect(user.age).to eq(34)
+      end
+
+      it 'calculates age correctly when birthday has occurred this year' do
+        travel_to Date.new(2025, 4, 1)
+        user = create(:user, date_of_birth: Date.new(1990, 3, 15))
+        expect(user.age).to eq(35)
+      end
+    end
+
+    context 'when date_of_birth is not set' do
+      it 'returns nil' do
+        user = create(:user, date_of_birth: nil)
+        expect(user.age).to be_nil
+      end
+    end
+  end
+
+  describe '#visit_info_for_stylist' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    let(:stylist) { create(:user, role: :stylist) }
+    let(:customer) { create(:user, role: :customer) }
+    let(:other_stylist) { create(:user, role: :stylist) }
+    let(:menu) { create(:menu, stylist: stylist) }
+    let(:other_menu) { create(:menu, stylist: other_stylist) }
+
+    before do
+      [3.months.ago.to_date, 2.months.ago.to_date, 1.month.ago.to_date, 1.week.ago.to_date].each do |target_date|
+        [stylist, other_stylist].each do |s|
+          create(:working_hour,
+            stylist: s,
+            target_date: target_date,
+            start_time: Time.zone.parse('09:00'),
+            end_time: Time.zone.parse('18:00'))
+
+          start_slot_index = (Time.zone.parse('09:00').hour * 2)
+          end_slot_index = (Time.zone.parse('18:00').hour * 2)
+
+          (start_slot_index...end_slot_index).each do |slot_idx|
+            create(:reservation_limit,
+              stylist: s,
+              target_date: target_date,
+              time_slot: slot_idx,
+              max_reservations: 1)
+          end
+        end
+      end
+    end
+
+    context 'when customer has multiple paid reservations' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      let(:first_visit_date) { Date.new(2025, 1, 1) }
+      let(:second_visit_date) { Date.new(2025, 2, 1) }
+      let(:third_visit_date) { Date.new(2025, 3, 1) }
+
+      before do
+        travel_to Date.new(2025, 4, 1)
+
+        [first_visit_date, second_visit_date, third_visit_date].each do |target_date|
+          create(:working_hour,
+            stylist: stylist,
+            target_date: target_date,
+            start_time: Time.zone.parse('09:00'),
+            end_time: Time.zone.parse('18:00'))
+
+          start_slot_index = (Time.zone.parse('09:00').hour * 2)
+          end_slot_index = (Time.zone.parse('18:00').hour * 2)
+
+          (start_slot_index...end_slot_index).each do |slot_idx|
+            create(:reservation_limit,
+              stylist: stylist,
+              target_date: target_date,
+              time_slot: slot_idx,
+              max_reservations: 1)
+          end
+        end
+
+        create(:reservation, customer: customer, stylist: stylist, status: :paid,
+          menu_ids: [menu.id], start_date_str: first_visit_date.to_s, start_time_str: '10:00')
+        create(:reservation, customer: customer, stylist: stylist, status: :paid,
+          menu_ids: [menu.id], start_date_str: second_visit_date.to_s, start_time_str: '10:00')
+        create(:reservation, customer: customer, stylist: stylist, status: :paid,
+          menu_ids: [menu.id], start_date_str: third_visit_date.to_s, start_time_str: '10:00')
+      end
+
+      it 'returns correct visit information' do
+        info = customer.visit_info_for_stylist(stylist.id)
+
+        expect(info[:first_visit]).to eq(first_visit_date)
+        expect(info[:last_visit]).to eq(third_visit_date)
+        expect(info[:total_visits]).to eq(3)
+        expect(info[:visit_frequency]).to eq('30日')
+      end
+    end
+
+    context 'when customer has reservations with different statuses' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      before do
+        create(:reservation, customer: customer, stylist: stylist, status: :paid,
+          menu_ids: [menu.id], start_date_str: 2.months.ago.to_date.to_s, start_time_str: '10:00')
+        create(:reservation, customer: customer, stylist: stylist, status: :canceled,
+          menu_ids: [menu.id], start_date_str: 1.month.ago.to_date.to_s, start_time_str: '10:00')
+        create(:reservation, customer: customer, stylist: stylist, status: :before_visit,
+          menu_ids: [menu.id], start_date_str: 1.week.ago.to_date.to_s, start_time_str: '10:00')
+      end
+
+      it 'only counts paid reservations' do
+        info = customer.visit_info_for_stylist(stylist.id)
+
+        expect(info[:total_visits]).to eq(1)
+        expect(info[:visit_frequency]).to be_nil
+      end
+    end
+
+    context 'when customer has reservations with other stylists' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      before do
+        create(:reservation, customer: customer, stylist: stylist, status: :paid,
+          menu_ids: [menu.id], start_date_str: 2.months.ago.to_date.to_s, start_time_str: '10:00')
+        create(:reservation, customer: customer, stylist: other_stylist, status: :paid,
+          menu_ids: [other_menu.id], start_date_str: 1.month.ago.to_date.to_s, start_time_str: '10:00')
+      end
+
+      it 'only counts reservations with specified stylist' do
+        info = customer.visit_info_for_stylist(stylist.id)
+
+        expect(info[:total_visits]).to eq(1)
+        expect(info[:last_visit]).to eq(2.months.ago.to_date)
+      end
+    end
+
+    context 'when customer has no paid reservations' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      it 'returns appropriate nil values' do
+        info = customer.visit_info_for_stylist(stylist.id)
+
+        expect(info[:first_visit]).to be_nil
+        expect(info[:last_visit]).to be_nil
+        expect(info[:total_visits]).to eq(0)
+        expect(info[:visit_frequency]).to be_nil
+      end
+    end
+
+    context 'when customer has only one paid reservation' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      before do
+        create(:reservation, customer: customer, stylist: stylist, status: :paid,
+          menu_ids: [menu.id], start_date_str: 1.month.ago.to_date.to_s, start_time_str: '10:00')
+      end
+
+      it 'returns nil for visit frequency' do
+        info = customer.visit_info_for_stylist(stylist.id)
+
+        expect(info[:total_visits]).to eq(1)
+        expect(info[:visit_frequency]).to be_nil
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
