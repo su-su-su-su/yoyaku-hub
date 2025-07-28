@@ -35,6 +35,9 @@ ja:
         given_name_kana: "メイ"
         gender: "性別"
         date_of_birth: "生年月日"
+      charte:
+        treatment_memo: "施術メモ"
+        remarks: "備考"
 
   date:
     abbr_day_names:
@@ -238,6 +241,11 @@ ja:
       already_completed: "会計は既に完了しています。修正画面に移動します。"
       completed: "会計が完了しました"
       updated: "会計が修正されました"
+    chartes:
+      access_denied: "アクセス権限がありません。"
+      created: "カルテを作成しました。"
+      updated: "カルテを更新しました。"
+      deleted: "カルテを削除しました。"
 
   customers:
     profiles:
