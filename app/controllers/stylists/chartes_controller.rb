@@ -11,6 +11,11 @@ module Stylists
         .where(customer: @customer)
         .includes(:reservation)
         .recent
+
+      @paid_reservations = current_user.stylist_reservations
+        .where(customer: @customer, status: :paid)
+        .includes(:menus, :accounting)
+        .order(start_at: :desc)
     end
 
     def show; end
@@ -52,9 +57,7 @@ module Stylists
     private
 
     def set_customer
-      @customer = User.joins(:customer_chartes)
-        .where(customer_chartes: { stylist: current_user })
-        .find(params[:customer_id])
+      @customer = User.customers_for_stylist(current_user.id).find(params[:customer_id])
     rescue ActiveRecord::RecordNotFound
       redirect_to stylists_dashboard_path, alert: t('stylists.chartes.access_denied')
     end
@@ -66,7 +69,7 @@ module Stylists
     end
 
     def set_reservation
-      @reservation = current_user.stylist_reservations.find(params[:reservation_id])
+      @reservation = current_user.stylist_reservations.find(params[:id])
     end
 
     def charte_params
