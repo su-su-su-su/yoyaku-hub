@@ -240,6 +240,8 @@ ja:
     reservations:
       updated: "予約が正常に更新されました。"
       cancelled: "予約をキャンセルしました。"
+      created: "予約を登録しました"
+      customer_required: "お客様を選択してください"
     accountings:
       already_completed: "会計は既に完了しています。修正画面に移動します。"
       completed: "会計が完了しました"
