@@ -64,6 +64,13 @@
             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
         span.text-sm.md:text-base.font-medium シフト管理
 
+    .menu-card
+      = link_to stylists_customers_path, class: "block bg-gray-100 border border-gray-300 rounded-lg p-4 h-32 md:h-40 flex flex-col items-center justify-center" do
+        .icon.text-orange-500.mb-2
+          svg.w-8.h-8.md:w-10.md:h-10(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z")
+        span.text-sm.md:text-base.font-medium 顧客管理
+
 - if Rails.env.production?
   - menu_url_to_copy = customers_stylist_menus_url(@stylist)
 - else
