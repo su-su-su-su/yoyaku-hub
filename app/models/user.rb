@@ -29,9 +29,10 @@ class User < ApplicationRecord
     message: I18n.t('errors.messages.only_katakana')
   }, allow_blank: true
 
-  validates :family_name, :given_name, presence: true, if: :profile_validation_required?
-  validates :family_name_kana, :given_name_kana, presence: true, if: :profile_validation_required?
-  validates :gender, :date_of_birth, presence: true, if: :profile_validation_required?
+  validates :family_name, :given_name, presence: true, if: :name_validation_required?
+  validates :family_name_kana, :given_name_kana, presence: true, if: :name_validation_required?
+  validates :gender, presence: true, if: :gender_validation_required?
+  validates :date_of_birth, presence: true, if: :date_of_birth_validation_required?
 
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
@@ -54,6 +55,20 @@ class User < ApplicationRecord
 
   def profile_validation_required?
     persisted? || validation_context == :profile_completion
+  end
+
+  def name_validation_required?
+    profile_validation_required? || created_by_stylist_id.present?
+  end
+
+  def gender_validation_required?
+    profile_validation_required?
+  end
+
+  def date_of_birth_validation_required?
+    return false if created_by_stylist_id.present?
+
+    profile_validation_required?
   end
 
   def profile_complete?
@@ -238,9 +253,12 @@ class User < ApplicationRecord
 
   scope :customers_for_stylist, lambda { |stylist_id|
     where(role: :customer)
-      .joins(:reservations)
-      .where(reservations: { stylist_id: stylist_id })
-      .distinct
+      .where(
+        "(created_by_stylist_id = ? OR
+          (created_by_stylist_id IS NULL AND id IN
+            (SELECT DISTINCT customer_id FROM reservations WHERE stylist_id = ?)))",
+        stylist_id, stylist_id
+      )
   }
 
   def self.search_by_name(query)
@@ -277,6 +295,10 @@ class User < ApplicationRecord
       total_visits: completed_reservations.count,
       visit_frequency: calculate_visit_frequency(completed_reservations)
     }
+  end
+
+  def dummy_email?
+    email&.include?('@no-email-dummy.invalid') || false
   end
 
   private

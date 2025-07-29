@@ -1231,5 +1231,128 @@ RSpec.describe User do
       end
     end
   end
+
+  describe '#dummy_email?' do
+    context 'when email contains dummy domain' do
+      it 'returns true' do
+        user = build(:user, email: 'dummy_20250729123456_abc12345@no-email-dummy.invalid')
+        expect(user.dummy_email?).to be true
+      end
+    end
+
+    context 'when email is a real email' do
+      it 'returns false' do
+        user = build(:user, email: 'real@example.com')
+        expect(user.dummy_email?).to be false
+      end
+    end
+
+    context 'when email is nil' do
+      it 'returns false' do
+        user = build(:user, email: nil)
+        expect(user.dummy_email?).to be false
+      end
+    end
+  end
+
+  describe 'manually registered customer validations' do
+    let(:stylist) { create(:user, :stylist) }
+
+    context 'when created_by_stylist_id is present (manually registered)' do
+      it 'requires name and kana but not date_of_birth' do
+        customer = build(:user,
+          role: :customer,
+          created_by_stylist_id: stylist.id,
+          family_name: '田中',
+          given_name: '太郎',
+          family_name_kana: 'タナカ',
+          given_name_kana: 'タロウ',
+          date_of_birth: nil,
+          gender: nil)
+        expect(customer).to be_valid
+      end
+
+      it 'is invalid without name' do
+        customer = build(:user,
+          role: :customer,
+          created_by_stylist_id: stylist.id,
+          family_name: '',
+          given_name: '',
+          family_name_kana: 'タナカ',
+          given_name_kana: 'タロウ')
+        expect(customer).not_to be_valid
+        expect(customer.errors[:family_name]).to include(I18n.t('errors.messages.blank'))
+        expect(customer.errors[:given_name]).to include(I18n.t('errors.messages.blank'))
+      end
+
+      it 'is invalid without kana' do
+        customer = build(:user,
+          role: :customer,
+          created_by_stylist_id: stylist.id,
+          family_name: '田中',
+          given_name: '太郎',
+          family_name_kana: '',
+          given_name_kana: '')
+        expect(customer).not_to be_valid
+        expect(customer.errors[:family_name_kana]).to include(I18n.t('errors.messages.blank'))
+        expect(customer.errors[:given_name_kana]).to include(I18n.t('errors.messages.blank'))
+      end
+    end
+  end
+
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  describe '.customers_for_stylist with manually registered customers' do
+    let(:stylist) { create(:user, :stylist) }
+    let(:other_stylist) { create(:user, :stylist) }
+    let(:menu) { create(:menu, stylist: stylist) }
+
+    let!(:reservation_customer) { create(:user, :customer) }
+    let!(:manual_customer) { create(:user, :customer, created_by_stylist_id: stylist.id) }
+    let!(:other_manual_customer) { create(:user, :customer, created_by_stylist_id: other_stylist.id) }
+
+    before do
+      create(:working_hour,
+        stylist: stylist,
+        target_date: Date.current,
+        start_time: Time.zone.parse('09:00'),
+        end_time: Time.zone.parse('18:00'))
+
+      start_slot_index = (Time.zone.parse('09:00').hour * 2)
+      end_slot_index = (Time.zone.parse('18:00').hour * 2)
+
+      (start_slot_index...end_slot_index).each do |slot_idx|
+        create(:reservation_limit,
+          stylist: stylist,
+          target_date: Date.current,
+          time_slot: slot_idx,
+          max_reservations: 1)
+      end
+
+      create(:reservation,
+        customer: reservation_customer,
+        stylist: stylist,
+        status: :paid,
+        menu_ids: [menu.id],
+        start_date_str: Date.current.to_s,
+        start_time_str: '10:00')
+    end
+
+    it 'returns both reservation customers and manually registered customers' do
+      customers = described_class.customers_for_stylist(stylist.id)
+      expect(customers).to contain_exactly(reservation_customer, manual_customer)
+    end
+
+    it 'does not return manually registered customers from other stylists' do
+      customers = described_class.customers_for_stylist(stylist.id)
+      expect(customers).not_to include(other_manual_customer)
+    end
+
+    it 'returns only manually registered customers when no reservations exist' do
+      Reservation.destroy_all
+      customers = described_class.customers_for_stylist(stylist.id)
+      expect(customers).to contain_exactly(manual_customer)
+    end
+  end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
 # rubocop:enable Metrics/BlockLength

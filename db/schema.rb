@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_28_061959) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_29_030848) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -126,6 +126,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_28_061959) do
     t.integer "role"
     t.string "provider"
     t.string "uid"
+    t.bigint "created_by_stylist_id"
+    t.index ["created_by_stylist_id"], name: "index_users_on_created_by_stylist_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -155,5 +157,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_28_061959) do
   add_foreign_key "reservation_menu_selections", "reservations"
   add_foreign_key "reservations", "users", column: "customer_id"
   add_foreign_key "reservations", "users", column: "stylist_id"
+  add_foreign_key "users", "users", column: "created_by_stylist_id"
   add_foreign_key "working_hours", "users", column: "stylist_id"
 end

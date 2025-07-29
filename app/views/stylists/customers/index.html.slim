@@ -7,7 +7,9 @@
   - if alert
     .alert.alert-error.shadow-lg.mb-4(data-controller="flash")= alert
 
-  h1.text-xl.font-bold.mt-4.mb-4.md:text-2xl 顧客一覧
+  .flex.justify-between.items-center.mt-4.mb-4
+    h1.text-xl.font-bold.md:text-2xl 顧客一覧
+    = link_to "新規顧客登録", new_stylists_customer_path, class: "btn btn-primary"
 
   .bg-white.border.border-gray-200.rounded-lg.p-4.mb-4
     = form_with url: stylists_customers_path, method: :get, local: true, class: "relative" do |form|
