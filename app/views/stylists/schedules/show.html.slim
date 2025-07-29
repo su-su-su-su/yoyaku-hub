@@ -74,7 +74,8 @@
                 - else
                   td.border &nbsp;
               - else
-                td.border &nbsp;
+                td.border.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: @schedule.date.strftime("%Y-%m-%d"), time_str: time_str)}'")
+                  .py-1
 
         - should_display_second_row_flag = @schedule.reservation_limits.values.any? { |limit_value| limit_value.to_i >= 2 }
         - if should_display_second_row_flag
@@ -103,7 +104,8 @@
                     td.border &nbsp;
                 - else
                   - if @schedule.reservation_limits[current_absolute_slot].to_i >= 2
-                    td.border &nbsp;
+                    td.border.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: @schedule.date.strftime("%Y-%m-%d"), time_str: time_str)}'")
+                      .py-1
                   - else
                     td.border &nbsp;
 

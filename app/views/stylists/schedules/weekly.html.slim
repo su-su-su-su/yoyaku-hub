@@ -62,7 +62,8 @@ table.border.border-gray-300.border-collapse.mt-4.w-full style="table-layout: fi
                     td.border.border-gray-300.text-center.px-1.py-1
                       = render 'weekly_reservation_card', reservation: reservation
                 - else
-                  td.border.border-gray-300.text-center.px-1.py-1
+                  td.border.border-gray-300.text-center.px-1.py-1.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: date.strftime("%Y-%m-%d"), time_str: time_str)}'")
+                    .py-2
 
 .mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
   = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
