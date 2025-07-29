@@ -40,6 +40,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :customer_reservations, only: [:new, :create]
+
     resources :customers, only: [:index, :show, :new, :create, :edit, :update] do
       resources :chartes, only: [:index, :show, :edit, :update, :destroy]
     end

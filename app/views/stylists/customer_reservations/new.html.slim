@@ -1,0 +1,64 @@
+- content_for :title, 'お客様の予約登録'
+- content_for :meta_description, 'お客様の新しい予約を登録します。'
+
+.container.mx-auto.px-4.py-4.md:py-6
+  - if flash[:alert]
+    .alert.alert-error.shadow-lg.mb-4(data-controller="flash")= flash[:alert]
+
+  - if @reservation&.errors&.any?
+    .alert.alert-error.shadow-lg.mb-4
+      h3.font-bold エラーが発生しました
+      ul.mt-2
+        - @reservation.errors.full_messages.each do |message|
+          li= message
+
+  .flex.justify-between.items-center.mt-4.mb-4
+    h1.text-xl.font-bold.md:text-2xl お客様の予約登録
+
+  .bg-white.border.border-gray-200.rounded-lg.p-6
+    .mb-4.text-sm.text-gray-700.font-medium
+      | 予約日時: #{Date.parse(@date).strftime('%Y年%m月%d日')} #{@time_str}
+
+    .customer-search-container(data-controller="customer-search")
+      .mb-4
+        = form_with url: new_stylists_customer_reservation_path, method: :get, local: false, class: "relative", data: { turbo_frame: "customer_search_results" } do |search_form|
+          = search_form.hidden_field :date, value: @date
+          = search_form.hidden_field :time_str, value: @time_str
+          = search_form.text_field :customer_search, value: params[:customer_search], placeholder: "お客様を検索", 
+                                 class: "input input-bordered w-full pr-10",
+                                 data: { action: "input->customer-search#debounceSearch" }
+          .search-button.absolute.right-2.top-1/2.transform.-translate-y-1/2.p-1.text-gray-400
+            svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
+        
+        = turbo_frame_tag "customer_search_results" do
+          = render 'customer_list', customers: @customers
+      
+      .selected-customer.hidden.p-3.bg-blue-50.border.border-blue-200.rounded(data-customer-search-target="selected")
+        .flex.justify-between.items-center
+          .customer-info
+            .font-medium(data-customer-search-target="selectedName")
+          = button_tag "変更", type: "button", class: "text-sm text-gray-600 underline hover:text-gray-800", data: { action: "click->customer-search#clearSelection" }
+
+    = form_with url: stylists_customer_reservations_path, local: true, class: "space-y-6" do |form|
+      = form.hidden_field :date, value: @date
+      = form.hidden_field :time_str, value: @time_str
+
+      .form-group
+        = form.label :customer_id, 'お客様', class: 'block text-sm font-medium text-gray-700 mb-2'
+        = form.hidden_field :customer_id, id: 'selected_customer_id'
+
+      .form-group
+        = form.label :menu_ids, 'メニュー', class: 'block text-sm font-medium text-gray-700 mb-2'
+        .space-y-2
+          - @active_menus.each do |menu|
+            .flex.items-center
+              = check_box_tag 'menu_ids[]', menu.id, false, { class: 'checkbox checkbox-primary mr-2', id: "menu_#{menu.id}" }
+              = label_tag "menu_#{menu.id}", class: 'text-sm' do
+                = "#{menu.name} (#{menu.duration}分, ¥#{number_with_delimiter(menu.price)})"
+
+      .pt-4
+        = form.submit '予約を登録', class: 'btn btn-primary w-full'
+
+.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
+  = link_to "スケジュール一覧へ", stylists_schedules_path(date: @date), class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"

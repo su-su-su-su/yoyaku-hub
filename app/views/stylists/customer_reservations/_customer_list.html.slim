@@ -1,0 +1,14 @@
+= turbo_frame_tag "customer_search_results" do
+  .customer-list(data-customer-search-target="list")
+    - if customers.any?
+      - customers.limit(20).each do |customer|
+        .customer-item.p-2.border.border-gray-200.rounded.mb-2.cursor-pointer.hover:bg-blue-50(
+          data-customer-id=customer.id 
+          data-customer-name="#{customer.family_name} #{customer.given_name}"
+          data-action="click->customer-search#selectCustomer"
+        )
+          .font-medium= "#{customer.family_name} #{customer.given_name}"
+          .text-sm.text-gray-600= "#{customer.family_name_kana} #{customer.given_name_kana}"
+    - elsif params[:customer_search].present?
+      .text-center.text-gray-500.py-4
+        | 該当するお客様が見つかりませんでした
