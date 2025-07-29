@@ -10,11 +10,11 @@
   h1.text-xl.font-bold.mt-4.mb-4.md:text-2xl 顧客一覧
 
   .bg-white.border.border-gray-200.rounded-lg.p-4.mb-4
-    = form_with url: stylists_customers_path, method: :get, local: true, class: "flex items-center space-x-2" do |form|
-      = form.text_field :query, value: params[:query], placeholder: "名前またはカタカナで検索", class: "input input-bordered flex-grow"
-      = form.submit "検索", class: "btn btn-primary"
-      - if params[:query].present?
-        = link_to "クリア", stylists_customers_path, class: "btn btn-outline"
+    = form_with url: stylists_customers_path, method: :get, local: true, class: "relative" do |form|
+      = form.text_field :query, value: params[:query], placeholder: "名前またはカタカナで検索", class: "input input-bordered w-full pr-10"
+      = form.button type: "submit", class: "search-button absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600" do
+        svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
 
   - if @customers.any?
     .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
@@ -52,3 +52,6 @@
       - else
         p.text-lg.font-medium まだ担当している顧客がいません
         p.text-sm.text-gray-500.mt-2 お客様からの予約をお待ちください
+
+.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
+  = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
