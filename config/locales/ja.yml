@@ -9,6 +9,9 @@ ja:
         invalid_access: "不正なアクセスです。"
         cannot_view_other_stylist_menus: "他のスタイリストの顧客向けメニューを閲覧することはできません。"
         access_denied: "アクセス権がありません。"
+        created: "顧客を登録しました。"
+        updated: "顧客情報を更新しました。"
+        edit_permission_denied: "この顧客の編集権限がありません。"
   activerecord:
     errors:
       messages:
