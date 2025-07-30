@@ -92,7 +92,7 @@ RSpec.describe 'Stylists::Reservations' do
 
       it 'displays confirmation dialog and can cancel the reservation' do
         accept_confirm do
-          click_on 'キャンセル'
+          click_link_or_button 'キャンセル'
         end
 
         expect(page).to have_content('予約表')

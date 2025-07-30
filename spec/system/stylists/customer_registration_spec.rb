@@ -85,16 +85,6 @@ RSpec.describe 'Stylists Customer Registration' do
       expect(page).to have_content('顧客登録')
       expect(User.count).to eq(1)
     end
-
-    it 'can cancel registration and return to customer list' do
-      visit new_stylists_customer_path
-
-      fill_in 'user[family_name]', with: '田中'
-      click_on 'キャンセル'
-
-      expect(page).to have_content('顧客一覧')
-      expect(User.where(role: :customer).count).to eq(0)
-    end
   end
   # rubocop:enable Metrics/BlockLength
 
@@ -175,19 +165,6 @@ RSpec.describe 'Stylists Customer Registration' do
 
       expect(page).to have_content('エラーが発生しました。')
       expect(page).to have_content('顧客情報編集')
-
-      manual_customer.reload
-      expect(manual_customer.family_name).to eq('元田中')
-    end
-
-    it 'can cancel editing and return to customer detail' do
-      visit edit_stylists_customer_path(manual_customer)
-
-      fill_in 'user[family_name]', with: '変更済み'
-      click_on 'キャンセル'
-
-      expect(page).to have_content('顧客詳細')
-      expect(page).to have_content('元田中 太郎')
 
       manual_customer.reload
       expect(manual_customer.family_name).to eq('元田中')

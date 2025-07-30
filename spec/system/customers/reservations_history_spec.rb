@@ -225,7 +225,7 @@ RSpec.describe 'Customer Reservation History' do
 
     it 'shows a confirmation dialog when cancel is clicked' do
       accept_confirm('本当にキャンセルしますか？') do
-        click_on 'キャンセル'
+        click_link_or_button 'キャンセル'
       end
 
       expect(page).to have_current_path(customers_reservations_path, ignore_query: true)
@@ -233,7 +233,7 @@ RSpec.describe 'Customer Reservation History' do
 
     it 'moves the reservation to past reservations after cancellation' do
       page.accept_confirm do
-        click_on 'キャンセル'
+        click_link_or_button 'キャンセル'
       end
 
       expect(page).to have_current_path(customers_reservations_path, ignore_query: true)
