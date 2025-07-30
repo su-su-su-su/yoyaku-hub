@@ -2,14 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  overscroll-behavior-y: contain;
-}
-
-html {
-  overscroll-behavior: contain;
+@layer base {
+  html {
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  
+  body {
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  
+  /* 全てのスクロール可能要素に適用 */
+  * {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @layer components {
