@@ -5,8 +5,15 @@
 - menu_chars = duration_slots >= 4 ? 12 : (duration_slots >= 3 ? 9 : (duration_slots == 2 ? 5 : 1))
 
 = link_to stylists_reservation_path(reservation), class: "block w-full h-full" do
-  .st-reservation-card.text-xs.p-1.bg-blue-50.border.border-blue-200.rounded style="height: 100%; max-height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 4px; overflow: hidden;"
-    .vertical-text.text-xs.text-blue-600 style="writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; text-overflow: ellipsis; display: block; height: auto;"
-      = "#{reservation.customer.family_name}#{reservation.customer.given_name}"[0, customer_chars]
-    .vertical-text.text-xs.text-blue-600.mt-1 style="writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; text-overflow: ellipsis; display: block; height: auto;"
-      = reservation.menus.map(&:name).join("・")[0, menu_chars]
+  - if reservation.paid?
+    .st-reservation-card.text-xs.p-1.bg-gray-100.border.border-gray-400.rounded style="height: 100%; max-height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 4px; overflow: hidden;"
+      .vertical-text.text-xs.text-gray-600 style="writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; text-overflow: ellipsis; display: block; height: auto;"
+        = "#{reservation.customer.family_name}#{reservation.customer.given_name}"[0, customer_chars]
+      .vertical-text.text-xs.text-gray-600.mt-1 style="writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; text-overflow: ellipsis; display: block; height: auto;"
+        = reservation.menus.map(&:name).join("・")[0, menu_chars]
+  - else
+    .st-reservation-card.text-xs.p-1.bg-blue-100.border.border-blue-300.rounded style="height: 100%; max-height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 4px; overflow: hidden;"
+      .vertical-text.text-xs.text-blue-700 style="writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; text-overflow: ellipsis; display: block; height: auto;"
+        = "#{reservation.customer.family_name}#{reservation.customer.given_name}"[0, customer_chars]
+      .vertical-text.text-xs.text-blue-700.mt-1 style="writing-mode: vertical-rl; text-orientation: upright; overflow: hidden; text-overflow: ellipsis; display: block; height: auto;"
+        = reservation.menus.map(&:name).join("・")[0, menu_chars]

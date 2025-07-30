@@ -40,12 +40,12 @@ table.border.border-gray-300.border-collapse.mt-4.w-full style="table-layout: fi
           - if occupied_slots_by_date[date_index][current_slot]
           - else
             - if schedule.holiday?
-              td.border.border-gray-300.text-center.px-1.py-1.bg-gray-100
+              td.border.border-gray-300.text-center.px-1.py-1.bg-gray-200
             - elsif schedule.working_hour.nil?
-              td.border.border-gray-300.text-center.px-1.py-1.bg-gray-100
+              td.border.border-gray-300.text-center.px-1.py-1.bg-gray-200
             - else
               - unless schedule.time_slots.include?(time_str)
-                td.border.border-gray-300.text-center.px-1.py-1.bg-gray-100
+                td.border.border-gray-300.text-center.px-1.py-1.bg-gray-200
               - else
                 - reservations_at_slot = schedule.reservations_map[current_slot]
                 - reservation = reservations_at_slot.present? ? reservations_at_slot[0] : nil
