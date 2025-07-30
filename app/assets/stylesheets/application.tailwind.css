@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
+}
+
+html {
+  overscroll-behavior: contain;
+}
+
 @layer components {
   .gsi-material-button {
     display: flex;
