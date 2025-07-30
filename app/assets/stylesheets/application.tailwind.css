@@ -9,15 +9,13 @@
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
-  
+
   body {
     overscroll-behavior: none;
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
-  
-  /* 全てのスクロール可能要素に適用 */
   * {
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
@@ -231,9 +229,12 @@
     background-color: #ecf2ff;
   }
 
-  a:hover .st-reservation-card {
-    background-color: #ddeaff;
-    border-color: #a8c7fa;
+  a:hover .st-reservation-card.bg-blue-100 {
+    background-color: #bfdbfe !important;
+  }
+
+  a:hover .st-reservation-card.bg-gray-100 {
+    background-color: #e5e7eb !important;
   }
 
   a:active .st-reservation-card {
