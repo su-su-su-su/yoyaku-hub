@@ -1,6 +1,12 @@
 td.border.p-1(colspan=colspan)
   = link_to stylists_reservation_path(reservation), class: "block w-full h-full" do
-    .st-reservation-card
-      - menu_names = reservation.menus.map(&:name).join(", ")
-      p.st-trim-magic.text-xs.md:text-sm #{menu_names}
-      p.st-trim-magic.text-xs.md:text-sm #{reservation.customer.family_name} #{reservation.customer.given_name} 様
+    - if reservation.paid?
+      .st-reservation-card.bg-gray-100.border.border-gray-400.rounded.p-2
+        - menu_names = reservation.menus.map(&:name).join(", ")
+        p.st-trim-magic.text-xs.md:text-sm.text-gray-600 #{menu_names}
+        p.st-trim-magic.text-xs.md:text-sm.text-gray-600 #{reservation.customer.family_name} #{reservation.customer.given_name} 様
+    - else
+      .st-reservation-card.bg-blue-100.border.border-blue-300.rounded.p-2
+        - menu_names = reservation.menus.map(&:name).join(", ")
+        p.st-trim-magic.text-xs.md:text-sm.text-blue-700 #{menu_names}
+        p.st-trim-magic.text-xs.md:text-sm.text-blue-700 #{reservation.customer.family_name} #{reservation.customer.given_name} 様
