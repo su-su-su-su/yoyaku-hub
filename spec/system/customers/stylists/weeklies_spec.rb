@@ -384,7 +384,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     let(:card_display_stylist) { create(:stylist, email: 'card_display_stylist_revised@example.com') }
     let(:card_display_customer) { create(:customer, email: 'card_display_customer_revised@example.com') }
 
-    let(:guide_card_selector) { '.mt-6.p-4.border.rounded-lg.bg-white.shadow' }
+    let(:guide_card_selector) { '.mt-2.p-4.border.rounded-lg.bg-white.shadow' }
     let(:guide_card_title_text) { '予約表の記号について' }
 
     before do
