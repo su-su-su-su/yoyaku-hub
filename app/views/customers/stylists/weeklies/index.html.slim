@@ -1,9 +1,12 @@
 - content_for :title, '日時選択'
 
+.container.mx-auto.px-4.sm:px-6.md:px-8
+  = render 'shared/reservation_steps', current_step: 'datetime'
+
 .simple-calendar
   - if @show_reservation_symbol_guide
     div class="px-4 mb-4"
-      .mt-6.p-4.border.rounded-lg.bg-white.shadow
+      .mt-2.p-4.border.rounded-lg.bg-white.shadow
         h3.text-sm.font-semibold.mb-3 予約表の記号について
         ul.space-y-2.text-xs
           li

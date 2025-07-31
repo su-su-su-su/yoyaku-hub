@@ -2,6 +2,7 @@
 - content_for :meta_description, "#{@stylist.family_name} #{@stylist.given_name}さんが提供する施術メニューの一覧です。ご希望のメニューを選択して予約日時設定へ進んでください。"
 
 div class="w-full max-w-lg mx-auto px-4 sm:px-6 md:px-8"
+  = render 'shared/reservation_steps', current_step: 'menu'
   h1 class="text-xl md:text-2xl font-bold my-4"= "#{@stylist.family_name} #{@stylist.given_name} さんのメニュー一覧"
 
   - if flash[:alert].present?
