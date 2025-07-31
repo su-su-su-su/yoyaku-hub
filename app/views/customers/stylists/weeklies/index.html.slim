@@ -56,49 +56,49 @@
               - working_hours = @working_hours_hash[date]
               - limit_obj = @reservation_limits_hash[date][slot]
               - if @holiday_days.include?(date)
-                | ×
+                span.text-gray-400 ×
               - elsif limit_obj && limit_obj.max_reservations <= 0
-                | ×
+                span.text-gray-400 ×
               - else
                 - wh = @wh_list.find { |rec| rec.target_date == date }
                 - if wh.blank?
-                  | ×
+                  span.text-gray-400 ×
                 - else
                   - if !within_working_hours?(wh, date, time_str, total_minutes)
-                    | ×
+                    span.text-gray-400 ×
                   - else
                     - day_start_slot = (wh.start_time.hour * 2) + (wh.start_time.min >= 30 ? 1 : 0)
                     - day_end_slot = (wh.end_time.hour * 2) + (wh.end_time.min >= 30 ? 1 : 0)
                     - if slot < day_start_slot || (slot + needed_slots) > day_end_slot
-                      | ×
+                      span.text-gray-400 ×
                     - else
                       - if !within_reservation_limits?(limit_obj, date, slot, needed_slots)
-                        | ×
+                        span.text-gray-400 ×
                       - else
                         - next_slot = @stylist.find_next_reservation_start_slot(date, slot + needed_slots)
                         - prev_slot = @stylist.find_previous_reservation_end_slot(date, slot)
                         - gap_from_prev = (slot - prev_slot) * 30
                         - gap_to_next = (next_slot - (slot + needed_slots)) * 30
                         - if gap_from_prev == 0 || gap_to_next == 0
-                          = link_to "◎",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
-                            class: "font-bold text-green-500 text-lg block min-h-[44px] flex items-center justify-center"
+                          = link_to new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
+                            class: "material-symbols-outlined font-bold text-blue-500 text-lg block min-h-[44px] flex items-center justify-center" do
+                            | nest_thermostat_gen_3
                         - elsif (gap_from_prev > 0 && gap_from_prev < min_time) && (gap_to_next > 0 && gap_to_next < min_time) && ((gap_from_prev + gap_to_next) == min_time)
                           = link_to "△",
                             new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
-                            class: "text-green-400 text-lg block min-h-[44px] flex items-center justify-center"
+                            class: "text-blue-400 text-lg block min-h-[44px] flex items-center justify-center"
                         - elsif gap_from_prev < min_time && gap_to_next < min_time
-                          = link_to "◎",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
-                            class: "font-bold text-green-500 text-lg block min-h-[44px] flex items-center justify-center"
+                          = link_to new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
+                            class: "material-symbols-outlined font-bold text-blue-500 text-lg block min-h-[44px] flex items-center justify-center" do
+                            | nest_thermostat_gen_3
                         - elsif gap_from_prev < min_time || gap_to_next < min_time
                           = link_to "△",
                             new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
-                            class: "text-green-400 text-lg block min-h-[44px] flex items-center justify-center"
+                            class: "text-blue-400 text-lg block min-h-[44px] flex items-center justify-center"
                         - else
-                          = link_to "◎",
-                            new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
-                            class: "font-bold text-green-500 text-lg block min-h-[44px] flex items-center justify-center"
+                          = link_to new_customers_reservation_path(stylist_id: @stylist.id, menu_ids: @selected_menu_ids, date: date, time_str: time_str),
+                            class: "material-symbols-outlined font-bold text-blue-500 text-lg block min-h-[44px] flex items-center justify-center" do
+                            | nest_thermostat_gen_3
 
 .container.mx-auto.p-4.max-w-lg
   .mt-6.flex.flex-col.md:flex-row.md:justify-between.items-center.space-y-4.md:space-y-0
