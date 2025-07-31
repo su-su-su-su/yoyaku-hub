@@ -58,7 +58,11 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
   end
 
   def verify_link_mark_in_cell(cell, expected_link_text)
-    expect(cell).to have_link(expected_link_text)
+    if expected_link_text == '◎'
+      expect(cell).to have_css('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
+    else
+      expect(cell).to have_link(expected_link_text)
+    end
   end
 
   def verify_other_mark_in_cell(cell, expected_text, time, day)
@@ -321,10 +325,10 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
         if expected_mark == '×'
           expect(cell).to have_content('×')
         elsif cell.has_css?('a')
-          link_text = cell.find('a').text
           if expected_mark == '◎'
-            expect(link_text).to eq('◎')
+            expect(cell).to have_css('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
           else
+            link_text = cell.find('a').text
             expect(link_text).to eq('△')
           end
         end
@@ -338,8 +342,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
         time_with_circle = find_cell('11:30', monday)
         if time_with_circle&.has_css?('a')
-          link_text = time_with_circle.find('a').text
-          expect(link_text).to eq('◎')
+          expect(time_with_circle).to have_css('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
         end
 
         time_with_triangle = find_cell('12:00', monday)
@@ -365,7 +368,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       end
 
       it 'navigates to reservation confirmation page when clicking available time slot' do
-        available_slot = first('a', text: '◎')
+        available_slot = first('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
         available_slot.click
         sleep 1
 
@@ -381,7 +384,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     let(:card_display_stylist) { create(:stylist, email: 'card_display_stylist_revised@example.com') }
     let(:card_display_customer) { create(:customer, email: 'card_display_customer_revised@example.com') }
 
-    let(:guide_card_selector) { '.mt-6.p-4.border.rounded-lg.bg-white.shadow' }
+    let(:guide_card_selector) { '.mt-2.p-4.border.rounded-lg.bg-white.shadow' }
     let(:guide_card_title_text) { '予約表の記号について' }
 
     before do

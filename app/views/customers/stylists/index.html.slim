@@ -2,6 +2,7 @@
 - content_for :meta_description, '過去にご予約いただいたスタイリストの中から、再度予約したいスタイリストを選択してください。'
 
 div.w-full.max-w-6xl.mx-auto.px-4.sm:px-6.md:px-8
+  = render 'shared/reservation_steps', current_step: 'stylist'
   h1.text-xl.md:text-2xl.font-bold.my-4 スタイリスト選択
 
   - if @stylists.any?

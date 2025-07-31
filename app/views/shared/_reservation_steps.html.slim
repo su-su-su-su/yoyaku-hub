@@ -1,0 +1,8 @@
+.reservation-steps.p-3
+  .steps.text-xs.text-gray-600.whitespace-nowrap.overflow-x-auto
+    - steps = [{ name: "スタイリスト選択", key: "stylist" }, { name: "メニュー選択", key: "menu" }, { name: "日時選択", key: "datetime" }, { name: "確認", key: "confirmation" }]
+    - steps.each_with_index do |step, index|
+      span class=("#{step[:key] == current_step ? 'text-blue-600 font-semibold' : 'text-gray-500'}")
+        = "#{index + 1}. #{step[:name]}"
+      - unless index == steps.length - 1
+        span.mx-1.text-gray-400 →
