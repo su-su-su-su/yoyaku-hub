@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
   get '/terms', to: 'static_pages#terms'
   get '/privacy', to: 'static_pages#privacy'
+  get '/demo', to: 'demo#index', as: :demo
   get 'home/index'
   devise_for :users, skip: %i[registrations sessions], controllers: {
     passwords: 'users/passwords',
