@@ -64,11 +64,14 @@ class ApplicationController < ActionController::Base
   end
 
   def demo_mode_enabled?
-    Rails.env.development? || ENV['ENABLE_DEMO_MODE'] == 'true'
+    if Rails.env.test?
+      ENV['ENABLE_DEMO_MODE'] == 'true'
+    else
+      true
+    end
   end
 
   def find_demo_user(demo_type)
-    # セッションIDを取得、存在しない場合はランダムに生成
     session_id = request.session.id.to_s
     session_id = SecureRandom.hex(8) if session_id.blank?
 
