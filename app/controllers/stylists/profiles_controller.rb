@@ -7,6 +7,11 @@ module Stylists
     end
 
     def update
+      if demo_mode? && current_user.email&.include?('@example.com')
+        redirect_to stylists_dashboard_path, alert: t('demo.profile_edit_disabled')
+        return
+      end
+
       @user = current_user
       @user.assign_attributes(stylist_params)
       if @user.save(context: :profile_completion)
