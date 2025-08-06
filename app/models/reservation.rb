@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class Reservation < ApplicationRecord
   belongs_to :customer, class_name: 'User', inverse_of: :reservations
   belongs_to :stylist,  class_name: 'User', inverse_of: :stylist_reservations
@@ -14,6 +15,7 @@ class Reservation < ApplicationRecord
   validate :validate_within_operating_hours
   validate :validate_slotwise_capacity
   validate :menu_selection_presence
+  validate :validate_demo_user_restrictions
   before_validation :combine_date_and_time
 
   attr_accessor :start_date_str, :start_time_str
@@ -134,4 +136,12 @@ class Reservation < ApplicationRecord
       end
     end
   end
+
+  def validate_demo_user_restrictions
+    return unless customer&.demo_customer?
+    return if customer.can_book_with_stylist?(stylist)
+
+    errors.add(:base, 'デモ環境では指定されたスタイリストのみご利用いただけます。')
+  end
 end
+# rubocop:enable Metrics/ClassLength
