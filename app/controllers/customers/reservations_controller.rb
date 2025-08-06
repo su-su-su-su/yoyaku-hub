@@ -56,15 +56,23 @@ module Customers
       redirect_to customers_reservations_path, alert: t('flash.reservation_not_found')
     end
 
+    # rubocop:disable Metrics/AbcSize
     def set_reservation_form_data
       @stylist_id = params[:stylist_id]
       @date = params[:date]
       @time_str = params[:time_str]
       @menu_ids = params[:menu_ids]
       @stylist = User.find(@stylist_id)
+
+      if demo_mode? && !current_user.can_book_with_stylist?(@stylist)
+        redirect_to customers_reservations_path, alert: t('customers.reservations.demo_restriction')
+        return
+      end
+
       @menus = Menu.where(id: @menu_ids).to_a
       calculate_totals
     end
+    # rubocop:enable Metrics/AbcSize
 
     def parse_start_time_for_display
       date_time_str = "#{@date} #{@time_str}"

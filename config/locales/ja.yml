@@ -256,3 +256,8 @@ ja:
     profiles:
       updated: "カスタマー情報を更新しました"
       incomplete_profile: "サービスを利用する前にプロフィールを入力してください"
+    reservations:
+      demo_restriction: "デモ環境では指定されたスタイリストのみご利用いただけます。"
+
+  demo:
+    profile_edit_disabled: "デモユーザーの情報は変更できません。"

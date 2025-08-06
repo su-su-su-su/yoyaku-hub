@@ -20,3 +20,6 @@ load Rails.root.join('db/seeds/shift_settings_date_based.rb')
 
 Rails.logger.debug 'Seeding reservations...'
 load Rails.root.join('db/seeds/reservations.rb')
+
+Rails.logger.debug 'Seeding demo users...'
+load Rails.root.join('db/seeds/demo_users.rb')

@@ -9,6 +9,11 @@ module Customers
     end
 
     def update
+      if demo_mode? && current_user.email&.include?('@example.com')
+        redirect_to customers_dashboard_path, alert: t('demo.profile_edit_disabled')
+        return
+      end
+
       @user = current_user
       @user.assign_attributes(customer_params)
       if @user.save(context: :profile_completion)

@@ -12,4 +12,8 @@ module ApplicationHelper
   def menu_form_method(menu)
     menu.new_record? ? :post : :patch
   end
+
+  def demo_mode?
+    session[:demo_mode] == true
+  end
 end

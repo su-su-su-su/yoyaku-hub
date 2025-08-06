@@ -19,6 +19,8 @@ class User < ApplicationRecord
 
   KATAKANA_REGEX = /\A[ァ-ヶー]+\z/
 
+  WEEKEND_DAYS = [0, 6].freeze
+
   validates :family_name_kana, format: {
     with: KATAKANA_REGEX,
     message: I18n.t('errors.messages.only_katakana')
@@ -301,7 +303,217 @@ class User < ApplicationRecord
     email&.include?('@no-email-dummy.invalid') || false
   end
 
+  def demo_customer?
+    email&.include?('demo_customer_') && email.include?('@example.com')
+  end
+
+  def demo_stylist?
+    email&.include?('demo_stylist_') && email.include?('@example.com')
+  end
+
+  def demo_session_id
+    return nil unless demo_customer? || demo_stylist?
+
+    email.split('_')[2].split('@')[0]
+  end
+
+  def same_demo_session?(other_user)
+    return false unless (demo_customer? || demo_stylist?) && other_user&.demo_user?
+
+    demo_session_id == other_user.demo_session_id
+  end
+
+  def demo_user?
+    demo_customer? || demo_stylist?
+  end
+
+  def self.demo_stylists_for_customer(customer)
+    return none unless customer&.demo_customer?
+
+    session_id = customer.demo_session_id
+    where(role: :stylist, email: "demo_stylist_#{session_id}@example.com")
+  end
+
+  def can_book_with_stylist?(stylist)
+    return true unless demo_customer?
+    return false unless stylist&.demo_stylist?
+
+    same_demo_session?(stylist)
+  end
+
+  class << self
+    def find_or_create_demo_stylist(session_id)
+      email = "demo_stylist_#{session_id}@example.com"
+
+      stylist = find_by(email: email)
+      return stylist if stylist
+
+      stylist = create!(
+        email: email,
+        password: 'demo_password_123',
+        role: 'stylist',
+        family_name: 'デモ',
+        given_name: 'スタイリスト',
+        family_name_kana: 'デモ',
+        given_name_kana: 'スタイリスト',
+        gender: 'male',
+        date_of_birth: '1990-01-01'
+      )
+
+      stylist.setup_demo_data
+      stylist
+    end
+
+    def find_or_create_demo_customer(session_id)
+      email = "demo_customer_#{session_id}@example.com"
+
+      customer = find_by(email: email)
+      if customer
+        find_or_create_demo_stylist(session_id)
+        return customer
+      end
+
+      customer = create!(
+        email: email,
+        password: 'demo_password_123',
+        role: 'customer',
+        family_name: 'デモ',
+        given_name: 'カスタマー',
+        family_name_kana: 'デモ',
+        given_name_kana: 'カスタマー',
+        gender: 'female',
+        date_of_birth: '1995-05-15'
+      )
+
+      find_or_create_demo_stylist(session_id)
+
+      customer
+    end
+  end
+
+  def setup_demo_data
+    return unless demo_stylist?
+
+    setup_demo_menus
+    setup_demo_working_hours
+    setup_demo_holidays
+    setup_demo_reservation_limits
+    setup_demo_monthly_shifts
+    create_demo_reservation
+  end
+
   private
+
+  def setup_demo_menus
+    return unless menus.empty?
+
+    menus.create!([
+                    { name: 'カット', price: 4000, duration: 60, is_active: true },
+                    { name: 'カラーリング', price: 6000, duration: 90, is_active: true },
+                    { name: 'パーマ', price: 7000, duration: 120, is_active: true }
+                  ])
+  end
+
+  def setup_demo_working_hours
+    return unless working_hours.where(target_date: nil).empty?
+
+    (1..5).each do |wday|
+      working_hours.create!(
+        day_of_week: wday,
+        start_time: '09:00',
+        end_time: '18:00'
+      )
+    end
+  end
+
+  def setup_demo_holidays
+    return unless holidays.where(target_date: nil).empty?
+
+    [0, 6].each do |wday|
+      holidays.create!(
+        day_of_week: wday,
+        is_holiday: true
+      )
+    end
+  end
+
+  def setup_demo_reservation_limits
+    return unless reservation_limits.where(target_date: nil).empty?
+
+    reservation_limits.create!(max_reservations: 1)
+  end
+
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  def setup_demo_monthly_shifts
+    today = Date.current
+    # rubocop:disable Metrics/BlockLength
+    [today.beginning_of_month, today.next_month.beginning_of_month].each do |month_start|
+      (month_start..month_start.end_of_month).each do |date|
+        next if WEEKEND_DAYS.include?(date.wday)
+
+        working_hours.find_or_create_by!(target_date: date) do |wh|
+          wh.start_time = '09:00'
+          wh.end_time = '18:00'
+        end
+
+        next if reservation_limits.exists?(target_date: date)
+
+        reservation_limits.create!(
+          target_date: date,
+          time_slot: nil,
+          max_reservations: 2
+        )
+
+        start_slot = 18  # 9:00
+        end_slot = 36    # 18:00
+        limits_data = (start_slot...end_slot).map do |slot|
+          {
+            stylist_id: id,
+            target_date: date,
+            time_slot: slot,
+            max_reservations: 1,
+            created_at: Time.current,
+            updated_at: Time.current
+          }
+        end
+        # rubocop:disable Rails/SkipsModelValidations
+        ReservationLimit.insert_all(limits_data)
+        # rubocop:enable Rails/SkipsModelValidations
+      end
+    end
+    # rubocop:enable Metrics/BlockLength
+  end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+
+  # rubocop:disable Metrics/AbcSize
+  def create_demo_reservation
+    session_id = demo_session_id
+    customer = User.find_or_create_demo_customer(session_id)
+
+    future_date = 3.days.from_now.to_date
+    future_date += 1.day while WEEKEND_DAYS.include?(future_date.wday)
+
+    return if stylist_reservations.exists?(customer: customer)
+
+    menu_ids = menus.where(name: 'カット').pluck(:id)
+    return if menu_ids.empty?
+
+    reservation = Reservation.new(
+      customer: customer,
+      stylist: self,
+      start_date_str: future_date.strftime('%Y-%m-%d'),
+      start_time_str: '14:00',
+      status: 'before_visit'
+    )
+    reservation.menu_ids = menu_ids
+
+    if reservation.save
+      Rails.logger.info "デモ予約を作成しました: #{future_date} 14:00 (#{email} → #{customer.email})"
+    else
+      Rails.logger.error "デモ予約の作成に失敗しました: #{reservation.errors.full_messages.join(', ')}"
+    end
+  end
+  # rubocop:enable Metrics/AbcSize
 
   def calculate_visit_frequency(reservations)
     return nil if reservations.count < 2

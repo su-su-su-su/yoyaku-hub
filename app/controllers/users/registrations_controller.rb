@@ -38,9 +38,13 @@ module Users
     # end
 
     # PUT /resource
-    # def update
-    #   super
-    # end
+    def update
+      if demo_mode? && current_user.email.include?('@example.com')
+        redirect_back(fallback_location: root_path, alert: t('demo.profile_edit_disabled'))
+        return
+      end
+      super
+    end
 
     # DELETE /resource
     # def destroy
