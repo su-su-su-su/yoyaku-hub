@@ -34,3 +34,12 @@ link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Sy
 = stylesheet_link_tag "application", "data-turbo-track": "reload"
 = stylesheet_link_tag "simple_calendar", "data-turbo-track": "reload"
 = javascript_include_tag "application", "data-turbo-track": "reload"
+
+/ Google Analytics
+- if Rails.env.production? && ENV['GA_MEASUREMENT_ID'].present?
+  script async="" src="https://www.googletagmanager.com/gtag/js?id=#{ENV['GA_MEASUREMENT_ID']}"
+  javascript:
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '#{ENV['GA_MEASUREMENT_ID']}');
