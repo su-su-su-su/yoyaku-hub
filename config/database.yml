@@ -80,6 +80,13 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+staging:
+  <<: *default
+  database: yoyaku_hub_staging
+  username: <%= ENV["APP_DATABASE_USER"] %>
+  password: <%= ENV["YOYAKU_HUB_DATABASE_PASSWORD"] %>
+  host: <%= ENV["YOYAKU_HUB_DATABASE_HOST"] %>
+
 production:
   <<: *default
   database: yoyaku_hub_production
