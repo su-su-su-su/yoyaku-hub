@@ -42,7 +42,7 @@ set :ssh_options, {
 # Staging specific settings
 set :rails_env, 'staging'
 set :branch, ENV['BRANCH'] || 'develop'
-set :deploy_to, '/var/www/yoyaku-hub-staging'
+set :deploy_to, '/home/debian/yoyaku-hub-staging'
 
 # Puma settings for staging
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma-staging.sock"
