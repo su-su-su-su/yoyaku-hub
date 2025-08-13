@@ -41,7 +41,7 @@ set :ssh_options, {
 
 # Staging specific settings
 set :rails_env, 'staging'
-set :branch, ENV['BRANCH'] || 'develop'
+set :branch, ENV['BRANCH'] || 'main'
 set :deploy_to, '/home/debian/yoyaku-hub-staging'
 
 # Puma settings for staging
@@ -56,7 +56,7 @@ set :puma_service_unit_name, 'puma-yoyaku-hub-staging.service'
 set :migration_role, :db
 
 # Staging environment specific linked files
-set :linked_files, fetch(:linked_files, []).push('config/credentials/staging.key', '.env.staging')
+set :linked_files, fetch(:linked_files, []).push('config/credentials/production.key', '.env')
 
 # Additional staging configurations
 namespace :deploy do
