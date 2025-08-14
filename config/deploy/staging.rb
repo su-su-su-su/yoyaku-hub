@@ -56,7 +56,7 @@ set :puma_service_unit_name, 'puma-yoyaku-hub-staging.service'
 set :migration_role, :db
 
 # Staging environment specific linked files
-set :linked_files, fetch(:linked_files, []).push('config/credentials/production.key', '.env')
+set :linked_files, fetch(:linked_files, []).push('config/credentials/staging.key', '.env')
 
 # Additional staging configurations
 namespace :deploy do
