@@ -42,3 +42,5 @@
 /app/assets/stylesheets/application.css
 
 /config/credentials/production.key
+
+/config/credentials/staging.key
