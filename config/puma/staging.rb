@@ -5,7 +5,7 @@ threads threads_count, threads_count
 
 environment 'staging'
 
-shared_dir = File.expand_path("../../shared", __dir__)
+shared_dir = "/home/debian/yoyaku-hub-staging/shared"
 
 bind "unix://#{shared_dir}/tmp/sockets/puma-staging.sock"
 

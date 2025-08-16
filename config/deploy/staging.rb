@@ -51,6 +51,7 @@ set :puma_pid, "#{shared_path}/tmp/pids/puma-staging.pid"
 set :puma_access_log, "#{shared_path}/log/puma_staging_access.log"
 set :puma_error_log, "#{shared_path}/log/puma_staging_error.log"
 set :puma_service_unit_name, 'puma-yoyaku-hub-staging.service'
+set :puma_systemctl_user, :system
 
 # Database settings
 set :migration_role, :db
@@ -70,7 +71,7 @@ namespace :deploy do
       end
     end
   end
-  
+
   desc 'Copy production data to staging (use with caution)'
   task :copy_production_data do
     on roles(:db) do
