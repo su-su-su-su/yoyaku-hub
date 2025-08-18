@@ -1354,5 +1354,23 @@ RSpec.describe User do
     end
   end
   # rubocop:enable RSpec/MultipleMemoizedHelpers
+
+  describe '#timeout_in' do
+    context 'when user is stylist' do
+      let(:stylist_user) { build(:user, role: 'stylist') }
+
+      it 'returns 6 hours' do
+        expect(stylist_user.timeout_in).to eq(6.hours)
+      end
+    end
+
+    context 'when user is customer' do
+      let(:customer_user) { build(:user, role: 'customer') }
+
+      it 'returns 1 year' do
+        expect(customer_user.timeout_in).to eq(1.year)
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
