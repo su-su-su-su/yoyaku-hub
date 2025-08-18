@@ -4,32 +4,29 @@
 
 @layer base {
   html {
+    /* 横方向は完全に無効化 */
     overscroll-behavior-x: none;
-    /* iOSのモメンタムスクロールを制御 */
-    -webkit-overflow-scrolling: auto;
+    /* 縦方向はcontainで連鎖を防ぎつつプルトゥリフレッシュ許可 */
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
 
   body {
+    /* 横方向は完全に無効化 */
     overscroll-behavior-x: none;
-    overscroll-behavior-y: auto;
-    /* 通常のスムーズスクロールのみ許可 */
-    -webkit-overflow-scrolling: auto;
+    /* 縦方向はcontainで連鎖を防ぎつつプルトゥリフレッシュ許可 */
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     position: relative;
-    /* 高さを明示的に設定 */
     min-height: 100vh;
-  }
-  
-  /* メインコンテナのスクロール制御 */
-  main, [role="main"] {
-    -webkit-overflow-scrolling: auto;
-    overscroll-behavior-x: none;
   }
   
   /* すべての要素で横方向のオーバースクロールを無効化 */
   * {
     overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
