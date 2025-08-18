@@ -5,18 +5,26 @@
 @layer base {
   html {
     overscroll-behavior-x: none;
-    -webkit-overflow-scrolling: touch;
+    /* iOSのモメンタムスクロールを制御 */
+    -webkit-overflow-scrolling: auto;
     touch-action: pan-y;
-    /* 縦方向のみプルトゥリフレッシュを許可 */
   }
 
   body {
     overscroll-behavior-x: none;
     overscroll-behavior-y: auto;
-    -webkit-overflow-scrolling: touch;
+    /* 通常のスムーズスクロールのみ許可 */
+    -webkit-overflow-scrolling: auto;
     touch-action: pan-y;
-    /* スクロール位置を固定 */
     position: relative;
+    /* 高さを明示的に設定 */
+    min-height: 100vh;
+  }
+  
+  /* メインコンテナのスクロール制御 */
+  main, [role="main"] {
+    -webkit-overflow-scrolling: auto;
+    overscroll-behavior-x: none;
   }
   
   /* すべての要素で横方向のオーバースクロールを無効化 */
