@@ -357,9 +357,12 @@ class User < ApplicationRecord
       stylist = find_by(email: email)
       return stylist if stylist
 
+      # セッションIDとタイムスタンプを使用してユニークなパスワードを生成
+      secure_password = SecureRandom.hex(32)
+
       stylist = create!(
         email: email,
-        password: 'demo_password_123',
+        password: secure_password,
         role: 'stylist',
         family_name: 'デモ',
         given_name: 'スタイリスト',
@@ -382,9 +385,12 @@ class User < ApplicationRecord
         return customer
       end
 
+      # セッションIDとタイムスタンプを使用してユニークなパスワードを生成
+      secure_password = SecureRandom.hex(32)
+
       customer = create!(
         email: email,
-        password: 'demo_password_123',
+        password: secure_password,
         role: 'customer',
         family_name: 'デモ',
         given_name: 'カスタマー',
