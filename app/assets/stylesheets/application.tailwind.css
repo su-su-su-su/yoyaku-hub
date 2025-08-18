@@ -4,17 +4,24 @@
 
 @layer base {
   html {
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    /* 縦方向のみプルトゥリフレッシュを許可 */
   }
 
   body {
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: contain;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    /* スクロール位置を固定 */
+    position: relative;
+  }
+  
+  /* すべての要素で横方向のオーバースクロールを無効化 */
+  * {
+    overscroll-behavior-x: none;
   }
   
   /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
