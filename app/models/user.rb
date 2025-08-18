@@ -38,7 +38,7 @@ class User < ApplicationRecord
 
   enum :role, { customer: 0, stylist: 1 }
   devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :validatable,
+    :recoverable, :rememberable, :validatable, :timeoutable,
     :omniauthable, omniauth_providers: [:google_oauth2]
 
   def self.from_omniauth(auth, role_for_new_user = nil)
@@ -53,6 +53,15 @@ class User < ApplicationRecord
 
   def min_active_menu_duration
     menus.where(is_active: true).minimum(:duration) || 0
+  end
+
+  # セッションタイムアウト時間を設定
+  def timeout_in
+    if stylist?
+      6.hours
+    else
+      1.year
+    end
   end
 
   def profile_validation_required?
