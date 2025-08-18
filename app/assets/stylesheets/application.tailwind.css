@@ -4,21 +4,22 @@
 
 @layer base {
   html {
-    overscroll-behavior: none;
-    overscroll-behavior-y: none;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
 
   body {
-    overscroll-behavior: none;
-    overscroll-behavior-y: none;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
-  * {
+  
+  /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
+  .modal, .dropdown-content {
     overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
   }
 }
 
