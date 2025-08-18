@@ -23,6 +23,9 @@ Devise.setup do |config|
 
   config.reset_password_within = 6.hours
 
+  # セッションタイムアウトの設定
+  config.timeout_in = :timeout_in
+
   config.scoped_views = true
 
   config.sign_out_via = :delete
