@@ -6,8 +6,8 @@
   html {
     /* 横方向は完全に無効化 */
     overscroll-behavior-x: none;
-    /* 縦方向はcontainで連鎖を防ぎつつプルトゥリフレッシュ許可 */
-    overscroll-behavior-y: contain;
+    /* 縦方向は上部のみauto（プルトゥリフレッシュ用） */
+    overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
@@ -15,12 +15,28 @@
   body {
     /* 横方向は完全に無効化 */
     overscroll-behavior-x: none;
-    /* 縦方向はcontainで連鎖を防ぎつつプルトゥリフレッシュ許可 */
-    overscroll-behavior-y: contain;
+    /* 縦方向はautoでプルトゥリフレッシュ許可 */
+    overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     position: relative;
     min-height: 100vh;
+  }
+  
+  /* Chrome/Chromium特有の対策 */
+  @supports (-webkit-appearance: none) and (not (-webkit-touch-callout: none)) {
+    /* Chrome モバイルでの最下部跳ね返り対策 */
+    body {
+      /* Chromeでは縦方向もnoneに */
+      overscroll-behavior-y: none;
+      /* 最下部に余白を追加 */
+      padding-bottom: env(safe-area-inset-bottom, 50px);
+    }
+    
+    /* htmlだけautoを維持してプルトゥリフレッシュを有効化 */
+    html {
+      overscroll-behavior-y: auto;
+    }
   }
   
   /* すべての要素で横方向のオーバースクロールを無効化 */
