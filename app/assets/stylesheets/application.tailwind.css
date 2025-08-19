@@ -3,19 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  /* スクロール関連の設定を削除してデフォルト動作を維持 */
-  /* 必要最小限の設定のみ残す */
-  
   html {
-    /* スムーズスクロールのみ設定 */
-    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  body {
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
   
-  /* モーダルやドロップダウンなど特定の要素のみ制御 */
-  .modal, 
-  .dropdown-content {
-    /* モーダル内でのスクロール連鎖を防ぐ */
-    overscroll-behavior: contain;
+  /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
+  .modal, .dropdown-content {
+    overscroll-behavior: none;
   }
 }
 
@@ -141,7 +145,6 @@
   .simple-calendar {
     width: 100%;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 
     .wday-0,
     .wday-7 {
