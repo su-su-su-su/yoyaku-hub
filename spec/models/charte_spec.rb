@@ -162,7 +162,7 @@ RSpec.describe Charte do
       it 'returns the accounting products' do
         products = charte.accounting_products
         expect(products.count).to eq(2)
-        expect(products.map(&:product).map(&:name)).to contain_exactly('シャンプー', 'トリートメント')
+        expect(products.map { |p| p.product.name }).to contain_exactly('シャンプー', 'トリートメント')
       end
     end
 
@@ -194,7 +194,7 @@ RSpec.describe Charte do
     end
   end
 
-  describe '#has_products?' do
+  describe '#products?' do
     let(:product) { create(:product, name: 'ヘアオイル') }
 
     context 'when accounting has products' do
@@ -204,7 +204,7 @@ RSpec.describe Charte do
       end
 
       it 'returns true' do
-        expect(charte.has_products?).to be true
+        expect(charte.products?).to be true
       end
     end
 
@@ -214,7 +214,7 @@ RSpec.describe Charte do
       end
 
       it 'returns false' do
-        expect(charte.has_products?).to be false
+        expect(charte.products?).to be false
       end
     end
 
@@ -225,13 +225,13 @@ RSpec.describe Charte do
       end
 
       it 'returns false' do
-        expect(charte.has_products?).to be false
+        expect(charte.products?).to be false
       end
     end
 
     context 'when accounting does not exist' do
       it 'returns false' do
-        expect(charte.has_products?).to be false
+        expect(charte.products?).to be false
       end
     end
   end

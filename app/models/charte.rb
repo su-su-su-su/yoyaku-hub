@@ -33,7 +33,7 @@ class Charte < ApplicationRecord
     reservation.accounting.accounting_products
   end
 
-  def has_products?
+  def products?
     accounting_products.any?
   end
 end
