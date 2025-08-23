@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Stylists::Customers' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+RSpec.describe 'Stylists::Customers' do # rubocop:disable RSpec/MultipleMemoizedHelpers
   let(:stylist) { create(:user, role: :stylist) }
   let(:yamada_customer) do
     create(:user, role: :customer,
@@ -54,7 +54,7 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable Metrics/BlockLength, R
       menu_ids: [other_menu.id], start_date_str: Date.current.to_s, start_time_str: '10:00')
   end
 
-  describe 'GET /stylists/customers' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'GET /stylists/customers' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     context 'when user is authenticated as stylist' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'returns successful response' do
         get stylists_customers_path
@@ -81,7 +81,7 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable Metrics/BlockLength, R
       end
     end
 
-    context 'when searching with query parameter' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+    context 'when searching with query parameter' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'filters customers by family name' do
         get stylists_customers_path, params: { query: '山田' }
         expect(response.body).to include('山田 太郎')
@@ -161,7 +161,7 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable Metrics/BlockLength, R
     end
   end
 
-  describe 'GET /stylists/customers/:id' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'GET /stylists/customers/:id' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     context 'when viewing customer details' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'returns successful response' do
         get stylists_customer_path(yamada_customer)
@@ -196,7 +196,7 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable Metrics/BlockLength, R
     end
   end
 
-  describe 'Security' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'Security' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     let(:non_stylist) { create(:user, role: :customer) }
 
     describe 'XSS Protection' do # rubocop:disable RSpec/MultipleMemoizedHelpers

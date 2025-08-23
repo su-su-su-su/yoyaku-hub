@@ -8,10 +8,11 @@ FactoryBot.define do
     status { :before_visit }
 
     start_at { Time.zone.now.change(hour: 10, min: 0) }
+
     end_at { start_at + 60.minutes }
 
     after(:build) do |reservation, _evaluator|
-      if reservation.menu_ids.blank?
+      if reservation.stylist.present? && reservation.menu_ids.blank?
         menu = create(:menu, stylist: reservation.stylist, is_active: true)
         reservation.menu_ids = [menu.id]
       end

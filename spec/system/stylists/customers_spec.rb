@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Stylists Customer Search' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMemoizedHelpers
   let(:stylist) do
     create(:user, role: :stylist,
       family_name: '美容師', given_name: '太郎',
@@ -34,7 +34,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable Metrics/BlockLeng
   let(:menu) { create(:menu, stylist: stylist) }
   let(:other_menu) { create(:menu, stylist: other_stylist) }
 
-  before do # rubocop:disable Metrics/BlockLength
+  before do
     target_dates = [2.months.ago.to_date, 1.month.ago.to_date, Date.current]
     target_dates.each do |target_date|
       [stylist, other_stylist].each do |s|
@@ -112,7 +112,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable Metrics/BlockLeng
     end
   end
 
-  describe 'Customer search functionality' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'Customer search functionality' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     before { visit stylists_customers_path }
 
     it 'searches by family name' do
@@ -187,7 +187,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable Metrics/BlockLeng
     end
   end
 
-  describe 'Customer detail page' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'Customer detail page' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     it 'displays customer details when clicking detail button' do
       visit stylists_customers_path
 

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Stylists::CustomerReservations', :js do # rubocop:disable Metrics/BlockLength
+RSpec.describe 'Stylists::CustomerReservations', :js do
   let(:stylist) { create(:user, role: :stylist) }
   let(:customer) do
     create(:user, role: :customer,
@@ -17,7 +17,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do # rubocop:disable Metric
   let(:cut_menu) { create(:menu, stylist: stylist, name: 'カット', duration: 60, price: 3000) }
   let(:color_menu) { create(:menu, stylist: stylist, name: 'カラー', duration: 90, price: 5000) }
 
-  before do # rubocop:disable Metrics/BlockLength
+  before do
     login_as(stylist, scope: :user)
 
     [Date.current, 1.day.ago.to_date].each do |target_date|
@@ -81,7 +81,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do # rubocop:disable Metric
     end
   end
 
-  describe 'customer search functionality' do # rubocop:disable Metrics/BlockLength
+  describe 'customer search functionality' do
     before do
       visit new_stylists_customer_reservation_path(
         date: Date.current.strftime('%Y-%m-%d'),
@@ -128,7 +128,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do # rubocop:disable Metric
     end
   end
 
-  describe 'reservation creation' do # rubocop:disable Metrics/BlockLength
+  describe 'reservation creation' do
     before do
       visit new_stylists_customer_reservation_path(
         date: Date.current.strftime('%Y-%m-%d'),
