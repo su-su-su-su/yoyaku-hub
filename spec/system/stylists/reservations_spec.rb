@@ -4,6 +4,7 @@ require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength
 RSpec.describe 'Stylists::Reservations' do
+  include ActionView::Helpers::NumberHelper
   let(:stylist) { create(:user, role: :stylist) }
   let(:customer) { create(:user, role: :customer) }
   let(:today) { Date.current }
@@ -79,7 +80,7 @@ RSpec.describe 'Stylists::Reservations' do
         cut_menu = menus.find { |m| m.name == 'カット' }
         color_menu = menus.find { |m| m.name == 'カラー' }
         total_price = cut_menu.price + color_menu.price
-        expect(page).to have_content("¥#{total_price} (税込み)")
+        expect(page).to have_content("¥#{number_with_delimiter(total_price)} (税込み)")
       end
     end
 
@@ -167,7 +168,7 @@ RSpec.describe 'Stylists::Reservations' do
         expect(page).to have_content('カット')
         expect(page).to have_no_content('カラー')
         expect(page).to have_content("#{cut_menu.duration} 分")
-        expect(page).to have_content("¥#{cut_menu.price} (税込み)")
+        expect(page).to have_content("¥#{number_with_delimiter(cut_menu.price)} (税込み)")
       end
     end
 
