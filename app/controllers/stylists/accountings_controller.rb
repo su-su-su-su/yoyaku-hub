@@ -20,38 +20,43 @@ module Stylists
         total_amount: @reservation.menus.sum(&:price)
       )
       @accounting.accounting_payments.build
+      # 店販商品の初期フィールドは作成しない
+      @products = current_user.products.active.order(:name)
     end
 
     def edit
       @accounting.accounting_payments.build if @accounting.accounting_payments.empty?
+      # 編集画面でも初期の商品フィールドは作成しない（新規追加時のみ）
+      @products = current_user.products.active.order(:name)
     end
 
     def create
-      total_amount = params[:accounting][:total_amount]
-      payment_attributes = payment_params[:accounting_payments_attributes]
+      # 支払い情報は別途処理するので、ここでは含めない
+      build_params = { total_amount: accounting_params[:total_amount] }
 
-      @accounting = Accounting.create_with_payments(
-        @reservation,
-        total_amount,
-        payment_attributes
-      )
+      # 商品情報がある場合のみ追加
+      if accounting_params[:accounting_products_attributes].present?
+        build_params[:accounting_products_attributes] = accounting_params[:accounting_products_attributes]
+      end
 
-      if @accounting.persisted?
+      @accounting = @reservation.build_accounting(build_params)
+
+      if @accounting.save_with_payments_and_products(payment_params[:accounting_payments_attributes])
         redirect_to stylists_reservation_path(@reservation),
           notice: t('stylists.accountings.completed')
       else
+        @products = current_user.products.active.order(:name)
         render :new, status: :unprocessable_entity
       end
     end
 
     def update
-      total_amount = accounting_params[:total_amount]
-      payment_attributes = payment_params[:accounting_payments_attributes]
-
-      if @accounting.update_with_payments(total_amount, payment_attributes)
+      if @accounting.update_with_payments_and_products(accounting_params,
+        payment_params[:accounting_payments_attributes])
         redirect_to stylists_reservation_path(@accounting.reservation),
           notice: t('stylists.accountings.updated')
       else
+        @products = current_user.products.active.order(:name)
         render :edit, status: :unprocessable_entity
       end
     end
@@ -70,7 +75,8 @@ module Stylists
     def accounting_params
       params.require(:accounting).permit(
         :total_amount,
-        accounting_payments_attributes: %i[payment_method amount _destroy]
+        accounting_payments_attributes: %i[id payment_method amount _destroy],
+        accounting_products_attributes: %i[id product_id quantity actual_price _destroy]
       )
     end
 
