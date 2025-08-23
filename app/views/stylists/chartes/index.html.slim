@@ -24,10 +24,15 @@
                 p
                   | メニュー:
                   = reservation.menus.pluck(:name).join(', ')
+                - if reservation.accounting&.accounting_products&.any?
+                  p
+                    | 店販商品:
+                    - product_names = reservation.accounting.accounting_products.map { |ap| "#{ap.product.name}×#{ap.quantity}" }
+                    = product_names.join(', ')
                 p
-                  | 料金:
-                  - if reservation.accounting&.total_amount
-                    = "¥#{reservation.accounting.total_amount}"
+                  | 合計金額:
+                  - if reservation.accounting&.completed?
+                    = "¥#{number_with_delimiter(reservation.accounting.total_with_products)}"
                   - else
                     span.text-gray-500 未設定
 

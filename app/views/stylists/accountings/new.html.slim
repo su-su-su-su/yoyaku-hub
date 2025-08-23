@@ -38,7 +38,17 @@
             - else
               | なし
 
-  = form_with model: @accounting, url: stylists_accountings_path(reservation_id: @reservation.id), local: true, class: "space-y-4", data: { controller: "accounting" } do |form|
+  = form_with model: @accounting, url: stylists_accountings_path(reservation_id: @reservation.id), local: true, class: "space-y-4", data: { controller: "accounting", accounting_products: @products.to_json, accounting_menu_total_value: @accounting.total_amount } do |form|
+    .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
+      .bg-gray-100.p-3.border-b.border-gray-300
+        h2.text-lg.font-semibold.mb-0 店販商品
+      .p-3
+        p.text-sm.text-gray-600.mb-3 店販商品を購入された場合は追加してください。
+        #product-items.space-y-3 data-accounting-target="productItems"
+          / 初期状態では商品フィールドを表示しない
+        .text-center.mt-3
+          button.text-blue-600.text-sm.hover:text-blue-800 type="button" data-action="click->accounting#addProduct" + 商品を追加
+
     .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
       .bg-gray-100.p-3.border-b.border-gray-300
         h2.text-lg.font-semibold.mb-0 会計金額
@@ -51,7 +61,8 @@
               class: "border border-gray-300 rounded px-3 py-2 pl-8 w-full min-h-[44px]",
               min: 0,
               step: 1,
-              required: true
+              required: true,
+              data: { accounting_target: "totalAmount" }
 
     .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
       .bg-gray-100.p-3.border-b.border-gray-300

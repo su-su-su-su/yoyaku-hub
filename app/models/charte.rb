@@ -26,4 +26,14 @@ class Charte < ApplicationRecord
 
     reservation.accounting.total_amount
   end
+
+  def accounting_products
+    return [] unless reservation.accounting&.completed?
+
+    reservation.accounting.accounting_products
+  end
+
+  def products?
+    accounting_products.any?
+  end
 end

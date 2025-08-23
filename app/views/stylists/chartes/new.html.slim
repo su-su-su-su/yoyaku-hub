@@ -34,9 +34,24 @@
                 - @charte.reservation.menus.each do |menu|
                   li
                     = menu.name
-                    span.ml-2.text-gray-600= "¥#{menu.price}"
+                    span.ml-2.text-gray-600= "¥#{number_with_delimiter(menu.price)}"
             - else
               | なし
+        - if @charte.reservation.accounting&.completed? && @charte.reservation.accounting.accounting_products.any?
+          tr
+            th.md:w-1/3 店販商品
+            td
+              - @charte.reservation.accounting.accounting_products.each do |ap|
+                .flex.justify-between.items-center
+                  span
+                    = ap.product.name
+                    span.text-gray-600.ml-2= "×#{ap.quantity}"
+                  span= "¥#{number_with_delimiter(ap.actual_price * ap.quantity)}"
+        - if @charte.reservation.accounting&.completed?
+          tr
+            th.md:w-1/3 会計金額
+            td.font-bold
+              = "¥#{number_with_delimiter(@charte.reservation.accounting.total_with_products)} (税込み)"
 
   = form_with model: [@charte.reservation, @charte], url: stylists_chartes_path(reservation_id: @charte.reservation.id), local: true, class: "space-y-4" do |form|
     .bg-white.rounded-lg.shadow-sm.p-4.md:p-6

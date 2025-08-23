@@ -147,5 +147,93 @@ RSpec.describe Charte do
       end
     end
   end
+
+  describe '#accounting_products' do
+    let(:product_a) { create(:product, name: 'シャンプー') }
+    let(:product_b) { create(:product, name: 'トリートメント') }
+
+    context 'when accounting is completed with products' do
+      before do
+        accounting = create(:accounting, :completed, reservation: charte.reservation)
+        create(:accounting_product, accounting: accounting, product: product_a, quantity: 2, actual_price: 3000)
+        create(:accounting_product, accounting: accounting, product: product_b, quantity: 1, actual_price: 5000)
+      end
+
+      it 'returns the accounting products' do
+        products = charte.accounting_products
+        expect(products.count).to eq(2)
+        expect(products.map { |p| p.product.name }).to contain_exactly('シャンプー', 'トリートメント')
+      end
+    end
+
+    context 'when accounting is completed without products' do
+      before do
+        create(:accounting, :completed, reservation: charte.reservation)
+      end
+
+      it 'returns an empty array' do
+        expect(charte.accounting_products).to eq([])
+      end
+    end
+
+    context 'when accounting is not completed' do
+      before do
+        accounting = create(:accounting, reservation: charte.reservation, status: :pending)
+        create(:accounting_product, accounting: accounting, product: product_a, quantity: 1, actual_price: 3000)
+      end
+
+      it 'returns an empty array' do
+        expect(charte.accounting_products).to eq([])
+      end
+    end
+
+    context 'when accounting does not exist' do
+      it 'returns an empty array' do
+        expect(charte.accounting_products).to eq([])
+      end
+    end
+  end
+
+  describe '#products?' do
+    let(:product) { create(:product, name: 'ヘアオイル') }
+
+    context 'when accounting has products' do
+      before do
+        accounting = create(:accounting, :completed, reservation: charte.reservation)
+        create(:accounting_product, accounting: accounting, product: product, quantity: 1, actual_price: 4000)
+      end
+
+      it 'returns true' do
+        expect(charte.products?).to be true
+      end
+    end
+
+    context 'when accounting has no products' do
+      before do
+        create(:accounting, :completed, reservation: charte.reservation)
+      end
+
+      it 'returns false' do
+        expect(charte.products?).to be false
+      end
+    end
+
+    context 'when accounting is not completed' do
+      before do
+        accounting = create(:accounting, reservation: charte.reservation, status: :pending)
+        create(:accounting_product, accounting: accounting, product: product, quantity: 1, actual_price: 4000)
+      end
+
+      it 'returns false' do
+        expect(charte.products?).to be false
+      end
+    end
+
+    context 'when accounting does not exist' do
+      it 'returns false' do
+        expect(charte.products?).to be false
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength

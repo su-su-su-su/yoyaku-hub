@@ -38,7 +38,42 @@
             - else
               | なし
 
-  = form_with model: @accounting, url: stylists_accounting_path(@accounting), method: :patch, local: true, class: "space-y-4", data: { controller: "accounting" } do |form|
+  = form_with model: @accounting, url: stylists_accounting_path(@accounting), method: :patch, local: true, class: "space-y-4", data: { controller: "accounting", accounting_products: @products.to_json, accounting_menu_total_value: @accounting.service_amount, accounting_skip_initial_calculation: true } do |form|
+    .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
+      .bg-gray-100.p-3.border-b.border-gray-300
+        h2.text-lg.font-semibold.mb-0 店販商品
+      .p-3
+        p.text-sm.text-gray-600.mb-3 店販商品を購入された場合は追加してください。
+        #product-items.space-y-3 data-accounting-target="productItems"
+          - @accounting.accounting_products.each_with_index do |product, index|
+            .product-item.p-3.border.border-gray-200.rounded-lg data-product-index="#{index}"
+              .grid.grid-cols-1.md:grid-cols-3.gap-3
+                .form-group
+                  label.block.text-sm.font-medium.text-gray-700.mb-1 商品
+                  = select_tag "accounting[accounting_products_attributes][#{index}][product_id]",
+                      options_for_select(@products.map { |p| [p.name, p.id, { 'data-price': p.default_price }] }, product.product_id),
+                      { prompt: '商品を選択', class: "border border-gray-300 rounded px-3 py-2 w-full min-h-[44px]", data: { action: "change->accounting#updateProductPrice" } }
+                  = hidden_field_tag "accounting[accounting_products_attributes][#{index}][id]", product.id
+                .form-group
+                  label.block.text-sm.font-medium.text-gray-700.mb-1 数量
+                  = number_field_tag "accounting[accounting_products_attributes][#{index}][quantity]", product.quantity,
+                      class: "border border-gray-300 rounded px-3 py-2 w-full min-h-[44px]",
+                      min: 1,
+                      data: { action: "input->accounting#updateProductQuantity" }
+                .form-group
+                  label.block.text-sm.font-medium.text-gray-700.mb-1 販売価格
+                  .relative
+                    span.absolute.left-3.top-1/2.transform.-translate-y-1/2.text-gray-500 ¥
+                    = number_field_tag "accounting[accounting_products_attributes][#{index}][actual_price]", product.actual_price,
+                        class: "product-price-input border border-gray-300 rounded px-3 py-2 pl-8 w-full min-h-[44px]",
+                        min: 0,
+                        step: 1,
+                        data: { action: "input->accounting#updateProductActualPrice" }
+              .text-right.mt-2
+                button.text-red-600.text-sm.hover:text-red-800 type="button" data-action="click->accounting#removeProduct" この商品を削除
+        .text-center.mt-3
+          button.text-blue-600.text-sm.hover:text-blue-800 type="button" data-action="click->accounting#addProduct" + 商品を追加
+
     .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
       .bg-gray-100.p-3.border-b.border-gray-300
         h2.text-lg.font-semibold.mb-0 会計金額
@@ -51,7 +86,8 @@
                 class: "border border-gray-300 rounded px-3 py-2 pl-8 w-full min-h-[44px]",
                 min: 0,
                 step: 1,
-                required: true
+                required: true,
+                data: { accounting_target: "totalAmount" }
 
     .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
       .bg-gray-100.p-3.border-b.border-gray-300

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable RSpec/MultipleMemoizedHelpers
   let(:stylist) { create(:user, role: :stylist) }
   let(:customer) do
     create(:user, role: :customer,
@@ -26,7 +26,7 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable Metrics/Blo
   let(:date) { Date.current.strftime('%Y-%m-%d') }
   let(:time_str) { '10:00' }
 
-  before do # rubocop:disable Metrics/BlockLength
+  before do
     sign_in stylist
 
     [Date.current, 1.day.ago.to_date].each do |target_date|
@@ -64,8 +64,8 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable Metrics/Blo
     stylist_created_customer
   end
 
-  describe 'GET /stylists/customer_reservations/new' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
-    context 'when successful' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'GET /stylists/customer_reservations/new' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    context 'when successful' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'displays reservation creation form' do
         get new_stylists_customer_reservation_path, params: { date: date, time_str: time_str }
 
@@ -118,7 +118,7 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable Metrics/Blo
     end
   end
 
-  describe 'POST /stylists/customer_reservations' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'POST /stylists/customer_reservations' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     context 'when successful' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'creates reservation and redirects to schedule' do
         post stylists_customer_reservations_path, params: {
@@ -150,7 +150,7 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable Metrics/Blo
       end
     end
 
-    context 'when validation error' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+    context 'when validation error' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'shows error when customer not selected' do
         post stylists_customer_reservations_path, params: {
           date: date,
