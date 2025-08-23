@@ -10,7 +10,7 @@ RSpec.describe 'Stylists::Products' do
   end
 
   describe '商品一覧画面' do
-    context '商品が存在しない場合' do
+    context 'when no products exist' do
       before do
         visit stylists_products_path
       end
@@ -24,7 +24,7 @@ RSpec.describe 'Stylists::Products' do
       end
     end
 
-    context '商品が存在する場合' do
+    context 'when products exist' do
       let!(:active_product) { create(:product, user: stylist, name: 'シャンプー', default_price: 3000, active: true) }
       let!(:inactive_product) { create(:product, user: stylist, name: 'トリートメント', default_price: 5000, active: false) }
 
@@ -67,13 +67,13 @@ RSpec.describe 'Stylists::Products' do
       expect(page).to have_content('掲載する')
     end
 
-    context '有効な情報を入力した場合' do
+    context 'with valid information' do
       it '商品が登録される' do
         fill_in '商品名', with: 'ヘアオイル'
         fill_in 'デフォルト価格', with: '4500'
-        
-        click_button '登録する'
-        
+
+        click_on '登録する'
+
         expect(page).to have_current_path(stylists_products_path)
         expect(page).to have_content('商品を登録しました。')
         expect(page).to have_content('ヘアオイル')
@@ -82,10 +82,10 @@ RSpec.describe 'Stylists::Products' do
       end
     end
 
-    context '無効な情報を入力した場合' do
+    context 'with invalid information' do
       it '必須フィールドにrequired属性がある' do
         visit new_stylists_product_path
-        
+
         # HTML5のrequired属性を確認
         expect(page).to have_css('input[name="product[name]"][required]')
         expect(page).to have_css('input[name="product[default_price]"][required]')
@@ -107,15 +107,15 @@ RSpec.describe 'Stylists::Products' do
       expect(page).to have_content('掲載する')
     end
 
-    context '情報を更新した場合' do
+    context 'when updating information' do
       it '商品情報が更新される' do
         fill_in '商品名', with: 'ヘアワックス'
         fill_in 'デフォルト価格', with: '2500'
         # トグルをクリックして非掲載にする
         find('.toggle.toggle-primary').click
-        
-        click_button '更新する'
-        
+
+        click_on '更新する'
+
         expect(page).to have_current_path(stylists_products_path)
         expect(page).to have_content('商品を更新しました。')
         expect(page).to have_content('ヘアワックス')
@@ -135,7 +135,7 @@ RSpec.describe 'Stylists::Products' do
     end
 
     it '商品管理画面に遷移できる' do
-      click_link '商品管理'
+      click_on '商品管理'
       expect(page).to have_current_path(stylists_products_path)
       expect(page).to have_content('商品管理')
     end
