@@ -35,11 +35,21 @@
                   li= menu_name
             - else
               | なし
+        - if @charte.has_products?
+          tr
+            th.md:w-1/3 店販商品
+            td
+              - @charte.accounting_products.each do |ap|
+                .flex.justify-between.items-center
+                  span
+                    = ap.product.name
+                    span.text-gray-600.ml-2= "×#{ap.quantity}"
+                  span= "¥#{number_with_delimiter(ap.actual_price * ap.quantity)}"
         tr
           th.md:w-1/3 会計金額
           td
             - if @charte.total_amount
-              = "¥#{@charte.total_amount} (税込み)"
+              = "¥#{number_with_delimiter(@charte.reservation.accounting.total_with_products)} (税込み)"
             - else
               span.text-gray-500 未会計
 
