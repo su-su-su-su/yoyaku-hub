@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   end
 
   namespace :stylists do
+    resources :products
     get 'dashboard', to: 'dashboards#show'
     get 'schedules/:date', to: 'schedules#show', as: :schedules
     get 'schedules/weekly/:start_date', to: 'schedules#weekly', as: :weekly_schedules
