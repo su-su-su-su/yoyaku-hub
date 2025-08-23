@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoizedHelpers
   let(:stylist) { create(:user, :stylist) }
   let(:customer) { create(:customer, family_name: '山田', given_name: '太郎') }
   let(:cut_menu) { create(:menu, name: 'カット', price: 3000, duration: 60) }
@@ -39,13 +39,13 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
     sign_in stylist
   end
 
-  describe 'new accounting process' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
-    context 'with basic accounting process' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'new accounting process' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+    context 'with basic accounting process' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'can process payment with cash' do
         visit stylists_reservation_path(reservation)
         click_on '会計'
 
-        expect(page).to have_content('予約詳細')
+        expect(page).to have_content('会計処理')
         expect(page).to have_content('山田太郎 様')
         expect(page).to have_content('カット')
         expect(page).to have_content('カラー')
@@ -91,7 +91,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
       end
     end
 
-    context 'with split payment using multiple methods' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+    context 'with split payment using multiple methods' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'can split payment between cash and credit card', :js do
         visit new_stylists_accounting_path(id: reservation.id)
 
@@ -163,7 +163,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
       end
     end
 
-    context 'when validation errors occur' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+    context 'when validation errors occur' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'shows error when payment total does not match accounting amount' do
         visit new_stylists_accounting_path(id: reservation.id)
 
@@ -223,7 +223,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
     end
   end
 
-  describe 'accounting modification' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+  describe 'accounting modification' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     let!(:accounting) do
       create(:accounting,
         reservation: reservation,
@@ -236,7 +236,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
       create(:accounting_payment, accounting: accounting, payment_method: :credit_card, amount: 3000)
     end
 
-    context 'with basic modifications' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+    context 'with basic modifications' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'can modify accounting amount' do
         visit edit_stylists_accounting_path(accounting)
 
@@ -279,7 +279,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
       end
     end
 
-    context 'when adding and removing payment methods' do # rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers
+    context 'when adding and removing payment methods' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'can add payment methods and modify', :js do
         visit edit_stylists_accounting_path(accounting)
 
@@ -363,7 +363,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable Metrics/BlockLength,
 
       expect(page).to have_content('会計詳細')
       expect(page).to have_content('山田太郎 様')
-      expect(page).to have_content('¥8000')
+      expect(page).to have_content('¥8,000')
 
       expect(page).to have_content('現金')
       expect(page).to have_content('¥3000')

@@ -9,5 +9,11 @@ FactoryBot.define do
     trait :completed do
       status { :completed }
     end
+
+    trait :with_payment do
+      after(:create) do |accounting|
+        create(:accounting_payment, accounting: accounting, amount: accounting.total_amount)
+      end
+    end
   end
 end
