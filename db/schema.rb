@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_29_030848) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_19_153015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,6 +21,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_29_030848) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["accounting_id"], name: "index_accounting_payments_on_accounting_id"
+  end
+
+  create_table "accounting_products", force: :cascade do |t|
+    t.bigint "accounting_id", null: false
+    t.bigint "product_id", null: false
+    t.integer "quantity", default: 1, null: false
+    t.integer "actual_price", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["accounting_id", "product_id"], name: "index_accounting_products_on_accounting_id_and_product_id"
+    t.index ["accounting_id"], name: "index_accounting_products_on_accounting_id"
+    t.index ["product_id"], name: "index_accounting_products_on_product_id"
   end
 
   create_table "accountings", force: :cascade do |t|
@@ -71,6 +83,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_29_030848) do
     t.datetime "updated_at", null: false
     t.index ["stylist_id", "name"], name: "index_menus_on_stylist_id_and_name", unique: true
     t.index ["stylist_id"], name: "index_menus_on_stylist_id"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.integer "default_price", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "active", default: true, null: false
+    t.index ["active"], name: "index_products_on_active"
+    t.index ["user_id", "name"], name: "index_products_on_user_id_and_name"
+    t.index ["user_id"], name: "index_products_on_user_id"
   end
 
   create_table "reservation_limits", force: :cascade do |t|
@@ -146,12 +170,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_29_030848) do
   end
 
   add_foreign_key "accounting_payments", "accountings"
+  add_foreign_key "accounting_products", "accountings"
+  add_foreign_key "accounting_products", "products"
   add_foreign_key "accountings", "reservations"
   add_foreign_key "chartes", "reservations"
   add_foreign_key "chartes", "users", column: "customer_id"
   add_foreign_key "chartes", "users", column: "stylist_id"
   add_foreign_key "holidays", "users", column: "stylist_id"
   add_foreign_key "menus", "users", column: "stylist_id"
+  add_foreign_key "products", "users"
   add_foreign_key "reservation_limits", "users", column: "stylist_id"
   add_foreign_key "reservation_menu_selections", "menus"
   add_foreign_key "reservation_menu_selections", "reservations"

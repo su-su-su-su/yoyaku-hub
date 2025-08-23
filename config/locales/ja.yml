@@ -234,6 +234,10 @@ ja:
       Duration: "施術時間"
       created: "メニューが作成されました。"
       updated: "メニューが更新されました。"
+    products:
+      created: "商品を登録しました。"
+      updated: "商品を更新しました。"
+      hidden: "商品を非表示にしました。"
     profiles:
       updated: "カスタマー情報を更新しました"
       incomplete_profile: "サービスを利用する前にプロフィールを入力してください"
