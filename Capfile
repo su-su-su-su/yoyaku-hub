@@ -42,5 +42,8 @@ require 'capistrano/bundler'
 # require "capistrano/passenger"
 install_plugin Capistrano::Puma
 install_plugin Capistrano::Puma::Systemd
+
+# Whenever (cron management)
+require 'whenever/capistrano'
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
