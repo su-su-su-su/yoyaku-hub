@@ -56,10 +56,17 @@ Rails.application.configure do
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
-  # Log to STDOUT by default
-  config.logger = ActiveSupport::Logger.new($stdout)
-                                       .tap  { |logger| logger.formatter = Logger::Formatter.new }
-                                       .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  # Log to file and STDOUT
+  if ENV['RAILS_LOG_TO_STDOUT'].present?
+    config.logger = ActiveSupport::Logger.new($stdout)
+                                         .tap  { |logger| logger.formatter = Logger::Formatter.new }
+                                         .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  else
+    # Log to file
+    config.logger = ActiveSupport::Logger.new(Rails.root.join('log', "#{Rails.env}.log"))
+                                         .tap { |logger| logger.formatter = Logger::Formatter.new }
+                                         .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  end
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
