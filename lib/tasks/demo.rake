@@ -44,6 +44,7 @@ class DemoDataCleaner
     count
   end
 
+  # rubocop:disable Metrics/AbcSize
   def perform_cleanup
     deleted_count = { users: 0, reservations: 0, chartes: 0, accountings: 0 }
 
@@ -52,12 +53,17 @@ class DemoDataCleaner
       deleted_count[:chartes] += user.stylist_chartes.count + user.customer_chartes.count
       deleted_count[:users] += 1
 
-      cleanup_user_data([user])
+      # 単一のユーザーを削除
+      user.reservations.destroy_all
+      user.stylist_reservations.destroy_all
+      user.stylist_chartes.destroy_all
+      user.customer_chartes.destroy_all
     end
 
-    @demo_users.destroy_all
+    @demo_users.reload.destroy_all
     deleted_count
   end
+  # rubocop:enable Metrics/AbcSize
 
   def silent_cleanup
     return 0 unless @demo_users.exists?
@@ -75,11 +81,22 @@ class DemoDataCleaner
   end
 
   def cleanup_user_data(users)
-    users.find_each do |user|
-      user.reservations.destroy_all
-      user.stylist_reservations.destroy_all
-      user.stylist_chartes.destroy_all
-      user.customer_chartes.destroy_all
+    # usersがActiveRecord::Relationか配列かを判定
+    if users.respond_to?(:find_each)
+      users.find_each do |user|
+        user.reservations.destroy_all
+        user.stylist_reservations.destroy_all
+        user.stylist_chartes.destroy_all
+        user.customer_chartes.destroy_all
+      end
+    else
+      # 配列の場合
+      users.each do |user|
+        user.reservations.destroy_all
+        user.stylist_reservations.destroy_all
+        user.stylist_chartes.destroy_all
+        user.customer_chartes.destroy_all
+      end
     end
   end
 end
