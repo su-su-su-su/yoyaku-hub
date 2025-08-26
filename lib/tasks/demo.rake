@@ -52,10 +52,14 @@ class DemoDataCleaner
       deleted_count[:chartes] += user.stylist_chartes.count + user.customer_chartes.count
       deleted_count[:users] += 1
 
-      cleanup_user_data([user])
+      # 単一のユーザーを削除
+      user.reservations.destroy_all
+      user.stylist_reservations.destroy_all
+      user.stylist_chartes.destroy_all
+      user.customer_chartes.destroy_all
     end
 
-    @demo_users.destroy_all
+    @demo_users.reload.destroy_all
     deleted_count
   end
 
