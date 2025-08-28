@@ -211,6 +211,7 @@ RSpec.describe 'Stylists Customer Registration' do
     end
 
     it 'shows both reservation customers and manually registered customers' do
+      manual_customer # 明示的にmanual_customerを作成
       visit stylists_customers_path
 
       expect(page).to have_content('予約 顧客')
@@ -227,6 +228,7 @@ RSpec.describe 'Stylists Customer Registration' do
     end
 
     it 'can search for manually registered customers' do
+      manual_customer # 明示的にmanual_customerを作成
       visit stylists_customers_path
 
       fill_in 'query', with: '手動'
