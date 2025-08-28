@@ -129,7 +129,7 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable RSpec/Multi
         }
 
         expect(response).to redirect_to(stylists_schedules_path(date: date))
-        expect(flash[:notice]).to eq(I18n.t('stylists.reservations.created'))
+        expect(flash[:toast]).to eq({ message: I18n.t('stylists.reservations.created'), type: :success })
 
         reservation = Reservation.last
         expect(reservation.customer).to eq(customer)

@@ -59,7 +59,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計完了'
 
-        expect(page).to have_content('会計が完了しました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
         expect(page).to have_current_path(stylists_reservation_path(reservation))
 
         accounting = reservation.reload.accounting
@@ -82,7 +82,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計完了'
 
-        expect(page).to have_content('会計が完了しました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
 
         accounting = reservation.reload.accounting
         expect(accounting.total_amount).to eq 7000
@@ -109,7 +109,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計完了'
 
-        expect(page).to have_content('会計が完了しました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
 
         accounting = reservation.reload.accounting
         expect(accounting.accounting_payments.count).to eq 2
@@ -143,7 +143,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計完了'
 
-        expect(page).to have_content('会計が完了しました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
 
         accounting = reservation.reload.accounting
         expect(accounting.accounting_payments.count).to eq 3
@@ -255,7 +255,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計修正完了'
 
-        expect(page).to have_content('会計が修正されました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
         expect(page).to have_current_path(stylists_reservation_path(reservation))
 
         accounting.reload
@@ -272,7 +272,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計修正完了'
 
-        expect(page).to have_content('会計が修正されました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
 
         accounting.reload
         expect(accounting.accounting_payments.find_by(amount: 5000).payment_method).to eq 'digital_pay'
@@ -300,7 +300,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計修正完了'
 
-        expect(page).to have_content('会計が修正されました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
 
         accounting.reload
         expect(accounting.accounting_payments.count).to eq 3
@@ -320,7 +320,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
         click_on '会計修正完了'
 
-        expect(page).to have_content('会計が修正されました')
+        expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
 
         accounting.reload
         expect(accounting.accounting_payments.count).to eq 1

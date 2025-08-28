@@ -148,7 +148,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
 
       click_on '予約を登録'
 
-      expect(page).to have_content('予約を登録しました')
+      expect(page).to have_css('#toast-container .toast-message', text: '予約を登録しました')
       expect(page).to have_current_path(stylists_schedules_path(date: Date.current.strftime('%Y-%m-%d')))
 
       reservation = Reservation.last
