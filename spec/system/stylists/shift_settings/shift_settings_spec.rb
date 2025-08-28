@@ -6,12 +6,12 @@ require 'rails_helper'
 RSpec.describe 'Stylist shift settings' do
   let(:stylist) do
     create(:user, role: :stylist,
-           family_name: '田中',
-           given_name: '太郎',
-           family_name_kana: 'タナカ',
-           given_name_kana: 'タロウ',
-           gender: 'male',
-           date_of_birth: '1990-01-01')
+      family_name: '田中',
+      given_name: '太郎',
+      family_name_kana: 'タナカ',
+      given_name_kana: 'タロウ',
+      gender: 'male',
+      date_of_birth: '1990-01-01')
   end
 
   describe 'Main settings page' do

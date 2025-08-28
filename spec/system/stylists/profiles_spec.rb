@@ -60,11 +60,11 @@ RSpec.describe 'Stylists::Profiles' do
         # HTML5バリデーションを無効化するために、JavaScriptでpattern属性を削除
         page.execute_script("document.getElementById('user_family_name_kana').removeAttribute('pattern')")
         page.execute_script("document.getElementById('user_given_name_kana').removeAttribute('pattern')")
-        
-        fill_in 'セイ', with: 'びようし'  # ひらがなで入力（エラー）
-        fill_in 'メイ', with: 'はなこ'    # ひらがなで入力（エラー）
+
+        fill_in 'セイ', with: 'びようし' # ひらがなで入力（エラー）
+        fill_in 'メイ', with: 'はなこ' # ひらがなで入力（エラー）
         click_on '登録'
-        
+
         expect(page).to have_content('全角カタカナのみ入力できます')
         # バリデーションエラー時はeditページが再表示される
         expect(page).to have_css('form[action="/stylists/profile"]')

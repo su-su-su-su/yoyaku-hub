@@ -153,7 +153,7 @@ RSpec.describe 'Stylists Customer Registration' do
       visit edit_stylists_customer_path(other_manual_customer)
 
       # RecordNotFoundエラーが発生することを確認（開発環境）
-      expect(page).to have_content("ActiveRecord::RecordNotFound")
+      expect(page).to have_content('ActiveRecord::RecordNotFound')
     end
 
     it 'shows validation errors during update' do
@@ -175,7 +175,7 @@ RSpec.describe 'Stylists Customer Registration' do
   # rubocop:disable Metrics/BlockLength
   describe 'Customer list integration' do
     let!(:reservation_customer) { create(:user, :customer, family_name: '予約', given_name: '顧客') }
-    let!(:manual_customer) do
+    let(:manual_customer) do
       create(:user, :customer,
         created_by_stylist_id: stylist.id,
         family_name: '手動',

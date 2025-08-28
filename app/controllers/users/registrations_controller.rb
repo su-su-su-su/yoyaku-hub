@@ -92,15 +92,23 @@ module Users
 
     def handle_successful_signup
       if resource.active_for_authentication?
-        flash[:toast] = { message: I18n.t('devise.registrations.signed_up'), type: :success }
-        sign_up(resource_name, resource)
-        respond_with resource, location: after_sign_up_path_for(resource)
+        handle_active_signup
       else
-        flash[:toast] =
-          { message: I18n.t("devise.registrations.signed_up_but_#{resource.inactive_message}"), type: :info }
-        expire_data_after_sign_in!
-        respond_with resource, location: after_inactive_sign_up_path_for(resource)
+        handle_inactive_signup
       end
+    end
+
+    def handle_active_signup
+      flash[:toast] = { message: I18n.t('devise.registrations.signed_up'), type: :success }
+      sign_up(resource_name, resource)
+      respond_with resource, location: after_sign_up_path_for(resource)
+    end
+
+    def handle_inactive_signup
+      flash[:toast] =
+        { message: I18n.t("devise.registrations.signed_up_but_#{resource.inactive_message}"), type: :info }
+      expire_data_after_sign_in!
+      respond_with resource, location: after_inactive_sign_up_path_for(resource)
     end
 
     def handle_failed_resource

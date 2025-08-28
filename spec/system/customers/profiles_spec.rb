@@ -60,7 +60,7 @@ RSpec.describe 'Customers::Profiles' do
         # HTML5バリデーションを無効化するために、JavaScriptでpattern属性を削除
         page.execute_script("document.getElementById('user_family_name_kana').removeAttribute('pattern')")
         page.execute_script("document.getElementById('user_given_name_kana').removeAttribute('pattern')")
-        
+
         fill_in 'セイ', with: 'よやく'
         fill_in 'メイ', with: 'たろう'
         click_on '登録'
