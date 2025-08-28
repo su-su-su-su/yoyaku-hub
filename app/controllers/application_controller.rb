@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     return unless allowed_roles.include?(role)
     return if current_user&.role == role
 
-    redirect_to root_path, alert: t('alerts.no_permission')
+    redirect_with_toast root_path, t('alerts.no_permission'), type: :error
   end
 
   def ensure_stylist_role
@@ -85,5 +85,15 @@ class ApplicationController < ActionController::Base
 
   def demo_mode?
     session[:demo_mode] == true
+  end
+
+  def redirect_with_toast(path, message, type: :info)
+    flash[:toast] = { message: message, type: type }
+    redirect_to path, status: :see_other
+  end
+
+  def redirect_back_with_toast(fallback_location:, message:, type: :info)
+    flash[:toast] = { message: message, type: type }
+    redirect_back fallback_location: fallback_location
   end
 end
