@@ -8,8 +8,6 @@
       = @customer.given_name
       |  様のカルテ履歴
 
-  - if notice
-    .alert.alert-info.flash-notice(data-controller="flash")= notice
 
   - if @paid_reservations.any?
     .space-y-4

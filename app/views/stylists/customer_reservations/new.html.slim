@@ -2,9 +2,6 @@
 - content_for :meta_description, 'お客様の新しい予約を登録します。'
 
 .container.mx-auto.px-4.py-4.md:py-6
-  - if flash[:alert]
-    .alert.alert-error.shadow-lg.mb-4(data-controller="flash")= flash[:alert]
-
   - if @reservation&.errors&.any?
     .alert.alert-error.shadow-lg.mb-4
       h3.font-bold エラーが発生しました
