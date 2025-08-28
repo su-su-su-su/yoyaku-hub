@@ -28,6 +28,7 @@ RSpec.describe 'User login' do
       click_on 'ログイン'
 
       expect(page).to have_current_path('/login', url: false)
+      expect(page).to have_css('#toast-container .toast-message', text: 'メールアドレスまたはパスワードが違います。')
       expect(page).to have_field('user_email')
       expect(page).to have_field('user_password')
     end
