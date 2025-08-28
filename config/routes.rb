@@ -89,7 +89,7 @@ Rails.application.routes.draw do
 
     get 'login', to: 'devise/sessions#new', as: :new_user_session
     post 'login', to: 'users/sessions#create', as: :user_session
-    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+    delete 'logout', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
   unauthenticated do

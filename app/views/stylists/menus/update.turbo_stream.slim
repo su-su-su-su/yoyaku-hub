@@ -1,8 +1,13 @@
-= turbo_stream.update 'flash-message' do
-  .alert.alert-info.flash-notice(data-controller="flash")= t('stylists.menus.updated')
+= turbo_stream.after 'toast-container' do
+  script
+    | setTimeout(function() {
+    |   if (window.showToast) {
+    |     window.showToast('#{j(t('stylists.menus.updated'))}', 'success');
+    |   }
+    | }, 100);
 
-= turbo_stream.replace dom_id(@menu) do
-  = turbo_frame_tag dom_id(@menu) do
+= turbo_stream.replace "menu_#{@menu.id}" do
+  = turbo_frame_tag "menu_#{@menu.id}" do
     = render partial: 'menu_item', locals: { menu: @menu }
 
 = turbo_stream.update 'menu-list' do

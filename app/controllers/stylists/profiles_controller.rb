@@ -8,14 +8,14 @@ module Stylists
 
     def update
       if demo_mode? && current_user.email&.include?('@example.com')
-        redirect_to stylists_dashboard_path, alert: t('demo.profile_edit_disabled')
+        redirect_with_toast stylists_dashboard_path, t('demo.profile_edit_disabled'), type: :error
         return
       end
 
       @user = current_user
       @user.assign_attributes(stylist_params)
       if @user.save(context: :profile_completion)
-        redirect_to stylists_dashboard_path, notice: t('stylists.profiles.updated')
+        redirect_with_toast stylists_dashboard_path, t('stylists.profiles.updated'), type: :success
       else
         render :edit, status: :unprocessable_entity
       end

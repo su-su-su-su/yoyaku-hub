@@ -4,10 +4,6 @@
 - visit_info = @customer.visit_info_for_stylist(current_user.id)
 
 .container.mx-auto.px-4.py-4.md:py-6
-  - if notice
-    .alert.alert-info.flash-notice(data-controller="flash")= notice
-  - if alert
-    .alert.alert-error.shadow-lg.mb-4(data-controller="flash")= alert
 
   .flex.items-center.justify-between.mb-4
     h1.text-xl.font-bold.md:text-2xl 顧客詳細

@@ -3,8 +3,6 @@
 
 .container.mx-auto.p-4.md:p-6
   h1.text-xl.md:text-2xl.font-bold.mb-4 シフト設定
-  - if notice
-    .alert.alert-info.flash-notice(data-controller="flash")= notice
 
   = form_with(url: update_defaults_stylists_shift_settings_path, method: :patch, local: true, scope: :default_settings) do |f|
     .bg-white.rounded-lg.shadow-sm.p-4.md:p-6.mt-4

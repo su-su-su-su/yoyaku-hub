@@ -12,8 +12,8 @@ module Customers
 
       def select_menus
         if params[:menu_ids].blank?
-          return redirect_to customers_stylist_menus_path(@stylist),
-            alert: t('flash.menu_not_selected')
+          return redirect_with_toast customers_stylist_menus_path(@stylist),
+            t('flash.menu_not_selected'), type: :error
         end
 
         redirect_to weekly_customers_stylist_menus_path(@stylist, menu_ids: params[:menu_ids])
@@ -30,7 +30,7 @@ module Customers
 
         flash_message = determine_set_stylist_error_flash_message
         redirect_path = determine_set_stylist_error_redirect_path
-        redirect_to redirect_path, alert: flash_message and return
+        redirect_with_toast redirect_path, flash_message, type: :error and return
       end
 
       def valid_stylist_target?(stylist_candidate)
@@ -63,13 +63,13 @@ module Customers
           true
         elsif current_user.stylist?
           unless current_user.id == @stylist.id
-            redirect_to stylists_dashboard_path,
-              alert: t('flash.customers.stylists.cannot_view_other_stylist_menus') and return
+            redirect_with_toast stylists_dashboard_path,
+              t('flash.customers.stylists.cannot_view_other_stylist_menus'), type: :error and return
           end
 
           true
         else
-          redirect_to root_path, alert: t('flash.customers.stylists.access_denied') and return
+          redirect_with_toast root_path, t('flash.customers.stylists.access_denied'), type: :error and return
         end
       end
     end

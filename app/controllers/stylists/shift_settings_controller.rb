@@ -107,7 +107,7 @@ module Stylists
       end
       # rubocop:enable Metrics/BlockLength
 
-      redirect_to stylists_shift_settings_path, notice: t('flash.batch_setting_success')
+      redirect_with_toast stylists_shift_settings_path, t('flash.batch_setting_success'), type: :success
     end
     # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
 
@@ -116,7 +116,8 @@ module Stylists
       save_default_working_hours(settings_params[:working_hour])
       save_default_holidays(settings_params[:holiday])
       save_default_reservation_limit(settings_params[:reservation_limit])
-      redirect_to stylists_shift_settings_path, notice: t('stylists.shift_settings.defaults.update_success')
+      redirect_with_toast stylists_shift_settings_path, t('stylists.shift_settings.defaults.update_success'),
+        type: :success
     end
 
     private
@@ -157,8 +158,8 @@ module Stylists
     def ensure_profile_complete
       return if current_user.profile_complete?
 
-      redirect_to edit_stylists_profile_path,
-        alert: t('stylists.profiles.incomplete_profile')
+      redirect_with_toast edit_stylists_profile_path,
+        t('stylists.profiles.incomplete_profile'), type: :error
     end
 
     def default_settings_params

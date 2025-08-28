@@ -16,9 +16,7 @@ RSpec.describe 'Stylists::Profiles' do
     }
   end
 
-  before do
-    driven_by(:rack_test)
-  end
+  # JavaScriptドライバーを使用（トースト通知のため）
 
   describe 'Profile editing' do
     context 'when logged in as a stylist' do
@@ -42,7 +40,7 @@ RSpec.describe 'Stylists::Profiles' do
         click_on '登録'
 
         expect(page).to have_current_path(stylists_dashboard_path)
-        expect(page).to have_content(I18n.t('stylists.profiles.updated'))
+        expect(page).to have_css('#toast-container .toast-message', text: I18n.t('stylists.profiles.updated'))
 
         stylist.reload
         expect_user_attributes_match(stylist, valid_attributes)
@@ -53,15 +51,23 @@ RSpec.describe 'Stylists::Profiles' do
         fill_in '名', with: ''
         click_on '登録'
 
-        expect(page).to have_current_path(stylists_profile_path)
+        expect(page).to have_content('を入力してください')
+        # バリデーションエラー時はeditページが再表示される
+        expect(page).to have_css('form[action="/stylists/profile"]')
       end
 
       it 'when entering invalid values for katakana fields, displays errors' do
-        fill_in 'セイ', with: 'びようし'
-        fill_in 'メイ', with: 'はなこ'
+        # HTML5バリデーションを無効化するために、JavaScriptでpattern属性を削除
+        page.execute_script("document.getElementById('user_family_name_kana').removeAttribute('pattern')")
+        page.execute_script("document.getElementById('user_given_name_kana').removeAttribute('pattern')")
+
+        fill_in 'セイ', with: 'びようし' # ひらがなで入力（エラー）
+        fill_in 'メイ', with: 'はなこ' # ひらがなで入力（エラー）
         click_on '登録'
 
-        expect(page).to have_current_path(stylists_profile_path)
+        expect(page).to have_content('全角カタカナのみ入力できます')
+        # バリデーションエラー時はeditページが再表示される
+        expect(page).to have_css('form[action="/stylists/profile"]')
       end
 
       it 'when selecting "no answer" for gender, saves that value' do

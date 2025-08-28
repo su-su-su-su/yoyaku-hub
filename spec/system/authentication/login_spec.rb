@@ -15,7 +15,7 @@ RSpec.describe 'User login' do
       fill_in 'user_password', with: 'testtest'
       click_on 'ログイン'
 
-      expect(page).to have_content('ログインしました')
+      expect(page).to have_css('#toast-container .toast-message', text: 'ログインしました')
       expect(page).to have_current_path('/customers/dashboard', url: false)
     end
 
@@ -42,7 +42,7 @@ RSpec.describe 'User login' do
 
       click_on 'ログイン'
 
-      expect(page).to have_content('ログインしました')
+      expect(page).to have_css('#toast-container .toast-message', text: 'ログインしました')
       expect(page).to have_current_path('/stylists/dashboard', url: false)
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe 'User login' do
       first('.dropdown .btn-ghost.btn-circle').click
       click_on 'ログアウト'
 
-      expect(page).to have_content('ログアウトしました。')
+      expect(page).to have_css('#toast-container .toast-message', text: 'ログアウトしました。')
 
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
     end

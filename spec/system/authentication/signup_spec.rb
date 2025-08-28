@@ -15,8 +15,7 @@ RSpec.describe 'User signup' do
       click_on '登録'
 
       expect(page).to have_css('h1', text: 'プロフィール編集')
-
-      expect(page).to have_content('アカウント登録が完了しました')
+      expect(page).to have_css('#toast-container .toast-message', text: 'アカウント登録が完了しました')
       expect(page).to have_current_path('/customers/profile/edit', url: false)
     end
 
@@ -40,7 +39,7 @@ RSpec.describe 'User signup' do
 
       click_on '登録'
 
-      expect(page).to have_content('アカウント登録が完了しました')
+      expect(page).to have_css('#toast-container .toast-message', text: 'アカウント登録が完了しました')
       expect(page).to have_current_path('/stylists/profile/edit', url: false)
     end
   end

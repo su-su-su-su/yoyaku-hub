@@ -19,7 +19,7 @@ module Users
     end
 
     def failure
-      redirect_to new_user_session_path, alert: I18n.t('alerts.login_failed')
+      redirect_with_toast new_user_session_path, I18n.t('alerts.login_failed'), type: :error
     end
 
     private
@@ -33,7 +33,7 @@ module Users
           session['devise.google_data'] = auth.except(:extra)
           redirect_path = determine_registration_failure_redirect_path(role_from_session)
           alert_message = "#{I18n.t('errors.messages.registration_failed')}: #{error_messages}"
-          redirect_to redirect_path, alert: alert_message
+          redirect_with_toast redirect_path, alert_message, type: :error
         end
       else
         logger.warn "OmniAuth Callback: Attempted to process new user without role. Auth UID: #{auth&.uid}"
@@ -43,7 +43,7 @@ module Users
 
     def handle_unregistered_login_attempt(auth)
       session['devise.google_data'] = auth.except(:extra)
-      redirect_to new_user_session_path, alert: I18n.t('alerts.omniauth_account_not_found')
+      redirect_with_toast new_user_session_path, I18n.t('alerts.omniauth_account_not_found'), type: :error
     end
 
     def determine_registration_failure_redirect_path(role)
@@ -56,7 +56,7 @@ module Users
 
     def handle_successful_authentication
       sign_in(:user, @user)
-      set_flash_message(:notice, :success, kind: 'Google') if is_navigational_format?
+      flash[:toast] = { message: I18n.t('devise.omniauth_callbacks.success', kind: 'Google'), type: :success }
       redirect_to decide_redirect_path
     end
 
@@ -72,7 +72,7 @@ module Users
 
     def handle_general_omniauth_failure(auth_data)
       session['devise.google_data'] = auth_data.except(:extra) if auth_data
-      redirect_to new_user_registration_url, alert: I18n.t('alerts.authentication_failed')
+      redirect_with_toast new_user_registration_url, I18n.t('alerts.authentication_failed'), type: :error
     end
   end
 end

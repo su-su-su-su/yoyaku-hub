@@ -75,7 +75,7 @@ RSpec.describe 'Stylists::Products' do
         click_on '登録する'
 
         expect(page).to have_current_path(stylists_products_path)
-        expect(page).to have_content('商品を登録しました。')
+        expect(page).to have_css('#toast-container .toast-message', text: '商品を登録しました。')
         expect(page).to have_content('ヘアオイル')
         expect(page).to have_content('¥4,500')
         expect(page).to have_content('掲載中')
@@ -117,7 +117,7 @@ RSpec.describe 'Stylists::Products' do
         click_on '更新する'
 
         expect(page).to have_current_path(stylists_products_path)
-        expect(page).to have_content('商品を更新しました。')
+        expect(page).to have_css('#toast-container .toast-message', text: '商品を更新しました。')
         expect(page).to have_content('ヘアワックス')
         expect(page).to have_content('¥2,500')
         expect(page).to have_content('非掲載')
