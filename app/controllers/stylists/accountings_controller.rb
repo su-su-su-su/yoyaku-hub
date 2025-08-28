@@ -9,8 +9,8 @@ module Stylists
 
     def new
       if @reservation.accounting&.completed?
-        redirect_to edit_stylists_accounting_path(@reservation.accounting),
-          notice: t('stylists.accountings.already_completed')
+        redirect_with_toast edit_stylists_accounting_path(@reservation.accounting),
+          t('stylists.accountings.already_completed'), type: :info
         return
       end
 
@@ -42,8 +42,8 @@ module Stylists
       @accounting = @reservation.build_accounting(build_params)
 
       if @accounting.save_with_payments_and_products(payment_params[:accounting_payments_attributes])
-        redirect_to stylists_reservation_path(@reservation),
-          notice: t('stylists.accountings.completed')
+        redirect_with_toast stylists_reservation_path(@reservation),
+          t('stylists.accountings.completed'), type: :success
       else
         @products = current_user.products.active.order(:name)
         render :new, status: :unprocessable_entity
@@ -53,8 +53,8 @@ module Stylists
     def update
       if @accounting.update_with_payments_and_products(accounting_params,
         payment_params[:accounting_payments_attributes])
-        redirect_to stylists_reservation_path(@accounting.reservation),
-          notice: t('stylists.accountings.updated')
+        redirect_with_toast stylists_reservation_path(@accounting.reservation),
+          t('stylists.accountings.updated'), type: :success
       else
         @products = current_user.products.active.order(:name)
         render :edit, status: :unprocessable_entity

@@ -10,14 +10,14 @@ module Customers
 
     def update
       if demo_mode? && current_user.email&.include?('@example.com')
-        redirect_to customers_dashboard_path, alert: t('demo.profile_edit_disabled')
+        redirect_with_toast customers_dashboard_path, t('demo.profile_edit_disabled'), type: :error
         return
       end
 
       @user = current_user
       @user.assign_attributes(customer_params)
       if @user.save(context: :profile_completion)
-        redirect_to customers_dashboard_path, notice: t('customers.profiles.updated')
+        redirect_with_toast customers_dashboard_path, t('customers.profiles.updated'), type: :success
       else
         render :edit, status: :unprocessable_entity
       end

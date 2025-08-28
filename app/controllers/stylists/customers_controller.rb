@@ -28,7 +28,7 @@ module Stylists
       @customer.email = generate_dummy_email if @customer.email.blank?
 
       if @customer.save
-        redirect_to stylists_customers_path, notice: t('flash.customers.stylists.created')
+        redirect_with_toast stylists_customers_path, t('flash.customers.stylists.created'), type: :success
       else
         render :new, status: :unprocessable_entity
       end
@@ -42,7 +42,7 @@ module Stylists
       @customer.email = generate_dummy_email if @customer.email.blank?
 
       if @customer.save
-        redirect_to stylists_customer_path(@customer), notice: t('flash.customers.stylists.updated')
+        redirect_with_toast stylists_customer_path(@customer), t('flash.customers.stylists.updated'), type: :success
       else
         render :edit, status: :unprocessable_entity
       end
@@ -66,11 +66,12 @@ module Stylists
     end
 
     def find_editable_customer
+      # findを使うことで、存在しない場合はRecordNotFoundが発生し404が返される
       customer = User.customers_for_stylist(current_user.id).find(params[:id])
 
       unless customer.created_by_stylist_id == current_user.id
-        redirect_to stylists_customers_path, alert: t('flash.customers.stylists.edit_permission_denied')
-        return
+        redirect_with_toast stylists_customers_path, t('flash.customers.stylists.edit_permission_denied'), type: :error
+        return nil
       end
 
       customer

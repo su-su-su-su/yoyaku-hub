@@ -19,7 +19,7 @@ module Stylists
       build_reservation
 
       if @reservation.save
-        redirect_to stylists_schedules_path(date: @date), notice: t('stylists.reservations.created')
+        redirect_with_toast stylists_schedules_path(date: @date), t('stylists.reservations.created'), type: :success
       else
         handle_validation_error
       end

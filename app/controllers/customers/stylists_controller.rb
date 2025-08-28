@@ -20,8 +20,8 @@ module Customers
     def ensure_profile_complete
       return if current_user.profile_complete?
 
-      redirect_to edit_customers_profile_path,
-        alert: t('customers.profiles.incomplete_profile')
+      redirect_with_toast edit_customers_profile_path,
+        t('customers.profiles.incomplete_profile'), type: :error
     end
   end
 end

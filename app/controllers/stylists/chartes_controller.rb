@@ -35,7 +35,8 @@ module Stylists
       @charte.reservation = @reservation
 
       if @charte.save
-        redirect_to stylists_customer_charte_path(@charte.customer, @charte), notice: t('stylists.chartes.created')
+        redirect_with_toast stylists_customer_charte_path(@charte.customer, @charte), t('stylists.chartes.created'),
+          type: :success
       else
         render :new, status: :unprocessable_entity
       end
@@ -43,7 +44,8 @@ module Stylists
 
     def update
       if @charte.update(charte_params)
-        redirect_to stylists_customer_charte_path(@customer, @charte), notice: t('stylists.chartes.updated')
+        redirect_with_toast stylists_customer_charte_path(@customer, @charte), t('stylists.chartes.updated'),
+          type: :success
       else
         render :edit, status: :unprocessable_entity
       end
@@ -51,7 +53,7 @@ module Stylists
 
     def destroy
       @charte.destroy!
-      redirect_to stylists_customer_chartes_path(@customer), notice: t('stylists.chartes.deleted')
+      redirect_with_toast stylists_customer_chartes_path(@customer), t('stylists.chartes.deleted'), type: :success
     end
 
     private
@@ -59,13 +61,13 @@ module Stylists
     def set_customer
       @customer = User.customers_for_stylist(current_user.id).find(params[:customer_id])
     rescue ActiveRecord::RecordNotFound
-      redirect_to stylists_dashboard_path, alert: t('stylists.chartes.access_denied')
+      redirect_with_toast stylists_dashboard_path, t('stylists.chartes.access_denied'), type: :error
     end
 
     def set_charte
       @charte = current_user.stylist_chartes.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      redirect_to stylists_dashboard_path, alert: t('stylists.chartes.access_denied')
+      redirect_with_toast stylists_dashboard_path, t('stylists.chartes.access_denied'), type: :error
     end
 
     def set_reservation

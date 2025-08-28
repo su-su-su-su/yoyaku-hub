@@ -35,7 +35,7 @@ module Customers
       @reservation = build_reservation
 
       if @reservation.save
-        redirect_to customers_reservation_path(@reservation), notice: t('flash.reservation_confirmed')
+        redirect_with_toast customers_reservation_path(@reservation), t('flash.reservation_confirmed'), type: :success
       else
         flash.now[:alert] = t('flash.reservation_failed')
         render :new
@@ -44,8 +44,8 @@ module Customers
 
     def cancel
       @reservation.canceled!
-      redirect_to customers_reservations_path(date: @reservation.start_at.to_date),
-        notice: t('stylists.reservations.cancelled')
+      redirect_with_toast customers_reservations_path(date: @reservation.start_at.to_date),
+        t('stylists.reservations.cancelled'), type: :success
     end
 
     private
@@ -53,7 +53,7 @@ module Customers
     def set_reservation
       @reservation = current_user.reservations.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      redirect_to customers_reservations_path, alert: t('flash.reservation_not_found')
+      redirect_with_toast customers_reservations_path, t('flash.reservation_not_found'), type: :error
     end
 
     # rubocop:disable Metrics/AbcSize
@@ -65,7 +65,7 @@ module Customers
       @stylist = User.find(@stylist_id)
 
       if demo_mode? && !current_user.can_book_with_stylist?(@stylist)
-        redirect_to customers_reservations_path, alert: t('customers.reservations.demo_restriction')
+        redirect_with_toast customers_reservations_path, t('customers.reservations.demo_restriction'), type: :error
         return
       end
 

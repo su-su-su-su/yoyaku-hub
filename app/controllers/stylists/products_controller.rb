@@ -18,7 +18,7 @@ module Stylists
       @product = current_user.products.build(product_params)
 
       if @product.save
-        redirect_to stylists_products_path, notice: t('stylists.products.created')
+        redirect_with_toast stylists_products_path, t('stylists.products.created'), type: :success
       else
         render :new, status: :unprocessable_entity
       end
@@ -26,7 +26,7 @@ module Stylists
 
     def update
       if @product.update(product_params)
-        redirect_to stylists_products_path, notice: t('stylists.products.updated')
+        redirect_with_toast stylists_products_path, t('stylists.products.updated'), type: :success
       else
         render :edit, status: :unprocessable_entity
       end
@@ -34,7 +34,7 @@ module Stylists
 
     def destroy
       @product.update(active: false)
-      redirect_to stylists_products_path, notice: t('stylists.products.hidden')
+      redirect_with_toast stylists_products_path, t('stylists.products.hidden'), type: :success
     end
 
     private
