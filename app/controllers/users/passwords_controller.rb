@@ -7,8 +7,9 @@ module Users
       yield resource if block_given?
 
       if successfully_sent?(resource)
+        flash[:toast] = { message: t('devise.passwords.send_instructions'), type: :info }
         redirect_to after_sending_reset_password_instructions_path_for(resource_name),
-          status: :see_other, notice: t('devise.passwords.send_instructions')
+          status: :see_other
       else
         render :new, status: :unprocessable_entity
       end

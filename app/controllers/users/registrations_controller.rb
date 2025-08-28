@@ -40,7 +40,7 @@ module Users
     # PUT /resource
     def update
       if demo_mode? && current_user.email.include?('@example.com')
-        redirect_back(fallback_location: root_path, alert: t('demo.profile_edit_disabled'))
+        redirect_back_with_toast(fallback_location: root_path, message: t('demo.profile_edit_disabled'), type: :error)
         return
       end
       super
@@ -92,11 +92,12 @@ module Users
 
     def handle_successful_signup
       if resource.active_for_authentication?
-        set_flash_message! :notice, :signed_up
+        flash[:toast] = { message: I18n.t('devise.registrations.signed_up'), type: :success }
         sign_up(resource_name, resource)
         respond_with resource, location: after_sign_up_path_for(resource)
       else
-        set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
+        flash[:toast] =
+          { message: I18n.t("devise.registrations.signed_up_but_#{resource.inactive_message}"), type: :info }
         expire_data_after_sign_in!
         respond_with resource, location: after_inactive_sign_up_path_for(resource)
       end
