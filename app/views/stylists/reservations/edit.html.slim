@@ -42,8 +42,8 @@ h1.text-xl.md:text-2xl.font-bold.mt-4.ml-4 予約の変更
           td
             .space-y-1
               - @active_menus.each do |menu|
-                label.flex.items-center.space-x-2.p-1.min-h-[44px]
-                  = check_box_tag "reservation[menu_ids][]", menu.id, @reservation.menus.include?(menu), class: "h-4 w-4"
+                label.flex.items-center.gap-2.p-1.cursor-pointer.rounded.hover:bg-gray-100.min-h-[44px]
+                  = check_box_tag "reservation[menu_ids][]", menu.id, @reservation.menus.include?(menu), class: "checkbox checkbox-xs checkbox-primary"
                   = menu.name
 
         tr
