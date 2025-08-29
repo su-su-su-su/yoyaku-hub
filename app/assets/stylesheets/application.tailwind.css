@@ -16,9 +16,10 @@
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
-  
+
   /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
-  .modal, .dropdown-content {
+  .modal,
+  .dropdown-content {
     overscroll-behavior: none;
   }
 }
@@ -160,6 +161,24 @@
     tbody tr:nth-child(even) {
       background-color: #f5f5f5;
     }
+  }
+
+  th.wday-0 .font-bold,
+  th.wday-7 .font-bold {
+    color: #ef4444;
+  }
+
+  th.wday-6 .font-bold {
+    color: #3b82f6;
+  }
+
+  th.wday-0,
+  th.wday-7 {
+    background-color: #fee2e2;
+  }
+
+  th.wday-6 {
+    background-color: #dbeafe;
   }
 
   body.stylists-shift-settings .navbar,
