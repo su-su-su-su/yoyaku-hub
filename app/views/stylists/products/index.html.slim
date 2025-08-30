@@ -13,8 +13,8 @@
           tr
             th.p-3.text-left 商品名
             th.p-3.text-left 価格
-            th.p-3.text-left ステータス
-            th.p-3.text-center 操作
+            th.p-3.text-left 掲載の有無
+            th.p-3.text-center 編集
         tbody
           - @products.each do |product|
             tr.border-t
@@ -32,5 +32,5 @@
       p.text-gray-600.mb-4 まだ商品が登録されていません。
 
   .mt-6.flex.justify-center
-    = link_to 'スタイリストトップページへ', stylists_dashboard_path, 
+    = link_to 'スタイリストトップページへ', stylists_dashboard_path,
       class: 'text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center'
