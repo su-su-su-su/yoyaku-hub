@@ -25,6 +25,21 @@
 }
 
 @layer components {
+  /* 共通のグラデーション背景 */
+  .page-bg-gradient {
+    @apply min-h-screen bg-gradient-to-br from-blue-50 to-white;
+  }
+
+  /* 共通のページタイトルスタイル */
+  .page-title-gradient {
+    @apply text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  /* 共通のカードスタイル */
+  .page-card {
+    @apply rounded-lg bg-white shadow-md border border-gray-200;
+  }
+
   .gsi-material-button {
     display: flex;
     align-items: center;
