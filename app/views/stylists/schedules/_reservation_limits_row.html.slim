@@ -6,6 +6,8 @@ tr#reservation-limits-row
       div.flex.flex-col.items-center.justify-center.w-full.h-full
         = button_to "▲", stylists_reservation_limits_path(date: schedule.date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'up'),
           class: 'limit-up-btn w-full flex-1 text-sm md:text-base text-blue-600 hover:bg-blue-100 rounded-t py-1', data: { turbo: true }, method: :patch
-        div.my-1.font-medium.text-sm.md:text-base = (schedule.reservation_limits[slot_idx].to_i - schedule.reservation_counts[slot_idx].to_i).clamp(0, 2)
+        - remaining_count = (schedule.reservation_limits[slot_idx].to_i - schedule.reservation_counts[slot_idx].to_i).clamp(0, 2)
+        div.my-1.font-medium.text-sm.md:text-base class=(remaining_count == 0 ? 'text-red-500' : '')
+          = remaining_count
         = button_to "▼", stylists_reservation_limits_path(date: schedule.date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'down'),
           class: 'limit-down-btn w-full flex-1 text-sm md:text-base text-blue-600 hover:bg-blue-100 rounded-b py-1', data: { turbo: true }, method: :patch

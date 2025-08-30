@@ -3,7 +3,10 @@
 
 .container.mx-auto.p-4.max-w-lg
   = render 'shared/reservation_steps', current_step: 'confirmation'
-  h1.text-xl.md:text-2xl.font-bold.mb-4 予約内容の確認
+  .mb-6.text-center
+    h1.page-title-gradient 予約内容の確認
+    .mt-2.text-sm.text-gray-600
+      | ご予約内容をご確認ください
 
   .bg-red-50.border-l-4.border-red-500.p-4.mb-6
     p.text-sm.md:text-base.text-red-600 ※まだ予約は確定していません！

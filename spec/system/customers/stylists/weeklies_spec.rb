@@ -9,17 +9,12 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
   def get_day_column_index_from_header(day)
     date_str = day.day.to_s
     day_char = %w[日 月 火 水 木 金 土][day.wday]
-    day_column_index = nil
+    search_str = "#{date_str}\n(#{day_char})"
 
-    within('thead') do
-      all('th').each_with_index do |th, i|
-        if th.text.include?("#{date_str} (#{day_char})")
-          day_column_index = i
-          break
-        end
-      end
+    all('thead th').each_with_index do |th, i|
+      return i if th.text.include?(search_str)
     end
-    day_column_index
+    nil
   end
 
   def find_cell(time, day)
@@ -164,29 +159,6 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     create_reservation(base_date + 1.day, '13:00', '14:00')
   end
 
-  def find_cell(time, day)
-    time_header = first('tbody th', text: time)
-    return nil unless time_header
-
-    day_index = nil
-    date_str = day.day.to_s
-    day_char = %w[日 月 火 水 木 金 土][day.wday]
-
-    within('thead') do
-      all('th').each_with_index do |th, i|
-        if th.text.include?("#{date_str} (#{day_char})")
-          day_index = i
-          break
-        end
-      end
-    end
-
-    return nil unless day_index
-
-    row = time_header.find(:xpath, './parent::tr')
-    row.all('td')[day_index - 1]
-  end
-
   describe 'Authentication' do
     context 'when not logged in' do
       it 'redirects to login page' do
@@ -241,7 +213,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
         expect(page).to have_content("#{expected_start_date}〜#{expected_end_date}")
 
         headers = all('thead th').map(&:text)
-        expect(headers[1]).to include("#{wednesday.day} (水)")
+        expect(headers[1]).to include("#{wednesday.day}\n(水)")
 
         monday = wednesday.beginning_of_week
         expect(headers[1]).not_to include("#{monday.day} (月)")
@@ -275,16 +247,16 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
       it 'displays X marks in holiday column' do
         wednesday = base_date + 2.days
-        wed_str = "#{wednesday.day} (水)"
+        wed_str = "#{wednesday.day}\n(水)"
 
         header = all('thead th').find { |th| th.text.include?(wed_str) }
         header_index = all('thead th').index(header)
 
-        return unless header_index
-
-        all('tbody tr').each do |row|
-          cell = row.all('td')[header_index - 1]
-          expect(cell).to have_content('×') if cell
+        if header_index
+          all('tbody tr').each do |row|
+            cell = row.all('td')[header_index - 1]
+            expect(cell).to have_content('×') if cell
+          end
         end
       end
     end
@@ -355,7 +327,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       it 'checks time slot markers for scenario B (Tuesday)' do
         tuesday = base_date + 1.day
 
-        expect(page).to have_css('table thead th', text: "#{tuesday.day} (火)")
+        expect(page).to have_css('table thead th', text: "#{tuesday.day}\n(火)")
 
         check_time_slot(tuesday, '10:00', '×')
         check_time_slot(tuesday, '12:30', '×')
@@ -454,7 +426,11 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       context 'when min_active_menu_duration is 60 minutes' do
         before do
           allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(60)
-          setup_slot_test_schedule(slot_test_stylist, card_test_base_date)
+          # 週間表示のため、7日分のデータをセットアップ
+          (0..6).each do |day_offset|
+            date = card_test_base_date + day_offset.days
+            setup_slot_test_schedule(slot_test_stylist, date)
+          end
         end
 
         context 'with a selected menu of 60 minutes' do
@@ -513,7 +489,11 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       context 'when min_active_menu_duration is 30 minutes' do
         before do
           allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(30)
-          setup_slot_test_schedule(slot_test_stylist, card_test_base_date)
+          # 週間表示のため、7日分のデータをセットアップ
+          (0..6).each do |day_offset|
+            date = card_test_base_date + day_offset.days
+            setup_slot_test_schedule(slot_test_stylist, date)
+          end
         end
 
         context 'with a selected menu of 30 minutes' do
@@ -552,9 +532,13 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
         before do
           allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(60)
-          slot_test_stylist.working_hours.where(target_date: card_test_base_date).destroy_all
-          slot_test_stylist.reservation_limits.where(target_date: card_test_base_date).destroy_all
-          setup_slot_test_schedule(slot_test_stylist, card_test_base_date, start_hour: 11, end_hour: 20)
+          # 週間表示のため、7日分のデータをセットアップ
+          (0..6).each do |day_offset|
+            date = card_test_base_date + day_offset.days
+            slot_test_stylist.working_hours.where(target_date: date).destroy_all
+            slot_test_stylist.reservation_limits.where(target_date: date).destroy_all
+            setup_slot_test_schedule(slot_test_stylist, date, start_hour: 11, end_hour: 20)
+          end
 
           create_slot_test_reservation(slot_test_customer, slot_test_stylist, card_test_base_date, '16:00', '17:00')
         end
@@ -581,13 +565,17 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
         before do
           allow(slot_test_stylist).to receive(:min_active_menu_duration).and_return(30)
 
-          setup_slot_test_schedule(
-            slot_test_stylist,
-            test_target_date,
-            start_hour: 10,
-            end_hour: 19,
-            default_max_reservations: 1
-          )
+          # 週間表示のため、7日分のデータをセットアップ
+          (0..6).each do |day_offset|
+            date = card_test_base_date + day_offset.days
+            setup_slot_test_schedule(
+              slot_test_stylist,
+              date,
+              start_hour: 10,
+              end_hour: 19,
+              default_max_reservations: 1
+            )
+          end
 
           hour, minute = target_time_str.split(':').map(&:to_i)
           calculated_target_slot_number = (hour * 2) + (minute >= 30 ? 1 : 0)

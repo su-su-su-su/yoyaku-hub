@@ -50,7 +50,7 @@
         .space-y-2
           - @active_menus.each do |menu|
             .flex.items-center
-              = check_box_tag 'menu_ids[]', menu.id, false, { class: 'checkbox checkbox-primary mr-2', id: "menu_#{menu.id}" }
+              = check_box_tag 'menu_ids[]', menu.id, false, { class: 'checkbox checkbox-xs checkbox-primary mr-2', id: "menu_#{menu.id}" }
               = label_tag "menu_#{menu.id}", class: 'text-sm' do
                 = "#{menu.name} (#{menu.duration}分, ¥#{number_with_delimiter(menu.price)})"
 

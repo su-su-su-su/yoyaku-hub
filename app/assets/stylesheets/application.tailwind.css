@@ -16,14 +16,30 @@
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
-  
+
   /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
-  .modal, .dropdown-content {
+  .modal,
+  .dropdown-content {
     overscroll-behavior: none;
   }
 }
 
 @layer components {
+  /* 共通のグラデーション背景 */
+  .page-bg-gradient {
+    @apply min-h-screen bg-gradient-to-br from-blue-50 to-white;
+  }
+
+  /* 共通のページタイトルスタイル */
+  .page-title-gradient {
+    @apply text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  /* 共通のカードスタイル */
+  .page-card {
+    @apply rounded-lg bg-white shadow-md border border-gray-200;
+  }
+
   .gsi-material-button {
     display: flex;
     align-items: center;
@@ -160,6 +176,24 @@
     tbody tr:nth-child(even) {
       background-color: #f5f5f5;
     }
+  }
+
+  th.wday-0 .font-bold,
+  th.wday-7 .font-bold {
+    color: #ef4444;
+  }
+
+  th.wday-6 .font-bold {
+    color: #3b82f6;
+  }
+
+  th.wday-0,
+  th.wday-7 {
+    background-color: #fee2e2;
+  }
+
+  th.wday-6 {
+    background-color: #dbeafe;
   }
 
   body.stylists-shift-settings .navbar,

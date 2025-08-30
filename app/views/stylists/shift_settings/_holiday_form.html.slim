@@ -10,5 +10,5 @@ div#default_holiday_settings
       - weekdays.each do |wday, label_text|
         - checkbox_id = "default_settings_holiday_day_of_weeks_#{wday}"
         label.flex.items-center.gap-2.p-1.cursor-pointer.rounded.hover:bg-gray-100 { for: checkbox_id }
-          = check_box_tag "default_settings[holiday][day_of_weeks][]", wday, chosen_wdays.include?(wday), id: checkbox_id, class: 'checkbox checkbox-sm'
+          = check_box_tag "default_settings[holiday][day_of_weeks][]", wday, chosen_wdays.include?(wday), id: checkbox_id, class: 'checkbox checkbox-xs checkbox-primary'
           span.text-sm= label_text
