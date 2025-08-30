@@ -12,9 +12,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     search_str = "#{date_str}\n(#{day_char})"
 
     all('thead th').each_with_index do |th, i|
-      if th.text.include?(search_str)
-        return i
-      end
+      return i if th.text.include?(search_str)
     end
     nil
   end
@@ -160,7 +158,6 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
     create_reservation(base_date + 1.day, '10:30', '11:30')
     create_reservation(base_date + 1.day, '13:00', '14:00')
   end
-
 
   describe 'Authentication' do
     context 'when not logged in' do
