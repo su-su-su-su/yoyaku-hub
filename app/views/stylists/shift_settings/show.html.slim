@@ -1,7 +1,8 @@
 - content_for :title, "#{@year}年#{@month}月の受付設定"
 - content_for :meta_description, "#{@year}年#{@month}月の日ごとの受付可否や営業時間をカレンダー形式で設定・確認できます。"
 
-h1.text-xl.font-bold = "#{@year}年#{@month}月の受付設定"
+.mb-4.mt-2.text-center
+  h1.page-title-gradient = "#{@year}年#{@month}月の受付設定"
 .stylists-shift-settings
 
   = month_calendar template: 'simple_calendar/month', start_date: @start_date do |day|

@@ -2,7 +2,8 @@
 - content_for :meta_description, 'お客様のカルテを作成します。施術メモや備考を記録できます。'
 
 .container.mx-auto.p-4.max-w-lg
-  h1.text-xl.md:text-2xl.lg:text-3xl.font-bold.mb-4 カルテ作成
+  .mb-4.text-center
+    h1.page-title-gradient カルテ作成
 
   - if @charte.errors.any?
     .alert.alert-error.mb-4
