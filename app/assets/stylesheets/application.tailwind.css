@@ -35,6 +35,16 @@
     @apply text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
   }
 
+  /* 背景を3倍に引き伸ばし、中央部分を表示するクラス */
+  .subtle-gradient-look {
+    @apply bg-[length:300%_100%] bg-center;
+  }
+
+  /* 微妙なグラデーション専用 */
+  .page-title-subtle-gradient {
+    @apply text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-500 to-purple-600 bg-clip-text text-transparent;
+  }
+
   /* 共通のカードスタイル */
   .page-card {
     @apply rounded-lg bg-white shadow-md border border-gray-200;

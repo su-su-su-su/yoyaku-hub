@@ -9,8 +9,8 @@
         - @reservation.errors.full_messages.each do |message|
           li= message
 
-  .flex.justify-between.items-center.mt-4.mb-4
-    h1.text-xl.font-bold.md:text-2xl お客様の予約登録
+  .mb-4.text-center
+    h1.page-title-gradient お客様の予約登録
 
   .bg-white.border.border-gray-200.rounded-lg.p-6
     .mb-4.text-sm.text-gray-700.font-medium
@@ -21,16 +21,16 @@
         = form_with url: new_stylists_customer_reservation_path, method: :get, local: false, class: "relative", data: { turbo_frame: "customer_search_results" } do |search_form|
           = search_form.hidden_field :date, value: @date
           = search_form.hidden_field :time_str, value: @time_str
-          = search_form.text_field :customer_search, value: params[:customer_search], placeholder: "お客様を検索", 
+          = search_form.text_field :customer_search, value: params[:customer_search], placeholder: "お客様を検索",
                                  class: "input input-bordered w-full pr-10",
                                  data: { action: "input->customer-search#debounceSearch" }
           .search-button.absolute.right-2.top-1/2.transform.-translate-y-1/2.p-1.text-gray-400
             svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
-        
+
         = turbo_frame_tag "customer_search_results" do
           = render 'customer_list', customers: @customers
-      
+
       .selected-customer.hidden.p-3.bg-blue-50.border.border-blue-200.rounded(data-customer-search-target="selected")
         .flex.justify-between.items-center
           .customer-info

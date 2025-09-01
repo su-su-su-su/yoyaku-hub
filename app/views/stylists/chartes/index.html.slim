@@ -2,8 +2,8 @@
 - content_for :meta_description, 'お客様のカルテ履歴です。過去の施術履歴や備考を確認・編集できます。'
 
 .container.mx-auto.p-4
-  .mb-4
-    h1.text-xl.md:text-2xl.lg:text-3xl.font-bold.mb-2
+  .mb-4.text-center
+    h1.page-title-gradient
       = @customer.family_name
       = @customer.given_name
       |  様のカルテ履歴
