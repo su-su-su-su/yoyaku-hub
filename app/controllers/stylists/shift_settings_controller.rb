@@ -33,7 +33,7 @@ module Stylists
     end
     # rubocop:enable Metrics/AbcSize
 
-    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
     def show
       @year = params[:year].to_i
       @month = params[:month].to_i
@@ -58,7 +58,7 @@ module Stylists
       @month_already_configured = month_configured?(@year, @month)
       @existing_reservations = fetch_month_reservations(@year, @month)
     end
-    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
     # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
     def create
@@ -247,11 +247,18 @@ module Stylists
       start_date = Date.new(year, month, 1)
       end_date = start_date.end_of_month
 
-      reservations = current_user.stylist_reservations
-                                 .where(status: %i[before_visit paid])
-                                 .where(start_at: start_date.beginning_of_day..end_date.end_of_day)
-                                 .includes(:customer)
+      reservations = fetch_active_reservations(start_date, end_date)
+      format_reservations(reservations)
+    end
 
+    def fetch_active_reservations(start_date, end_date)
+      current_user.stylist_reservations
+        .where(status: %i[before_visit paid])
+        .where(start_at: start_date.beginning_of_day..end_date.end_of_day)
+        .includes(:customer)
+    end
+
+    def format_reservations(reservations)
       reservations.map do |reservation|
         {
           date: reservation.start_at.to_date.iso8601,

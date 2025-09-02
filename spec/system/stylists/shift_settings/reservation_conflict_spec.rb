@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength
-RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: true do
+# rubocop:disable RSpec/MultipleMemoizedHelpers
+RSpec.describe 'Shift settings with reservation conflicts', :js do
   let(:stylist) do
     create(:user, role: :stylist,
       family_name: '田中',
@@ -35,7 +36,13 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
   end
 
   def setup_default_shift_settings
-    # デフォルトの営業時間を設定
+    setup_weekday_hours
+    setup_weekend_hours
+    setup_holiday_hours
+    setup_default_reservation_limit
+  end
+
+  def setup_weekday_hours
     (1..5).each do |wday|
       create(:working_hour,
         stylist:,
@@ -44,8 +51,9 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         start_time: Time.zone.parse('09:00'),
         end_time: Time.zone.parse('18:00'))
     end
-    
-    # 土日
+  end
+
+  def setup_weekend_hours
     [0, 6].each do |wday|
       create(:working_hour,
         stylist:,
@@ -54,16 +62,18 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         start_time: Time.zone.parse('10:00'),
         end_time: Time.zone.parse('17:00'))
     end
-    
-    # 祝日
+  end
+
+  def setup_holiday_hours
     create(:working_hour,
       stylist:,
       day_of_week: 7,
       target_date: nil,
       start_time: Time.zone.parse('10:00'),
       end_time: Time.zone.parse('17:00'))
-    
-    # デフォルトの予約上限
+  end
+
+  def setup_default_reservation_limit
     create(:reservation_limit,
       stylist:,
       target_date: nil,
@@ -72,26 +82,33 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
   end
 
   def setup_specific_date_shift(date, start_time: '09:00', end_time: '18:00')
-    # 特定日の営業時間を設定
+    setup_date_working_hours(date, start_time, end_time)
+    mark_as_working_day(date)
+    setup_date_reservation_limits(date, start_time, end_time)
+  end
+
+  def setup_date_working_hours(date, start_time, end_time)
     create(:working_hour,
       stylist:,
       target_date: date,
       start_time: Time.zone.parse(start_time),
       end_time: Time.zone.parse(end_time))
-    
-    # 休業日でないことを明示
+  end
+
+  def mark_as_working_day(date)
     create(:holiday,
       stylist:,
       target_date: date,
       is_holiday: false)
-    
-    # その日の各時間スロットの予約上限も設定
+  end
+
+  def setup_date_reservation_limits(date, start_time, end_time)
     create(:reservation_limit,
       stylist:,
       target_date: date,
       time_slot: nil,
       max_reservations: 2)
-    
+
     start_slot = Time.zone.parse(start_time).hour * 2
     end_slot = Time.zone.parse(end_time).hour * 2
     (start_slot...end_slot).each do |slot|
@@ -104,11 +121,11 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
   end
 
   describe '予約が入っている月の再設定' do
-    context '予約が入っている日を休業日に設定しようとする場合' do
+    context 'when trying to set a day with reservations as a holiday' do
       before do
         # 1日の営業時間を設定
         setup_specific_date_shift(target_date)
-        
+
         # 1日の10:00-11:00に予約を作成
         create(:reservation,
           stylist:,
@@ -116,7 +133,7 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
-        
+
         # 月の設定画面を直接開く（初回設定を省略）
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
       end
@@ -126,12 +143,12 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         within("td[class*='wday-'][class*='border']", match: :first) do
           check '休業日'
         end
-        
+
         # alertをacceptする設定（アラートは自動的に閉じられる）
         accept_alert do
-          click_button '一括設定'
+          click_on '一括設定'
         end
-        
+
         # ページがリロードされていないことを確認（設定が中止された）
         expect(page).to have_current_path(show_stylists_shift_settings_path(year: current_year, month: current_month))
       end
@@ -140,11 +157,11 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         within("td[class*='wday-'][class*='border']", match: :first) do
           check '休業日'
         end
-        
+
         message = accept_alert do
-          click_button '一括設定'
+          click_on '一括設定'
         end
-        
+
         expect(message).to include('以下の予約があるため、設定できません')
         expect(message).to include('休業日に設定しようとしている日に予約があります')
         expect(message).to include("#{current_month}月1日")
@@ -154,20 +171,20 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
       end
     end
 
-    context '予約時間が営業時間外になる設定をしようとする場合' do
+    context 'when trying to set business hours that exclude existing reservations' do
       before do
         # 5日の営業時間を設定
-        date_5 = target_date + 4.days
-        setup_specific_date_shift(date_5, start_time: '09:00', end_time: '18:00')
-        
+        date5 = target_date + 4.days
+        setup_specific_date_shift(date5, start_time: '09:00', end_time: '18:00')
+
         # 5日の14:00-15:00に予約を作成
         create(:reservation,
           stylist:,
           customer:,
-          start_at: date_5.to_time.change(hour: 14),
-          end_at: date_5.to_time.change(hour: 15),
+          start_at: date5.to_time.change(hour: 14),
+          end_at: date5.to_time.change(hour: 15),
           status: :before_visit)
-        
+
         # 月の設定画面を直接開く（初回設定を省略）
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
       end
@@ -178,11 +195,11 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
           find("select[data-holiday-toggle-target='startTime']").select('10:00')
           find("select[data-holiday-toggle-target='endTime']").select('13:00')
         end
-        
+
         accept_alert do
-          click_button '一括設定'
+          click_on '一括設定'
         end
-        
+
         expect(page).to have_current_path(show_stylists_shift_settings_path(year: current_year, month: current_month))
       end
 
@@ -191,11 +208,11 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
           find("select[data-holiday-toggle-target='startTime']").select('10:00')
           find("select[data-holiday-toggle-target='endTime']").select('13:00')
         end
-        
+
         message = accept_alert do
-          click_button '一括設定'
+          click_on '一括設定'
         end
-        
+
         expect(message).to include('営業時間外になってしまう予約があります')
         expect(message).to include("#{current_month}月5日")
         expect(message).to include('予約：14:00〜15:00')
@@ -204,12 +221,12 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
       end
     end
 
-    context '複数の競合がある場合' do
+    context 'when there are multiple conflicts' do
       before do
         # 複数の日に営業時間を設定
         setup_specific_date_shift(target_date)
         setup_specific_date_shift(target_date + 2.days)
-        
+
         # 複数の予約を作成
         create(:reservation,
           stylist:,
@@ -217,21 +234,21 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
-        
+
         create(:reservation,
           stylist:,
           customer: create(:user, role: :customer, family_name: '佐藤', given_name: '次郎'),
           start_at: (target_date + 2.days).to_time.change(hour: 14),
           end_at: (target_date + 2.days).to_time.change(hour: 15),
           status: :paid)
-        
+
         create(:reservation,
           stylist:,
           customer: create(:user, role: :customer, family_name: '鈴木', given_name: '三郎'),
           start_at: target_date.to_time.change(hour: 16),
           end_at: target_date.to_time.change(hour: 17),
           status: :before_visit)
-        
+
         # 月の設定画面を直接開く（初回設定を省略）
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
       end
@@ -241,35 +258,35 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         within all("td[class*='wday-'][class*='border']")[0] do
           check '休業日'
         end
-        
+
         within all("td[class*='wday-'][class*='border']")[2] do
           find("select[data-holiday-toggle-target='startTime']").select('10:00')
           find("select[data-holiday-toggle-target='endTime']").select('13:00')
         end
-        
+
         message = accept_alert do
-          click_button '一括設定'
+          click_on '一括設定'
         end
-        
+
         # メッセージの順序を確認（1日の早い時間→1日の遅い時間→3日）
         lines = message.split("\n")
-        
+
         # 1日の予約が時間順に表示されることを確認
         expect(lines.find { |l| l.include?('1日') && l.include?('10:00') }).to be_truthy
         expect(lines.find { |l| l.include?('1日') && l.include?('16:00') }).to be_truthy
-        
+
         # 1日の10:00が16:00より先に表示されることを確認
-        idx_10 = lines.index { |l| l.include?('1日') && l.include?('10:00') }
-        idx_16 = lines.index { |l| l.include?('1日') && l.include?('16:00') }
-        expect(idx_10).to be < idx_16 if idx_10 && idx_16
-        
+        idx10 = lines.index { |l| l.include?('1日') && l.include?('10:00') }
+        idx16 = lines.index { |l| l.include?('1日') && l.include?('16:00') }
+        expect(idx10).to be < idx16 if idx10 && idx16
+
         # 3日の予約も表示されることを確認
         expect(message).to include('3日')
         expect(message).to include('佐藤 次郎様')
       end
     end
 
-    context '予約がない日の設定' do
+    context 'when setting days without reservations' do
       before do
         # 10日には予約を作らない
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
@@ -279,32 +296,30 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         # 一部の日を営業日として設定し、10日を休業日に設定
         # 1日を営業日として設定
         within all("td[class*='wday-'][class*='border']")[0] do
-          if has_checked_field?('休業日')
-            uncheck '休業日'
-          end
+          uncheck '休業日' if has_checked_field?('休業日')
           select '09:00', from: find("select[data-holiday-toggle-target='startTime']")[:name]
           select '18:00', from: find("select[data-holiday-toggle-target='endTime']")[:name]
         end
-        
+
         # 10日を休業日に設定
         within all("td[class*='wday-'][class*='border']")[9] do
           check '休業日'
         end
-        
+
         # アラートが表示されないことを確認して、フォームが送信される
-        click_button '一括設定'
-        
+        click_on '一括設定'
+
         # フォーム送信処理が時間がかかる場合があるため、長めに待つ
         expect(page).to have_content('シフトを設定しました', wait: 10)
       end
     end
 
-    context 'キャンセル済みや来店済みの予約がある場合' do
+    context 'when there are canceled or visited reservations' do
       before do
         # 2日と3日の営業時間を設定
         setup_specific_date_shift(target_date + 1.day)
         setup_specific_date_shift(target_date + 2.days)
-        
+
         # キャンセル済みの予約
         create(:reservation,
           stylist:,
@@ -312,7 +327,7 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
           start_at: (target_date + 1.day).to_time.change(hour: 10),
           end_at: (target_date + 1.day).to_time.change(hour: 11),
           status: :canceled)
-        
+
         # 来店済み（no_show）の予約
         create(:reservation,
           stylist:,
@@ -320,7 +335,7 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
           start_at: (target_date + 2.days).to_time.change(hour: 10),
           end_at: (target_date + 2.days).to_time.change(hour: 11),
           status: :no_show)
-        
+
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
       end
 
@@ -328,25 +343,23 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
         # 一部の日を営業日として設定
         # 1日を営業日として設定
         within all("td[class*='wday-'][class*='border']")[0] do
-          if has_checked_field?('休業日')
-            uncheck '休業日'
-          end
+          uncheck '休業日' if has_checked_field?('休業日')
           select '09:00', from: find("select[data-holiday-toggle-target='startTime']")[:name]
           select '18:00', from: find("select[data-holiday-toggle-target='endTime']")[:name]
         end
-        
+
         # 2日と3日を休業日に設定
         within all("td[class*='wday-'][class*='border']")[1] do
           check '休業日'
         end
-        
+
         within all("td[class*='wday-'][class*='border']")[2] do
           check '休業日'
         end
-        
+
         # アラートが表示されないことを確認して、フォームが送信される
-        click_button '一括設定'
-        
+        click_on '一括設定'
+
         # フォーム送信処理が時間がかかる場合があるため、長めに待つ
         expect(page).to have_content('シフトを設定しました', wait: 10)
       end
@@ -354,3 +367,4 @@ RSpec.describe 'Shift settings with reservation conflicts', type: :system, js: t
   end
 end
 # rubocop:enable Metrics/BlockLength
+# rubocop:enable RSpec/MultipleMemoizedHelpers
