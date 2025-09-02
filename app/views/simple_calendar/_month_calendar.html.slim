@@ -1,5 +1,6 @@
-.simple-calendar
-  = form_with url: create_stylists_shift_settings_path(year: @year, month: @month), method: :post, local: true do
+.simple-calendar data-controller="shift-confirmation" data-shift-confirmation-existing-reservations-value="#{@existing_reservations.to_json}"
+  = form_with url: create_stylists_shift_settings_path(year: @year, month: @month), method: :post, local: true, 
+              data: { action: "submit->shift-confirmation#confirmSubmit" } do
 
     table.table.w-full.border-collapse
       thead
