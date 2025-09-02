@@ -131,8 +131,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: target_date.to_time.change(hour: 10),
-          end_at: target_date.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date} 10:00"),
+          end_at: Time.zone.parse("#{target_date} 11:00"),
           status: :before_visit)
         reservation.save(validate: false)
 
@@ -184,8 +184,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: date5.to_time.change(hour: 14),
-          end_at: date5.to_time.change(hour: 15),
+          start_at: Time.zone.parse("#{date5} 14:00"),
+          end_at: Time.zone.parse("#{date5} 15:00"),
           status: :before_visit)
         reservation.save(validate: false)
 
@@ -236,8 +236,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: target_date.to_time.change(hour: 10),
-          end_at: target_date.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date} 10:00"),
+          end_at: Time.zone.parse("#{target_date} 11:00"),
           status: :before_visit)
         reservation1.save(validate: false)
 
@@ -246,8 +246,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer: customer2,
           menu_ids: [menu.id],
-          start_at: (target_date + 2.days).to_time.change(hour: 14),
-          end_at: (target_date + 2.days).to_time.change(hour: 15),
+          start_at: Time.zone.parse("#{target_date + 2.days} 14:00"),
+          end_at: Time.zone.parse("#{target_date + 2.days} 15:00"),
           status: :paid)
         reservation2.save(validate: false)
 
@@ -256,8 +256,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer: customer3,
           menu_ids: [menu.id],
-          start_at: target_date.to_time.change(hour: 16),
-          end_at: target_date.to_time.change(hour: 17),
+          start_at: Time.zone.parse("#{target_date} 16:00"),
+          end_at: Time.zone.parse("#{target_date} 17:00"),
           status: :before_visit)
         reservation3.save(validate: false)
 
@@ -337,8 +337,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: (target_date + 1.day).to_time.change(hour: 10),
-          end_at: (target_date + 1.day).to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date + 1.day} 10:00"),
+          end_at: Time.zone.parse("#{target_date + 1.day} 11:00"),
           status: :canceled)
         canceled_reservation.save(validate: false)
 
@@ -347,8 +347,8 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: (target_date + 2.days).to_time.change(hour: 10),
-          end_at: (target_date + 2.days).to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date + 2.days} 10:00"),
+          end_at: Time.zone.parse("#{target_date + 2.days} 11:00"),
           status: :no_show)
         no_show_reservation.save(validate: false)
 

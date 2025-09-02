@@ -147,8 +147,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: target_date.to_time.change(hour: 10),
-          end_at: target_date.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date} 10:00"),
+          end_at: Time.zone.parse("#{target_date} 11:00"),
           status: :before_visit)
         reservation1.save(validate: false)
 
@@ -157,8 +157,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer: customer2,
           menu_ids: [menu.id],
-          start_at: (target_date + 4.days).to_time.change(hour: 14),
-          end_at: (target_date + 4.days).to_time.change(hour: 15),
+          start_at: Time.zone.parse("#{target_date + 4.days} 14:00"),
+          end_at: Time.zone.parse("#{target_date + 4.days} 15:00"),
           status: :paid)
         reservation2.save(validate: false)
       end
@@ -205,8 +205,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer: canceled_customer,
           menu_ids: [menu.id],
-          start_at: (target_date + 9.days).to_time.change(hour: 10),
-          end_at: (target_date + 9.days).to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date + 9.days} 10:00"),
+          end_at: Time.zone.parse("#{target_date + 9.days} 11:00"),
           status: :canceled)
         canceled_reservation.save(validate: false)
 
@@ -269,8 +269,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: date15.to_time.change(hour: 10),
-          end_at: date15.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{date15} 10:00"),
+          end_at: Time.zone.parse("#{date15} 11:00"),
           status: :before_visit)
         current_month_reservation.save(validate: false)
 
@@ -279,8 +279,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: prev_month_date.to_time.change(hour: 10),
-          end_at: prev_month_date.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{prev_month_date} 10:00"),
+          end_at: Time.zone.parse("#{prev_month_date} 11:00"),
           status: :before_visit)
         prev_month_reservation.save(validate: false)
 
@@ -289,8 +289,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: next_month_date.to_time.change(hour: 10),
-          end_at: next_month_date.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{next_month_date} 10:00"),
+          end_at: Time.zone.parse("#{next_month_date} 11:00"),
           status: :before_visit)
         next_month_reservation.save(validate: false)
       end
@@ -356,8 +356,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist:,
           customer:,
           menu_ids: [menu.id],
-          start_at: target_date.to_time.change(hour: 10),
-          end_at: target_date.to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date} 10:00"),
+          end_at: Time.zone.parse("#{target_date} 11:00"),
           status: :before_visit)
         my_reservation.save(validate: false)
 
@@ -368,8 +368,8 @@ RSpec.describe 'Shift settings reservation data', :js do
           stylist: other_stylist,
           customer: other_customer,
           menu_ids: [other_menu.id],
-          start_at: (target_date + 1.day).to_time.change(hour: 10),
-          end_at: (target_date + 1.day).to_time.change(hour: 11),
+          start_at: Time.zone.parse("#{target_date + 1.day} 10:00"),
+          end_at: Time.zone.parse("#{target_date + 1.day} 11:00"),
           status: :before_visit)
         other_reservation.save(validate: false)
       end
