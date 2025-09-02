@@ -7,6 +7,7 @@ import AccountingController from "./accounting_controller.js";
 import CustomerSearchController from "./customer_search_controller.js";
 import ToastController from "./toast_controller.js";
 import ToastManagerController from "./toast_manager_controller.js";
+import ShiftConfirmationController from "./shift_confirmation_controller.js";
 
 application.register("holiday-toggle", HolidayToggleController);
 application.register("time-options", TimeOptionsController);
@@ -16,3 +17,4 @@ application.register("accounting", AccountingController);
 application.register("customer-search", CustomerSearchController);
 application.register("toast", ToastController);
 application.register("toast-manager", ToastManagerController);
+application.register("shift-confirmation", ShiftConfirmationController);
