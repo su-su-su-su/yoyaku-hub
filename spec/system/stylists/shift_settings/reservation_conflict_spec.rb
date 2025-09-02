@@ -126,14 +126,15 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         # 1日の営業時間を設定
         setup_specific_date_shift(target_date)
 
-        # 1日の10:00-11:00に予約を作成
-        create(:reservation,
+        # 1日の10:00-11:00に予約を作成（バリデーションをスキップ）
+        reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
+        reservation.save(validate: false)
 
         # 月の設定画面を直接開く（初回設定を省略）
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
@@ -178,14 +179,15 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         date5 = target_date + 4.days
         setup_specific_date_shift(date5, start_time: '09:00', end_time: '18:00')
 
-        # 5日の14:00-15:00に予約を作成
-        create(:reservation,
+        # 5日の14:00-15:00に予約を作成（バリデーションをスキップ）
+        reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: date5.to_time.change(hour: 14),
           end_at: date5.to_time.change(hour: 15),
           status: :before_visit)
+        reservation.save(validate: false)
 
         # 月の設定画面を直接開く（初回設定を省略）
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
@@ -229,30 +231,35 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         setup_specific_date_shift(target_date)
         setup_specific_date_shift(target_date + 2.days)
 
-        # 複数の予約を作成
-        create(:reservation,
+        # 複数の予約を作成（バリデーションをスキップ）
+        reservation1 = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
+        reservation1.save(validate: false)
 
-        create(:reservation,
+        customer2 = create(:user, role: :customer, family_name: '佐藤', given_name: '次郎')
+        reservation2 = build(:reservation,
           stylist:,
-          customer: create(:user, role: :customer, family_name: '佐藤', given_name: '次郎'),
+          customer: customer2,
           menu_ids: [menu.id],
           start_at: (target_date + 2.days).to_time.change(hour: 14),
           end_at: (target_date + 2.days).to_time.change(hour: 15),
           status: :paid)
+        reservation2.save(validate: false)
 
-        create(:reservation,
+        customer3 = create(:user, role: :customer, family_name: '鈴木', given_name: '三郎')
+        reservation3 = build(:reservation,
           stylist:,
-          customer: create(:user, role: :customer, family_name: '鈴木', given_name: '三郎'),
+          customer: customer3,
           menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 16),
           end_at: target_date.to_time.change(hour: 17),
           status: :before_visit)
+        reservation3.save(validate: false)
 
         # 月の設定画面を直接開く（初回設定を省略）
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
@@ -325,23 +332,25 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         setup_specific_date_shift(target_date + 1.day)
         setup_specific_date_shift(target_date + 2.days)
 
-        # キャンセル済みの予約
-        create(:reservation,
+        # キャンセル済みの予約（バリデーションをスキップ）
+        canceled_reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: (target_date + 1.day).to_time.change(hour: 10),
           end_at: (target_date + 1.day).to_time.change(hour: 11),
           status: :canceled)
+        canceled_reservation.save(validate: false)
 
-        # 来店済み（no_show）の予約
-        create(:reservation,
+        # 来店済み（no_show）の予約（バリデーションをスキップ）
+        no_show_reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: (target_date + 2.days).to_time.change(hour: 10),
           end_at: (target_date + 2.days).to_time.change(hour: 11),
           status: :no_show)
+        no_show_reservation.save(validate: false)
 
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
       end

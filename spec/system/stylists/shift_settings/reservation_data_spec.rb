@@ -142,22 +142,25 @@ RSpec.describe 'Shift settings reservation data', :js do
         setup_specific_date_shift(target_date)
         setup_specific_date_shift(target_date + 4.days)
 
-        # 予約を作成
-        create(:reservation,
+        # 予約を作成（バリデーションをスキップ）
+        reservation1 = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
+        reservation1.save(validate: false)
 
-        create(:reservation,
+        customer2 = create(:user, role: :customer, family_name: '佐藤', given_name: '次郎')
+        reservation2 = build(:reservation,
           stylist:,
-          customer: create(:user, role: :customer, family_name: '佐藤', given_name: '次郎'),
+          customer: customer2,
           menu_ids: [menu.id],
           start_at: (target_date + 4.days).to_time.change(hour: 14),
           end_at: (target_date + 4.days).to_time.change(hour: 15),
           status: :paid)
+        reservation2.save(validate: false)
       end
 
       it '予約データが正しくJavaScriptに渡される' do
@@ -198,13 +201,14 @@ RSpec.describe 'Shift settings reservation data', :js do
         setup_specific_date_shift(target_date + 9.days)
 
         canceled_customer = create(:user, role: :customer, family_name: '鈴木', given_name: '太郎')
-        create(:reservation,
+        canceled_reservation = build(:reservation,
           stylist:,
           customer: canceled_customer,
           menu_ids: [menu.id],
           start_at: (target_date + 9.days).to_time.change(hour: 10),
           end_at: (target_date + 9.days).to_time.change(hour: 11),
           status: :canceled)
+        canceled_reservation.save(validate: false)
 
         visit show_stylists_shift_settings_path(year: current_year, month: current_month)
 
@@ -260,32 +264,35 @@ RSpec.describe 'Shift settings reservation data', :js do
         next_month_date = target_date.next_month
         setup_specific_date_shift(next_month_date)
 
-        # 対象月の予約
-        create(:reservation,
+        # 対象月の予約（バリデーションをスキップ）
+        current_month_reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: date15.to_time.change(hour: 10),
           end_at: date15.to_time.change(hour: 11),
           status: :before_visit)
+        current_month_reservation.save(validate: false)
 
-        # 前月の予約（含まれない）
-        create(:reservation,
+        # 前月の予約（含まれない）（バリデーションをスキップ）
+        prev_month_reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: prev_month_date.to_time.change(hour: 10),
           end_at: prev_month_date.to_time.change(hour: 11),
           status: :before_visit)
+        prev_month_reservation.save(validate: false)
 
-        # 翌月の予約（含まれない）
-        create(:reservation,
+        # 翌月の予約（含まれない）（バリデーションをスキップ）
+        next_month_reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: next_month_date.to_time.change(hour: 10),
           end_at: next_month_date.to_time.change(hour: 11),
           status: :before_visit)
+        next_month_reservation.save(validate: false)
       end
 
       it '指定月の予約のみがデータに含まれる' do
@@ -344,25 +351,27 @@ RSpec.describe 'Shift settings reservation data', :js do
             max_reservations: 2)
         end
 
-        # 自分の予約
-        create(:reservation,
+        # 自分の予約（バリデーションをスキップ）
+        my_reservation = build(:reservation,
           stylist:,
           customer:,
           menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
+        my_reservation.save(validate: false)
 
-        # 他のスタイリストの予約
+        # 他のスタイリストの予約（バリデーションをスキップ）
         other_customer = create(:user, role: :customer, family_name: '他の', given_name: '顧客')
         other_menu = create(:menu, stylist: other_stylist, name: 'カット', price: 3000, duration: 60)
-        create(:reservation,
+        other_reservation = build(:reservation,
           stylist: other_stylist,
           customer: other_customer,
           menu_ids: [other_menu.id],
           start_at: (target_date + 1.day).to_time.change(hour: 10),
           end_at: (target_date + 1.day).to_time.change(hour: 11),
           status: :before_visit)
+        other_reservation.save(validate: false)
       end
 
       it '他のスタイリストの予約は含まれない' do
