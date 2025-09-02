@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe 'Shift settings reservation data', :js do
   let(:stylist) do
     create(:user, role: :stylist,
@@ -21,6 +22,8 @@ RSpec.describe 'Shift settings reservation data', :js do
       family_name_kana: 'ヤマダ',
       given_name_kana: 'ハナコ')
   end
+
+  let(:menu) { create(:menu, stylist:, name: 'カット', price: 3000, duration: 60) }
 
   let(:current_year) { Time.zone.today.year }
   let(:current_month) { Time.zone.today.month }
@@ -143,6 +146,7 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
@@ -150,6 +154,7 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer: create(:user, role: :customer, family_name: '佐藤', given_name: '次郎'),
+          menu_ids: [menu.id],
           start_at: (target_date + 4.days).to_time.change(hour: 14),
           end_at: (target_date + 4.days).to_time.change(hour: 15),
           status: :paid)
@@ -196,6 +201,7 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer: canceled_customer,
+          menu_ids: [menu.id],
           start_at: (target_date + 9.days).to_time.change(hour: 10),
           end_at: (target_date + 9.days).to_time.change(hour: 11),
           status: :canceled)
@@ -258,6 +264,7 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: date15.to_time.change(hour: 10),
           end_at: date15.to_time.change(hour: 11),
           status: :before_visit)
@@ -266,6 +273,7 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: prev_month_date.to_time.change(hour: 10),
           end_at: prev_month_date.to_time.change(hour: 11),
           status: :before_visit)
@@ -274,6 +282,7 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: next_month_date.to_time.change(hour: 10),
           end_at: next_month_date.to_time.change(hour: 11),
           status: :before_visit)
@@ -339,15 +348,18 @@ RSpec.describe 'Shift settings reservation data', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
 
         # 他のスタイリストの予約
         other_customer = create(:user, role: :customer, family_name: '他の', given_name: '顧客')
+        other_menu = create(:menu, stylist: other_stylist, name: 'カット', price: 3000, duration: 60)
         create(:reservation,
           stylist: other_stylist,
           customer: other_customer,
+          menu_ids: [other_menu.id],
           start_at: (target_date + 1.day).to_time.change(hour: 10),
           end_at: (target_date + 1.day).to_time.change(hour: 11),
           status: :before_visit)
@@ -369,3 +381,4 @@ RSpec.describe 'Shift settings reservation data', :js do
   end
 end
 # rubocop:enable Metrics/BlockLength
+# rubocop:enable RSpec/MultipleMemoizedHelpers

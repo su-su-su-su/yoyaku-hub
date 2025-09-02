@@ -130,6 +130,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
@@ -181,6 +182,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: date5.to_time.change(hour: 14),
           end_at: date5.to_time.change(hour: 15),
           status: :before_visit)
@@ -231,6 +233,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 10),
           end_at: target_date.to_time.change(hour: 11),
           status: :before_visit)
@@ -238,6 +241,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer: create(:user, role: :customer, family_name: '佐藤', given_name: '次郎'),
+          menu_ids: [menu.id],
           start_at: (target_date + 2.days).to_time.change(hour: 14),
           end_at: (target_date + 2.days).to_time.change(hour: 15),
           status: :paid)
@@ -245,6 +249,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer: create(:user, role: :customer, family_name: '鈴木', given_name: '三郎'),
+          menu_ids: [menu.id],
           start_at: target_date.to_time.change(hour: 16),
           end_at: target_date.to_time.change(hour: 17),
           status: :before_visit)
@@ -324,6 +329,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: (target_date + 1.day).to_time.change(hour: 10),
           end_at: (target_date + 1.day).to_time.change(hour: 11),
           status: :canceled)
@@ -332,6 +338,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         create(:reservation,
           stylist:,
           customer:,
+          menu_ids: [menu.id],
           start_at: (target_date + 2.days).to_time.change(hour: 10),
           end_at: (target_date + 2.days).to_time.change(hour: 11),
           status: :no_show)
