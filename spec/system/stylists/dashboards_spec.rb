@@ -206,7 +206,7 @@ RSpec.describe '/stylists/dashboards' do
       it 'changes the button content to success and then reverts' do
         copy_button = find("button[data-copy-clipboard-target='button']")
         actual_original_button_text = invitation_url_texts[:copy_default]
-        original_icon_svg_path_part = 'M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192'
+        original_icon_svg_path_part = 'M15.666 3.888A2.25 2.25 0 0013.5 2.25'
 
         copy_button.click
 
