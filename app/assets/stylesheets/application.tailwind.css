@@ -22,6 +22,7 @@
   .dropdown-content {
     overscroll-behavior: none;
   }
+
 }
 
 @layer components {
@@ -331,6 +332,17 @@
     @apply hover:bg-gray-500;
 
     @apply active:bg-gray-600;
+  }
+
+  /* 小さいボタン用のスタイル */
+  .btn-primary-small {
+    @apply bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium inline-flex items-center justify-center whitespace-nowrap;
+    height: 32px;
+    min-width: fit-content;
+
+    @apply hover:bg-blue-700;
+
+    @apply active:bg-blue-800;
   }
 
   .responsive-table {
