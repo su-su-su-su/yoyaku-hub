@@ -46,6 +46,7 @@ gem 'slim-rails'
 gem 'holiday_jp'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
+gem 'rqrcode'
 gem 'sassc-rails'
 gem 'simple_calendar'
 gem 'whenever', require: false

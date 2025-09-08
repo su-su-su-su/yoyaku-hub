@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   namespace :stylists do
     resources :products
     get 'dashboard', to: 'dashboards#show'
+    resource :qr_code, only: [:show]
     get 'schedules/:date', to: 'schedules#show', as: :schedules
     get 'schedules/weekly/:start_date', to: 'schedules#weekly', as: :weekly_schedules
     patch 'schedules/:date/reservation_limits', to: 'schedules#reservation_limits', as: :reservation_limits
