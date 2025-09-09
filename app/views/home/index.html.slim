@@ -1,8 +1,15 @@
 - content_for :title, 'フリーランス美容師のための予約・顧客管理プラットフォーム'
 - content_for :meta_description, 'YOYAKU HUBはフリーランス美容師の予約管理、顧客管理、会計をシンプルにするプラットフォーム。複数ツールの煩雑さ、非効率な予約管理、不透明な料金体系の悩みを解決し、あなたの時間と収益を最大化します。'
 
-section.hero.bg-gradient-to-br.from-blue-50.to-blue-100.pt-24.pb-24.relative.overflow-hidden
-  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+.home-page
+  .text-white.py-3.text-center.relative style="background-color: #E4B802;"
+    .container.max-w-7xl.mx-auto.px-4
+      p.font-bold.text-lg
+        | 🎉 今なら半年無料キャンペーン実施中！
+        br
+        | お早めにご登録ください
+  section.hero.bg-gradient-to-br.from-blue-50.to-blue-100.pt-12.sm:pt-24.pb-12.sm:pb-24.relative.overflow-hidden
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
     .hero-content.flex.flex-col.items-center.gap-16.lg:flex-row.lg:gap-16.lg:text-left
       .hero-text.flex-1.order-1.text-center.lg:order-0.lg:text-left
         h1.text-2xl.sm:text-4xl.font-bold.mb-5.text-gray-800.md:text-5xl style="line-height: 1.3;"
@@ -26,116 +33,164 @@ section.hero.bg-gradient-to-br.from-blue-50.to-blue-100.pt-24.pb-24.relative.ove
             a.cta-button.secondary.bg-white.text-blue-600.border.border-blue-600.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-gray-50[href=new_stylist_registration_path]
               | 会員登録がまだの美容師方はこちらから
 
-section#problems.problems.bg-white.py-24
-  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-    .section-title.text-center.mb-16
-      h2.text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
-        | フリーランスという働き方に
-        br.md:hidden
-        | もっと自由と安心を
-      p.text-lg.text-gray-600.max-w-3xl.mx-auto
-        | 多くのフリーランス美容師さんが日々感じている悩みに対する解決策を提供します
-    .problem-cards.grid.grid-cols-1.gap-8.md:grid-cols-2.lg:grid-cols-3
-      .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
-        .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
-          img src="/images/Complex tool management.svg" alt="複数ツール管理" class="w-full h-full object-contain"
-        h3.text-xl.font-bold.mb-4
-          | 複数ツールの管理が煩雑
-        p.text-gray-600.text-left
-          | 予約、顧客管理、会計と別々のツールを使い分けることによる時間のロスと混乱。YOYAKU HUBはこれらを一つのプラットフォームに統合します。
-      .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
-        .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
-          img src="/images/Inefficient scheduling.svg" alt="非効率な予約管理" class="w-full h-full object-contain"
-        h3.text-xl.font-bold.mb-4
-          | 非効率な予約管理
-        p.text-gray-600.text-left
-          | 予約の隙間時間が発生し、効率的に仕事ができない問題。スマートな予約最適化機能で隙間時間を自動的に調整します。
-      .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
-        .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
-          img src="/images/Opaque pricing.svg" alt="不透明な料金体系" class="w-full h-full object-contain"
-        h3.text-xl.font-bold.mb-4
-          | 不透明な料金体系
-        p.text-gray-600.text-left
-          | 月額料金に加えて追加料金が発生する不透明な料金体系。YOYAKU HUBは明確でシンプルな料金体系で、美容師の経済的負担を軽減します。
+  section#problems.problems.bg-white.py-12.sm:py-24
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      .section-title.text-center.mb-16
+        h2.text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+          | フリーランスという
+          br.md:hidden
+          | 働き方に
+          br.md:hidden
+          | もっと自由と安心を
+        p.text-lg.text-gray-600.max-w-3xl.mx-auto
+          | 多くのフリーランス美容師さんが日々感じている悩みに対する解決策を提供します
+      .problem-cards.grid.grid-cols-1.gap-8.md:grid-cols-2.lg:grid-cols-3
+        .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
+          .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
+            img src="/images/Complex tool management.svg" alt="複数ツール管理" class="w-full h-full object-contain"
+          h3.text-xl.font-bold.mb-4
+            | 複数ツールの管理が煩雑
+          p.text-gray-600.text-left
+            | 予約、顧客管理、会計と別々のツールを使い分けることによる時間のロスと混乱。YOYAKU HUBはこれらを一つのプラットフォームに統合します。
+        .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
+          .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
+            img src="/images/Inefficient scheduling.svg" alt="非効率な予約管理" class="w-full h-full object-contain"
+          h3.text-xl.font-bold.mb-4
+            | 非効率な予約管理
+          p.text-gray-600.text-left
+            | 予約の隙間時間が発生し、効率的に仕事ができない問題。スマートな予約最適化機能で隙間時間を自動的に調整します。
+        .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
+          .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
+            img src="/images/Opaque pricing.svg" alt="不透明な料金体系" class="w-full h-full object-contain"
+          h3.text-xl.font-bold.mb-4
+            | 不透明な料金体系
+          p.text-gray-600.text-left
+            | 月額料金に加えて追加料金が発生する不透明な料金体系。YOYAKU HUBは明確でシンプルな料金体系で、美容師の経済的負担を軽減します。
 
-section#benefits.benefits.bg-gray-50.py-24
-  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-    .section-title.text-center.mb-16
-      h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
-        | 現場に根ざした課題解決を
-        br
-        | テクノロジーの力で
-      p.text-lg.text-gray-600.max-w-3xl.mx-auto
-        | YOYAKU HUBが提供する価値と導入後の効果についてご案内します
-    .benefit-cards.grid.grid-cols-1.gap-8.sm:grid-cols-2.lg:grid-cols-4
-      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-        .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-          | ⏱
-        h3.text-xl.font-bold.mb-4
-          | 時間の節約
-        p.text-gray-600.text-left
-          | 事務作業時間を削減。その時間を自分の為の時間や休息に充てられます。
-      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-        .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-          | 💰
-        h3.text-xl.font-bold.mb-4
-          | 収益アップ
-        p.text-gray-600.text-left
-          | 隙間時間の最適化により、毎月の予約枠増加が可能に。売上アップにつながります。
-      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-        .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-          | 📊
-        h3.text-xl.font-bold.mb-4
-          | データ分析
-        p.text-gray-600.text-left
-          | 顧客データや売上の分析機能で、自分の強みや改善点を可視化。戦略的な経営判断ができます。
-      .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-        .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-          | 💸
-        h3.text-xl.font-bold.mb-4
-          | 固定費削減
-        p.text-gray-600.text-left
-          | 複数のサービス料を統合することで、月間のサブスクリプション費用を削減できます。
+  section#benefits.benefits.bg-gray-50.py-12.sm:py-24
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      .section-title.text-center.mb-16
+        h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+          | 現場に根ざした課題解決を
+          br
+          | テクノロジーの力で
+        p.text-lg.text-gray-600.max-w-3xl.mx-auto
+          | YOYAKU HUBが提供する価値と導入後の効果についてご案内します
+      .benefit-cards.grid.grid-cols-1.gap-8.sm:grid-cols-2.lg:grid-cols-4
+        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
+            | ⏱
+          h3.text-xl.font-bold.mb-4
+            | 時間の節約
+          p.text-gray-600.text-left
+            | 事務作業時間を削減。その時間を自分の為の時間や休息に充てられます。
+        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
+            | 💰
+          h3.text-xl.font-bold.mb-4
+            | 収益アップ
+          p.text-gray-600.text-left
+            | 隙間時間の最適化により、毎月の予約枠増加が可能に。売上アップにつながります。
+        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
+            | 📊
+          h3.text-xl.font-bold.mb-4
+            | データ分析
+          p.text-gray-600.text-left
+            | 顧客データや売上の分析機能で、自分の強みや改善点を可視化。戦略的な経営判断ができます。
+        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
+          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
+            | 💸
+          h3.text-xl.font-bold.mb-4
+            | 固定費削減
+          p.text-gray-600.text-left
+            | 複数のサービス料を統合することで、月間のサブスクリプション費用を削減できます。
 
-section#roadmap.roadmap.bg-white.py-24
-  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-    .section-title.text-center.mb-16
-      h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
-        | 現在ベータ版として無料公開中
-      p.text-lg.text-gray-600.max-w-3xl.mx-auto.mb-8
-        | より多くの美容師さんにご利用いただき、フィードバックを集めるため
-        br
-        | 現在すべての機能を無料でお使いいただけます
+  section#pricing.pricing.bg-white.py-12.sm:py-24
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      .section-title.text-center.mb-16
+        h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+          | 料金プラン
+        p.text-lg.text-gray-600.max-w-3xl.mx-auto.mb-8
+          | シンプルで分かりやすい料金体系
+          br
+          | 現在ベータ版として無料でご利用いただけます
 
-    .roadmap-content.max-w-4xl.mx-auto
-      .bg-yellow-50.rounded-xl.p-8.border.border-yellow-200
-        h3.text-xl.font-bold.mb-4.text-yellow-800
-          | 📢 今後の料金プランについて
-        p.text-gray-700.mb-4
-          | サービスの安定運営と継続的な改善のため、将来的に月額制の有料プランを導入予定です。
-        ul.space-y-2.text-gray-700
-          li
-            | • 
-            strong 現在は無料期間：
-            |  すべての機能を無料でご利用いただけます
-          li
-            | • 
-            strong ベータ版ユーザー特典：
-            |  今ご登録の方には正式版リリース時に特別価格をご用意
-          li
-            | • 
-            strong 料金体系：
-            |  シンプルな月額制を予定しています
-          li
-            | • 
-            strong 移行時期：
-            |  有料化の際は最低1ヶ月前に告知いたします
-        p.text-sm.text-gray-600.mt-4
-          | ※正式な料金・開始時期は決定次第、ご登録メールアドレスにお知らせいたします
+      .pricing-content.max-w-4xl.mx-auto
+        .pricing-card.bg-white.rounded-xl.p-8.shadow-lg.border.border-gray-200
+          .text-center.mb-8
+            h3.text-2xl.font-bold.mb-2.text-gray-800
+              | スタンダードプラン
+            .pricing-display.mt-6
+              .price
+                | ¥3,850
+                span.text-lg.text-gray-600.font-normal
+                  | /月
 
-section.footer-links.bg-gray-100.py-8
-  .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-    .flex.justify-center.items-center.gap-8
-      = link_to '利用規約', terms_path, class: 'text-sm text-gray-600 hover:text-blue-600 active:text-blue-800'
-      span.text-gray-400 |
-      = link_to 'プライバシーポリシー', privacy_path, class: 'text-sm text-gray-600 hover:text-blue-600 active:text-blue-800'
+          .features-list.mb-8
+            ul.space-y-3
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | ネット予約機能
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | カルテ機能
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 顧客管理
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 会計機能
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 売上分析*
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 店販・物販管理
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 予約の最適化機能
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 予約関連のメール通知*
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | 予約前日にリマインダー通知*
+              li.flex.items-center
+                span.mr-3 style="color: #3e5cd7;" ✓
+                | モバイル対応
+
+          .text-sm.text-gray-600.mt-4.text-left
+            | *今後追加予定の機能です
+
+          .text-center.mt-8
+            = link_to new_stylist_registration_path, class: "btn-primary px-8 py-3 text-lg"
+              | 無料で試してみる
+
+        .bg-yellow-50.rounded-xl.p-8.border.border-yellow-200.mt-8
+          h3.text-xl.font-bold.mb-4.text-yellow-800
+            | 📢 現在ベータ版として無料公開中
+          p.text-gray-700.mb-4
+            | サービス品質向上のため、現在すべての機能を無料でご利用いただけます。
+          ul.space-y-2.text-gray-700
+            li
+              | •
+              strong ベータ版ユーザー特典：
+              |  今ご登録の方には半年無料の特別価格
+            li
+              | •
+              strong 有料化移行：
+              |  最低1ヶ月前に事前告知いたします
+            li
+              | •
+              strong 追加料金なし：
+              |  表示価格のみでシンプルな料金体系
+          p.text-sm.text-gray-600.mt-4
+            | ※正式な開始時期は決定次第、ご登録メールアドレスにお知らせいたします
+
+  section.footer-links.bg-gray-100.py-6.sm:py-8
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      .flex.justify-center.items-center.gap-8
+        = link_to '利用規約', terms_path, class: 'text-sm text-gray-600 hover:text-blue-600 active:text-blue-800'
+        span.text-gray-400 |
+        = link_to 'プライバシーポリシー', privacy_path, class: 'text-sm text-gray-600 hover:text-blue-600 active:text-blue-800'
