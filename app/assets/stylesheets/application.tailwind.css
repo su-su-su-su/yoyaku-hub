@@ -314,7 +314,7 @@
   }
 
   .btn-primary {
-    @apply rounded font-bold text-white inline-flex items-center justify-center;
+    @apply rounded text-white inline-flex items-center justify-center;
     background-color: #3e5cd7;
     min-height: 48px;
     min-width: 120px;
@@ -372,5 +372,19 @@
     .responsive-table tr:nth-child(even) {
       @apply bg-gray-50;
     }
+  }
+
+  /* ホームページ専用のNoto Sans JPフォント */
+  .home-page {
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .pricing-card .price {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #3e5cd7;
+    font-family: 'Noto Sans JP', sans-serif;
   }
 }
