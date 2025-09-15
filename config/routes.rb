@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
   namespace :stylists do
     resources :products
+    resources :sales, only: [:index]
     get 'dashboard', to: 'dashboards#show'
     resource :qr_code, only: [:show]
     get 'schedules/:date', to: 'schedules#show', as: :schedules
