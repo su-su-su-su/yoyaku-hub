@@ -75,6 +75,13 @@
             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z")
         span.text-sm.md:text-base.font-medium 商品管理
 
+    .menu-card
+      = link_to stylists_sales_path, class: "block bg-gray-100 border border-gray-300 rounded-lg p-4 h-32 md:h-40 flex flex-col items-center justify-center" do
+        .icon.text-yellow-500.mb-2
+          svg.w-8.h-8.md:w-10.md:h-10(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+        span.text-sm.md:text-base.font-medium 売り上げ管理
+
 - if Rails.env.production?
   - menu_url_to_copy = customers_stylist_menus_url(@stylist)
 - else

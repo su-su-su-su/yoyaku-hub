@@ -21,6 +21,25 @@ AllCops:
     - tmp/**/*
     - bin/**/*
 
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/IndexedLet:
+  Enabled: false
+
+Capybara/ClickLinkOrButtonStyle:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Max: 6
+  Exclude:
+    - spec/system/stylists/sales_spec.rb
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - spec/system/stylists/sales_spec.rb
+
 Style/Documentation:
   Enabled: false
 
@@ -36,6 +55,7 @@ RSpec/MultipleExpectations:
 
 RSpec/MultipleMemoizedHelpers:
   Exclude:
+    - spec/system/stylists/sales_spec.rb
 
 RSpec/NestedGroups:
   Exclude:
@@ -49,6 +69,7 @@ Metrics/ClassLength:
 
 Metrics/CyclomaticComplexity:
   Exclude:
+    - app/controllers/stylists/sales_controller.rb
 
 Metrics/PerceivedComplexity:
   Exclude:
@@ -57,10 +78,13 @@ Metrics/AbcSize:
   Max: 20
   Exclude:
     - app/controllers/stylists/accountings_controller.rb
+    - app/controllers/stylists/sales_controller.rb
+    - spec/system/stylists/sales_spec.rb
 
 Metrics/MethodLength:
   Max: 20
   Exclude:
+    - spec/system/stylists/sales_spec.rb
 
 Metrics/BlockLength:
   Exclude:

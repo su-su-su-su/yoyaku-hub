@@ -133,7 +133,7 @@ RSpec.describe User do
     end
 
     describe '#can_book_with_stylist?' do
-      # rubocop:disable RSpec/NestedGroups, RSpec/ContextWording
+      # rubocop:disable RSpec/NestedGroups
       context 'デモカスタマーの場合' do
         it '同じセッションのデモスタイリストには予約可能' do
           expect(demo_customer.can_book_with_stylist?(demo_stylist)).to be true
