@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-# rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers, RSpec/NestedGroups, RSpec/ContextWording
+# rubocop:disable Metrics/BlockLength, RSpec/MultipleMemoizedHelpers, RSpec/NestedGroups
 RSpec.describe Reservation do
   describe 'デモユーザー制限のバリデーション' do
     let(:demo_customer) do
