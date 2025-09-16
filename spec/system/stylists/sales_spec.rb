@@ -115,8 +115,9 @@ RSpec.describe 'Stylists::Sales' do
       it '売り上げ管理ページが表示される' do
         expect(page).to have_content('売り上げ管理')
         # ドロップダウンで現在の年月が選択されていることを確認
-        expect(page).to have_select('year-select', selected: "#{current_year}年")
-        expect(page).to have_select('month-select', selected: "#{current_month}月")
+        selects = page.all('select')
+        expect(selects[0].value).to eq(current_year.to_s)
+        expect(selects[1].value).to eq(current_month.to_s)
       end
 
       it '月間サマリーが表示される' do
@@ -147,13 +148,29 @@ RSpec.describe 'Stylists::Sales' do
 
       it '前月・次月へのナビゲーションができる' do
         click_on '前月へ'
-        expect(page).to have_select('year-select', selected: "#{prev_month_date.year}年")
-        expect(page).to have_select('month-select', selected: "#{prev_month_date.month}月")
+
+        # ページ遷移を待つ - 前月の年月がURLに含まれることを確認
+        expect(page).to have_current_path(stylists_sales_path(year: prev_month_date.year, month: prev_month_date.month))
+
+        # ページ遷移後に要素を取得
+        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+          selects = all('select')
+          expect(selects[0].value).to eq(prev_month_date.year.to_s)
+          expect(selects[1].value).to eq(prev_month_date.month.to_s)
+        end
         expect(page).to have_content('¥3,000') # 前月の総売上
 
         click_on '次月へ'
-        expect(page).to have_select('year-select', selected: "#{current_year}年")
-        expect(page).to have_select('month-select', selected: "#{current_month}月")
+
+        # ページ遷移を待つ - 現在の年月がURLに含まれることを確認
+        expect(page).to have_current_path(stylists_sales_path(year: current_year, month: current_month))
+
+        # ページ遷移後に要素を取得
+        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+          selects = all('select')
+          expect(selects[0].value).to eq(current_year.to_s)
+          expect(selects[1].value).to eq(current_month.to_s)
+        end
       end
     end
 
@@ -190,8 +207,9 @@ RSpec.describe 'Stylists::Sales' do
     context '年月を指定してアクセスした場合' do
       it '指定した年月の売り上げが表示される' do
         visit stylists_sales_path(year: 2024, month: 3)
-        expect(page).to have_select('year-select', selected: '2024年')
-        expect(page).to have_select('month-select', selected: '3月')
+        selects = page.all('select')
+        expect(selects[0].value).to eq('2024')
+        expect(selects[1].value).to eq('3')
       end
     end
 
@@ -210,20 +228,19 @@ RSpec.describe 'Stylists::Sales' do
       end
 
       it '年と月のドロップダウンが表示される' do
-        expect(page).to have_select('year-select')
-        expect(page).to have_select('month-select')
+        expect(page.all('select').count).to eq(2)
       end
 
       it '現在の年月が選択されている' do
-        year_select = find_by_id('year-select')
-        month_select = find_by_id('month-select')
+        year_select = page.all('select')[0]
+        month_select = page.all('select')[1]
 
         expect(year_select.value).to eq current_year.to_s
         expect(month_select.value).to eq current_month.to_s
       end
 
       it '年の選択肢が2020年から来年まで表示される' do
-        year_select = find_by_id('year-select')
+        year_select = page.all('select')[0]
         options = year_select.all('option').map(&:text)
 
         expect(options.first).to eq '2020年'
@@ -231,7 +248,7 @@ RSpec.describe 'Stylists::Sales' do
       end
 
       it '月の選択肢が1月から12月まで表示される' do
-        month_select = find_by_id('month-select')
+        month_select = page.all('select')[1]
         options = month_select.all('option').map(&:text)
 
         expect(options).to eq((1..12).map { |m| "#{m}月" })
@@ -239,13 +256,16 @@ RSpec.describe 'Stylists::Sales' do
 
       it 'ドロップダウンで年月を変更できる', :js do
         # 2024年5月を選択
-        select '2024年', from: 'year-select'
-        select '5月', from: 'month-select'
+        page.all('select')[0].select('2024年')
+        page.all('select')[1].select('5月')
+
+        # デバウンスを待つ
+        sleep 0.6
 
         # ページが遷移することを確認（URLパラメータの順番は問わない）
         expect(page).to have_current_path(%r{/stylists/sales\?.*year=2024.*month=5|/stylists/sales\?.*month=5.*year=2024})
-        expect(page).to have_select('year-select', selected: '2024年')
-        expect(page).to have_select('month-select', selected: '5月')
+        expect(page.all('select')[0].value).to eq('2024')
+        expect(page.all('select')[1].value).to eq('5')
 
         # 2024年5月の売上が表示される
         expect(page).to have_content('¥3,000')

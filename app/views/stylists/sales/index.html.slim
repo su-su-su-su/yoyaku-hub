@@ -7,11 +7,11 @@
       = link_to '前月へ', stylists_sales_path(year: @month == 1 ? @year - 1 : @year, month: @month == 1 ? 12 : @month - 1),
                 class: "px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded"
 
-      .flex.items-center.gap-2
-        select#year-select.border.rounded.px-2.py-1(data-controller="sales-date-picker" data-action="change->sales-date-picker#navigate" data-sales-date-picker-month-value=@month)
+      .flex.items-center.gap-2(data-controller="sales-date-picker")
+        select.border.rounded.px-2.py-1(data-sales-date-picker-target="year" data-action="change->sales-date-picker#navigate")
           - (2020..Date.current.year + 1).each do |year|
             option(value=year selected=(@year == year)) = "#{year}年"
-        select#month-select.border.rounded.px-2.py-1(data-controller="sales-date-picker" data-action="change->sales-date-picker#navigate" data-sales-date-picker-year-value=@year)
+        select.border.rounded.px-2.py-1(data-sales-date-picker-target="month" data-action="change->sales-date-picker#navigate")
           - (1..12).each do |month|
             option(value=month selected=(@month == month)) = "#{month}月"
 
