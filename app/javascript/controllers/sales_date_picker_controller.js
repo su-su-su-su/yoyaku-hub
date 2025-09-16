@@ -43,10 +43,10 @@ export default class extends Controller {
       clearTimeout(this.navigationTimeout)
     }
 
-    // デバウンス: 1000ms待ってから実行（モバイルでより長い待機）
+    // デバウンス: 100ms待ってから実行（ほぼ即座に反応）
     this.navigationTimeout = setTimeout(() => {
       this.performNavigation()
-    }, 1000)
+    }, 100)
   }
 
   performNavigation() {
