@@ -3,18 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+    html要素 (ページ全体)
+    - ページ全体のスクロール連鎖と「引っ張って更新」を無効化する
+  */
   html {
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    overscroll-behavior: contain; /* 'none'よりも挙動が自然な'contain'を推奨 */
   }
 
+  /*
+    body要素 (コンテンツのコンテナ)
+    - モバイルでのスクロール問題を解決するため、動的なビューポート高さを最小値として設定
+    - 縦スクロール時の意図しないジェスチャー(拡大等)を無効化
+    - iOSでの慣性スクロールを有効化（古いiOS向け）
+  */
   body {
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    min-height: 100dvh;                /* vhではなくdvhを使用（動的ビューポート高さ） */
+    touch-action: pan-y;                /* 意図しないジェスチャーを防ぐ */
+    -webkit-overflow-scrolling: touch;  /* 古いiOS向けの慣性スクロール */
+    position: relative;
   }
 
   /* モーダルやドロップダウンなど特定の要素のみ完全に無効化 */
