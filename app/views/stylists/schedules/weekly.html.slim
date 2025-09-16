@@ -1,7 +1,7 @@
 - content_for :title, "#{@start_date.strftime('%Y年%m月%d日')}〜#{(@start_date + 6.days).strftime('%m月%d日')}の予約表"
 - content_for :meta_description, "#{@start_date.strftime('%Y年%m月%d日')}〜#{(@start_date + 6.days).strftime('%m月%d日')}の予約状況を確認できます。"
 
-.px-2.mt-8.flex.justify-between.items-center
+.px-4.mt-6.flex.justify-between.items-center
   h1.page-title-gradient.subtle-gradient-look 週間予約表
   = link_to "日別表示", stylists_schedules_path(date: @start_date.strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
 
