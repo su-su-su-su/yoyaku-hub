@@ -14,7 +14,25 @@ export default class extends Controller {
     }
   }
 
-  navigate() {
+  navigate(event) {
+    // モバイルChromeの検出
+    const isMobileChrome = /Android.*Chrome|CriOS/i.test(navigator.userAgent)
+
+    if (isMobileChrome) {
+      // モバイルChromeの場合、blurイベントを待つ
+      if (event && event.type === 'change') {
+        // changeイベントの場合、選択が確定するまで待機
+        event.target.addEventListener('blur', () => {
+          this.scheduleNavigation()
+        }, { once: true })
+        return
+      }
+    }
+
+    this.scheduleNavigation()
+  }
+
+  scheduleNavigation() {
     // 既にナビゲーション中の場合は何もしない
     if (this.navigating) {
       return
@@ -25,10 +43,10 @@ export default class extends Controller {
       clearTimeout(this.navigationTimeout)
     }
 
-    // デバウンス: 500ms待ってから実行（モバイルでの連続イベントを防ぐ）
+    // デバウンス: 1000ms待ってから実行（モバイルでより長い待機）
     this.navigationTimeout = setTimeout(() => {
       this.performNavigation()
-    }, 500)
+    }, 1000)
   }
 
   performNavigation() {
@@ -44,24 +62,15 @@ export default class extends Controller {
       const month = this.monthTarget.value
 
       if (year && month) {
-        // フォームを作成して送信（より安定した方法）
-        const form = document.createElement('form')
-        form.method = 'GET'
-        form.action = '/stylists/sales'
-        form.style.display = 'none'
+        // URLパラメータを構築
+        const params = new URLSearchParams({ year, month })
+        const url = `/stylists/sales?${params.toString()}`
 
-        const yearInput = document.createElement('input')
-        yearInput.name = 'year'
-        yearInput.value = year
-        form.appendChild(yearInput)
-
-        const monthInput = document.createElement('input')
-        monthInput.name = 'month'
-        monthInput.value = month
-        form.appendChild(monthInput)
-
-        document.body.appendChild(form)
-        form.submit()
+        // location.hrefを使用（form.submit()よりも安定）
+        window.location.href = url
+      } else {
+        // 値が不正な場合はナビゲーションをリセット
+        this.navigating = false
       }
     } catch (error) {
       console.error('Navigation error:', error)

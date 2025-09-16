@@ -259,8 +259,8 @@ RSpec.describe 'Stylists::Sales' do
         page.all('select')[0].select('2024年')
         page.all('select')[1].select('5月')
 
-        # デバウンスを待つ
-        sleep 0.6
+        # デバウンスを待つ（1000msに変更されたため）
+        sleep 1.2
 
         # ページが遷移することを確認（URLパラメータの順番は問わない）
         expect(page).to have_current_path(%r{/stylists/sales\?.*year=2024.*month=5|/stylists/sales\?.*month=5.*year=2024})
