@@ -31,8 +31,10 @@ link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"
 link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"
 
 link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=nest_thermostat_gen_3"
-= stylesheet_link_tag "application", "data-turbo-track": "reload"
-= stylesheet_link_tag "simple_calendar", "data-turbo-track": "reload"
+/ 一時的な診断用キャッシュバスティング（問題解決後に削除予定）
+- cache_buster = Time.current.to_i
+= stylesheet_link_tag "application", "data-turbo-track": "reload", cache: cache_buster
+= stylesheet_link_tag "simple_calendar", "data-turbo-track": "reload", cache: cache_buster
 = javascript_include_tag "application", "data-turbo-track": "reload"
 
 / Google Analytics
