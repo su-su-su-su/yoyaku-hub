@@ -19,11 +19,7 @@ module Admin
     def edit; end
 
     def update
-      # 管理者以外がroleを変更できないようにする
-      filtered_params = user_params
-      filtered_params = user_params.except(:role) if params[:user][:role].present? && @user == current_user
-
-      if @user.update(filtered_params)
+      if @user.update(user_params)
         redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.updated')
       else
         render :edit, status: :unprocessable_entity
@@ -58,10 +54,14 @@ module Admin
     end
 
     def user_params
-      params.require(:user).permit(
-        :family_name, :given_name, :family_name_kana, :given_name_kana,
-        :email, :role, :gender, :date_of_birth
-      )
+      # roleの変更は管理者のみ、かつ自分以外のユーザーに対してのみ許可
+      permitted = %i[family_name given_name family_name_kana given_name_kana
+                     email gender date_of_birth]
+
+      # 管理者が他のユーザーのroleを変更する場合のみroleを許可
+      permitted << :role if current_user.admin? && @user != current_user
+
+      params.require(:user).permit(permitted)
     end
 
     def build_user_scope
