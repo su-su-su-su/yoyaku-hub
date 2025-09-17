@@ -1,0 +1,114 @@
+- content_for :title, 'ユーザー管理'
+- content_for :meta_description, 'システムの全ユーザーを管理します。'
+
+.container.mx-auto.px-4.py-4.md:py-6
+  .mb-4
+    h1.page-title-gradient.subtle-gradient-look.text-xl.md:text-2xl ユーザー管理
+    .text-xs.md:text-sm.text-gray-600.mt-2
+      | 管理者: #{current_user.family_name} #{current_user.given_name}
+
+  .bg-white.border.border-gray-200.rounded-lg.p-4.mb-4
+    = form_with url: admin_users_path, method: :get, local: true, class: "space-y-3 md:space-y-0 md:flex md:gap-3 md:items-end" do |form|
+      .flex-1
+        = form.text_field :query, value: params[:query], placeholder: "名前・メールで検索", class: "input input-bordered w-full text-sm"
+      .w-full.md:w-40
+        = form.select :role, options_for_select([['すべて', ''], ['顧客', 'customer'], ['スタイリスト', 'stylist'], ['管理者', 'admin']], params[:role]), {}, class: "select select-bordered w-full text-sm"
+      .w-full.md:w-32
+        = form.select :status, options_for_select([['すべて', ''], ['有効', 'active'], ['無効', 'inactive']], params[:status]), {}, class: "select select-bordered w-full text-sm"
+      = form.button type: "submit", class: "btn-primary w-full md:w-auto" do
+        | 検索
+
+  - if @users.any?
+    / デスクトップ表示
+    .hidden.md:block.bg-white.border.border-gray-200.rounded-lg.overflow-hidden
+      .overflow-x-auto
+        table.table.w-full
+          thead
+            tr
+              th.bg-gray-50.text-left.py-3.px-4.text-sm ID
+              th.bg-gray-50.text-left.py-3.px-4.text-sm 名前
+              th.bg-gray-50.text-left.py-3.px-4.text-sm メールアドレス
+              th.bg-gray-50.text-left.py-3.px-4.text-sm ロール
+              th.bg-gray-50.text-left.py-3.px-4.text-sm ステータス
+              th.bg-gray-50.text-left.py-3.px-4.text-sm 登録日
+              th.bg-gray-50.text-center.py-3.px-4.text-sm 操作
+          tbody
+            - @users.each do |user|
+              tr.border-t
+                td.py-3.px-4.text-sm
+                  = user.id
+                td.py-3.px-4.text-sm
+                  = "#{user.family_name} #{user.given_name}"
+                  - if user.family_name.blank? && user.given_name.blank?
+                    span.text-gray-400 (未設定)
+                td.py-3.px-4.text-sm
+                  = user.email
+                td.py-3.px-4
+                  - case user.role
+                  - when 'admin'
+                    span.px-2.py-1.bg-red-100.text-red-800.rounded-full.text-xs 管理者
+                  - when 'stylist'
+                    span.px-2.py-1.bg-blue-100.text-blue-800.rounded-full.text-xs スタイリスト
+                  - when 'customer'
+                    span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 顧客
+                td.py-3.px-4
+                  - if user.active?
+                    span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
+                  - else
+                    span.px-2.py-1.bg-gray-100.text-gray-800.rounded-full.text-xs 無効
+                td.py-3.px-4.text-sm.text-gray-600
+                  = user.created_at.strftime('%Y/%m/%d')
+                td.py-3.px-4.text-center.space-x-2
+                  = link_to "詳細", admin_user_path(user), class: 'text-blue-600 text-sm hover:text-blue-800 underline'
+                  = link_to "編集", edit_admin_user_path(user), class: 'text-blue-600 text-sm hover:text-blue-800 underline'
+                  - if user != current_user
+                    - if user.active?
+                      = link_to "無効化", admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: '本当に無効化しますか？' }, class: 'text-red-600 text-sm hover:text-red-800 underline'
+                    - else
+                      = link_to "有効化", activate_admin_user_path(user), data: { turbo_method: :patch, turbo_confirm: '有効化しますか？' }, class: 'text-green-600 text-sm hover:text-green-800 underline'
+
+    / モバイル表示
+    .md:hidden.space-y-3
+      - @users.each do |user|
+        .bg-white.border.border-gray-200.rounded-lg.p-4
+          .flex.justify-between.items-start.mb-2
+            div
+              .font-medium.text-sm
+                = "#{user.family_name} #{user.given_name}"
+                - if user.family_name.blank? && user.given_name.blank?
+                  span.text-gray-400 (未設定)
+              .text-xs.text-gray-600.mt-1
+                = user.email
+            div
+              - case user.role
+              - when 'admin'
+                span.px-2.py-1.bg-red-100.text-red-800.rounded-full.text-xs 管理者
+              - when 'stylist'
+                span.px-2.py-1.bg-blue-100.text-blue-800.rounded-full.text-xs スタイリスト
+              - when 'customer'
+                span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 顧客
+          .flex.justify-between.items-center.text-xs.text-gray-500.mb-2
+            span ID: #{user.id}
+            span = user.created_at.strftime('%Y/%m/%d')
+          .mb-3
+            - if user.active?
+              span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
+            - else
+              span.px-2.py-1.bg-gray-100.text-gray-800.rounded-full.text-xs 無効
+          .flex.gap-3.text-sm
+            = link_to "詳細", admin_user_path(user), class: 'text-blue-600 hover:text-blue-800 underline'
+            = link_to "編集", edit_admin_user_path(user), class: 'text-blue-600 hover:text-blue-800 underline'
+            - if user != current_user
+              - if user.active?
+                = link_to "無効化", admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: '本当に無効化しますか？' }, class: 'text-red-600 hover:text-red-800 underline'
+              - else
+                = link_to "有効化", activate_admin_user_path(user), data: { turbo_method: :patch, turbo_confirm: '有効化しますか？' }, class: 'text-green-600 hover:text-green-800 underline'
+
+    .mt-4.text-sm.text-gray-600
+      = "#{@users.count}件のユーザーが見つかりました"
+  - else
+    .bg-white.border.border-gray-200.rounded-lg.p-8.text-center
+      .text-gray-500.mb-4
+        svg.w-12.h-12.mx-auto.mb-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z")
+      p.text-lg.font-medium ユーザーが見つかりませんでした

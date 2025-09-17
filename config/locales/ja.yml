@@ -3,6 +3,17 @@ ja:
     menu_not_selected: "メニューを1つ以上選択してください"
     reservation_confirmed: "予約を確定しました。"
     batch_setting_success: "シフトを設定しました"
+    admin:
+      users:
+        login_required: "ログインが必要です"
+        access_denied: "アクセス権限がありません"
+        updated: "ユーザー情報を更新しました"
+        cannot_deactivate_self: "自分自身を無効化することはできません"
+        cannot_deactivate_last_admin: "最後の管理者は無効化できません"
+        deactivated: "ユーザーを無効化しました"
+        deactivation_failed: "ユーザーの無効化に失敗しました"
+        activated: "ユーザーを有効化しました"
+        activation_failed: "ユーザーの有効化に失敗しました"
     customers:
       stylists:
         stylist_not_found: "指定されたスタイリストが見つかりません。"
