@@ -1,0 +1,16 @@
+doctype html
+html
+  head
+    - default_title = "管理画面 | YOYAKU HUB"
+    - default_description = "システム管理画面"
+    - default_image_url = '/images/yoyakuhub-1200x600.jpg'
+    - site_name = "YOYAKU HUB"
+    - default_og_type = 'website'
+    - default_twitter_card = 'summary_large_image'
+    = render 'layouts/shared_head', default_title: default_title, default_description: default_description, default_image_url: default_image_url,
+      site_name: site_name, default_og_type: default_og_type, default_twitter_card: default_twitter_card
+
+  body
+    = render 'layouts/navbars/admin_navbar'
+    = render 'shared/toast'
+    = yield
