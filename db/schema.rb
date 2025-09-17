@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_19_153015) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_17_032227) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -151,9 +151,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_19_153015) do
     t.string "provider"
     t.string "uid"
     t.bigint "created_by_stylist_id"
+    t.integer "status", default: 0, null: false
     t.index ["created_by_stylist_id"], name: "index_users_on_created_by_stylist_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["status"], name: "index_users_on_status"
   end
 
   create_table "working_hours", force: :cascade do |t|

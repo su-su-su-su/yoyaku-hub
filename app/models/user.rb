@@ -38,6 +38,7 @@ class User < ApplicationRecord
   validates :date_of_birth, presence: true, if: :date_of_birth_validation_required?
 
   enum :role, { customer: 0, stylist: 1, admin: 2 }
+  enum :status, { active: 0, inactive: 1 }
 
   devise :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :timeoutable,
@@ -264,6 +265,12 @@ class User < ApplicationRecord
     prev_end_slots.max || day_start_slot
   end
 
+  # デフォルトスコープでactiveなユーザーのみ取得
+  default_scope { where(status: :active) }
+
+  # 無効化されたユーザーも含めて取得する場合
+  scope :with_inactive, -> { unscope(where: :status) }
+
   scope :customers_for_stylist, lambda { |stylist_id|
     where(role: :customer)
       .where(
@@ -277,13 +284,17 @@ class User < ApplicationRecord
   def self.search_by_name(query)
     return none if query.blank?
 
+    # SQLインジェクション対策: sanitize_sql_likeを使用
+    sanitized_query = sanitize_sql_like(query)
+
     where(
       'family_name ILIKE ? OR given_name ILIKE ? OR ' \
       'family_name_kana ILIKE ? OR given_name_kana ILIKE ? OR ' \
+      'email ILIKE ? OR ' \
       'CONCAT(family_name, given_name) ILIKE ? OR ' \
       'CONCAT(family_name_kana, given_name_kana) ILIKE ?',
-      "%#{query}%", "%#{query}%", "%#{query}%", "%#{query}%",
-      "%#{query}%", "%#{query}%"
+      "%#{sanitized_query}%", "%#{sanitized_query}%", "%#{sanitized_query}%", "%#{sanitized_query}%",
+      "%#{sanitized_query}%", "%#{sanitized_query}%", "%#{sanitized_query}%"
     )
   end
 
