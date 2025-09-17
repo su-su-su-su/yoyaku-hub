@@ -1,0 +1,77 @@
+- content_for :title, "ユーザー編集: #{@user.family_name} #{@user.given_name}"
+- content_for :meta_description, "#{@user.family_name} #{@user.given_name}さんの情報を編集"
+
+.container.mx-auto.px-4.py-4.md:py-6.max-w-2xl
+  .flex.justify-between.items-center.mb-4
+    h1.page-title-gradient.subtle-gradient-look ユーザー編集
+    = link_to "戻る", admin_user_path(@user), class: "btn-secondary"
+
+  = form_with model: @user, url: admin_user_path(@user), local: true do |form|
+    .bg-white.border.border-gray-200.rounded-lg.p-6
+      - if @user.errors.any?
+        .bg-red-50.border.border-red-200.rounded.p-4.mb-6
+          h2.text-red-800.font-semibold.mb-2 エラーが発生しました
+          ul.list-disc.list-inside.text-sm.text-red-700
+            - @user.errors.full_messages.each do |message|
+              li = message
+
+      h2.text-lg.font-semibold.mb-4.border-b.pb-2 基本情報
+
+      .grid.grid-cols-1.md:grid-cols-2.gap-4.mb-6
+        .form-group
+          = form.label :family_name, "姓", class: "label"
+          = form.text_field :family_name, class: "input input-bordered w-full"
+        .form-group
+          = form.label :given_name, "名", class: "label"
+          = form.text_field :given_name, class: "input input-bordered w-full"
+        .form-group
+          = form.label :family_name_kana, "姓（カナ）", class: "label"
+          = form.text_field :family_name_kana, class: "input input-bordered w-full"
+        .form-group
+          = form.label :given_name_kana, "名（カナ）", class: "label"
+          = form.text_field :given_name_kana, class: "input input-bordered w-full"
+
+      .form-group.mb-4
+        = form.label :email, "メールアドレス", class: "label"
+        = form.email_field :email, class: "input input-bordered w-full", required: true
+
+      .grid.grid-cols-1.md:grid-cols-3.gap-4.mb-6
+        .form-group
+          = form.label :gender, "性別", class: "label"
+          = form.select :gender, [["未設定", nil], ["男性", "male"], ["女性", "female"]], {}, class: "select select-bordered w-full"
+        .form-group
+          = form.label :date_of_birth, "生年月日", class: "label"
+          = form.date_field :date_of_birth, class: "input input-bordered w-full"
+        .form-group
+          = form.label :role, "ロール", class: "label"
+          - role_options = @user == current_user ? [[@user.role == 'admin' ? '管理者' : @user.role == 'stylist' ? 'スタイリスト' : '顧客', @user.role]] : [['顧客', 'customer'], ['スタイリスト', 'stylist'], ['管理者', 'admin']]
+          = form.select :role, role_options, {}, class: "select select-bordered w-full", disabled: @user == current_user
+          - if @user == current_user
+            p.text-xs.text-gray-500.mt-1 自分のロールは変更できません
+
+      h2.text-lg.font-semibold.mb-4.border-b.pb-2 アカウント情報
+
+      .grid.grid-cols-1.md:grid-cols-2.gap-4.mb-6
+        .text-sm
+          .font-medium.text-gray-600 ID:
+          .mt-1 = @user.id
+        .text-sm
+          .font-medium.text-gray-600 登録日:
+          .mt-1 = @user.created_at.strftime('%Y年%m月%d日 %H:%M')
+        - if @user.provider.present?
+          .text-sm
+            .font-medium.text-gray-600 認証方法:
+            .mt-1 = @user.provider == 'google_oauth2' ? 'Google認証' : @user.provider
+        - if @user.created_by_stylist_id.present?
+          .text-sm
+            .font-medium.text-gray-600 登録者:
+            .mt-1
+              - creator = User.find_by(id: @user.created_by_stylist_id)
+              - if creator
+                = "#{creator.family_name} #{creator.given_name}"
+              - else
+                | ID: #{@user.created_by_stylist_id}
+
+      .flex.justify-between.items-center.pt-4.border-t
+        = link_to "キャンセル", admin_user_path(@user), class: "text-gray-600 hover:text-gray-800"
+        = form.submit "更新", class: "btn-primary"

@@ -1,0 +1,41 @@
+= form_with model: user, url: url, local: true do |form|
+  .bg-white.border.border-gray-200.rounded-lg.p-6
+    - if user.errors.any?
+      .bg-red-50.border.border-red-200.rounded.p-4.mb-6
+        h2.text-red-800.font-semibold.mb-2 エラーが発生しました
+        ul.list-disc.list-inside.text-sm.text-red-700
+          - user.errors.full_messages.each do |message|
+            li = message
+
+    .grid.grid-cols-1.md:grid-cols-2.gap-4.mb-4
+      .form-group
+        = form.label :family_name, "姓", class: "label"
+        = form.text_field :family_name, class: "input input-bordered w-full"
+      .form-group
+        = form.label :given_name, "名", class: "label"
+        = form.text_field :given_name, class: "input input-bordered w-full"
+      .form-group
+        = form.label :family_name_kana, "姓（カナ）", class: "label"
+        = form.text_field :family_name_kana, class: "input input-bordered w-full"
+      .form-group
+        = form.label :given_name_kana, "名（カナ）", class: "label"
+        = form.text_field :given_name_kana, class: "input input-bordered w-full"
+
+    .form-group.mb-4
+      = form.label :email, "メールアドレス", class: "label"
+      = form.email_field :email, class: "input input-bordered w-full", required: true
+
+    .grid.grid-cols-1.md:grid-cols-3.gap-4.mb-4
+      .form-group
+        = form.label :gender, "性別", class: "label"
+        = form.select :gender, [["未設定", nil], ["男性", "male"], ["女性", "female"]], {}, class: "select select-bordered w-full"
+      .form-group
+        = form.label :date_of_birth, "生年月日", class: "label"
+        = form.date_field :date_of_birth, class: "input input-bordered w-full"
+      .form-group
+        = form.label :role, "ロール", class: "label"
+        = form.select :role, [['顧客', 'customer'], ['スタイリスト', 'stylist'], ['管理者', 'admin']], {}, class: "select select-bordered w-full"
+
+    .flex.justify-between.items-center.pt-4.border-t
+      = link_to "キャンセル", cancel_path, class: "text-gray-600 hover:text-gray-800"
+      = form.submit submit_label, class: "btn-primary"

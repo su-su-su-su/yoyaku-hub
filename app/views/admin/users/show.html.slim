@@ -1,0 +1,121 @@
+- content_for :title, "ユーザー詳細: #{@user.family_name} #{@user.given_name}"
+- content_for :meta_description, "#{@user.family_name} #{@user.given_name}さんの詳細情報"
+
+.container.mx-auto.px-4.py-4.md:py-6
+  .flex.justify-between.items-center.mb-4
+    h1.page-title-gradient.subtle-gradient-look ユーザー詳細
+    .flex.gap-2
+      = link_to "編集", edit_admin_user_path(@user), class: "btn-primary"
+      = link_to "一覧に戻る", admin_users_path, class: "btn-secondary"
+
+  .grid.grid-cols-1.md:grid-cols-2.gap-4.mb-6
+    .bg-white.border.border-gray-200.rounded-lg.p-6
+      h2.text-lg.font-semibold.mb-4 基本情報
+      dl.space-y-3
+        .flex
+          dt.font-medium.text-gray-600.w-32 ID:
+          dd = @user.id
+        .flex
+          dt.font-medium.text-gray-600.w-32 ロール:
+          dd
+            - case @user.role
+            - when 'admin'
+              span.px-2.py-1.bg-red-100.text-red-800.rounded-full.text-xs 管理者
+            - when 'stylist'
+              span.px-2.py-1.bg-blue-100.text-blue-800.rounded-full.text-xs スタイリスト
+            - when 'customer'
+              span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 顧客
+        .flex
+          dt.font-medium.text-gray-600.w-32 名前:
+          dd
+            = "#{@user.family_name} #{@user.given_name}"
+            - if @user.family_name.blank? && @user.given_name.blank?
+              span.text-gray-400 (未設定)
+        .flex
+          dt.font-medium.text-gray-600.w-32 フリガナ:
+          dd
+            = "#{@user.family_name_kana} #{@user.given_name_kana}"
+            - if @user.family_name_kana.blank? && @user.given_name_kana.blank?
+              span.text-gray-400 (未設定)
+        .flex
+          dt.font-medium.text-gray-600.w-32 メール:
+          dd = @user.email
+        .flex
+          dt.font-medium.text-gray-600.w-32 性別:
+          dd
+            = @user.gender == 'male' ? '男性' : @user.gender == 'female' ? '女性' : '未設定'
+        .flex
+          dt.font-medium.text-gray-600.w-32 生年月日:
+          dd
+            = @user.date_of_birth&.strftime('%Y年%m月%d日') || '未設定'
+            - if @user.age
+              |  (#{@user.age}歳)
+
+    .bg-white.border.border-gray-200.rounded-lg.p-6
+      h2.text-lg.font-semibold.mb-4 アカウント情報
+      dl.space-y-3
+        .flex
+          dt.font-medium.text-gray-600.w-32 登録日:
+          dd = @user.created_at.strftime('%Y年%m月%d日 %H:%M')
+        .flex
+          dt.font-medium.text-gray-600.w-32 更新日:
+          dd = @user.updated_at.strftime('%Y年%m月%d日 %H:%M')
+        - if @user.provider.present?
+          .flex
+            dt.font-medium.text-gray-600.w-32 認証方法:
+            dd = @user.provider == 'google_oauth2' ? 'Google認証' : @user.provider
+        - if @user.created_by_stylist_id.present?
+          .flex
+            dt.font-medium.text-gray-600.w-32 登録者:
+            dd
+              - creator = User.find_by(id: @user.created_by_stylist_id)
+              - if creator
+                = link_to "#{creator.family_name} #{creator.given_name}", admin_user_path(creator), class: "text-blue-600 hover:text-blue-800 underline"
+              - else
+                | ID: #{@user.created_by_stylist_id}
+
+  - if @reservations.any?
+    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
+      .p-4.border-b
+        h2.text-lg.font-semibold 最近の予約
+      .overflow-x-auto
+        table.table.w-full
+          thead
+            tr
+              th.bg-gray-50.text-left.py-3.px-4 予約日時
+              th.bg-gray-50.text-left.py-3.px-4
+                = @user.stylist? ? '顧客' : 'スタイリスト'
+              th.bg-gray-50.text-left.py-3.px-4 メニュー
+              th.bg-gray-50.text-left.py-3.px-4 ステータス
+          tbody
+            - @reservations.each do |reservation|
+              tr.border-t
+                td.py-3.px-4
+                  = reservation.start_at.strftime('%Y/%m/%d %H:%M')
+                td.py-3.px-4
+                  - if @user.stylist?
+                    = "#{reservation.customer.family_name} #{reservation.customer.given_name}"
+                  - else
+                    = "#{reservation.stylist.family_name} #{reservation.stylist.given_name}"
+                td.py-3.px-4
+                  = reservation.menus.pluck(:name).join(', ')
+                td.py-3.px-4
+                  - case reservation.status
+                  - when 'before_visit'
+                    span.text-yellow-600 来店前
+                  - when 'paid'
+                    span.text-green-600 支払済
+                  - when 'cancelled'
+                    span.text-red-600 キャンセル
+
+  .mt-6.flex.justify-between.items-center
+    = link_to "← 一覧に戻る", admin_users_path, class: "text-blue-600 hover:text-blue-800"
+    .flex.gap-3
+      - if @user.inactive?
+        .px-3.py-1.bg-gray-100.text-gray-800.rounded-full.text-sm
+          | 無効化済み
+      - if @user != current_user
+        - if @user.active?
+          = link_to "無効化", admin_user_path(@user), data: { turbo_method: :delete, turbo_confirm: "#{@user.family_name} #{@user.given_name}さんを無効化しますか？" }, class: "text-red-600 hover:text-red-800"
+        - else
+          = link_to "有効化", activate_admin_user_path(@user), data: { turbo_method: :patch, turbo_confirm: "#{@user.family_name} #{@user.given_name}さんを有効化しますか？" }, class: "text-green-600 hover:text-green-800"
