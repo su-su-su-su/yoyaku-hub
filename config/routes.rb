@@ -24,6 +24,15 @@ Rails.application.routes.draw do
     resources :menus_settings, controller: 'menus', only: %i[index new create edit update]
   end
 
+  namespace :admin do
+    resources :users do
+      member do
+        patch :activate
+      end
+    end
+    root to: 'users#index'
+  end
+
   namespace :stylists do
     resources :products
     resources :sales, only: [:index]
