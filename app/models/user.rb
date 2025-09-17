@@ -37,7 +37,8 @@ class User < ApplicationRecord
   validates :gender, presence: true, if: :gender_validation_required?
   validates :date_of_birth, presence: true, if: :date_of_birth_validation_required?
 
-  enum :role, { customer: 0, stylist: 1 }
+  enum :role, { customer: 0, stylist: 1, admin: 2 }
+
   devise :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :timeoutable,
     :omniauthable, omniauth_providers: [:google_oauth2]
