@@ -32,18 +32,18 @@ RSpec.describe 'Stylists::Sales CSV Export' do
       max_reservations: 1)
   end
 
-  def create_accounting_with_payment(customer, menu, payment_method, hours_offset = 10)
-    date = Date.current.beginning_of_month
+  def create_accounting_with_payment(customer, menu, payment_method, day_offset = 0)
+    date = Date.current.beginning_of_month + day_offset.days
     date += 1.day while weekend_days.include?(date.wday)
 
-    # 時間スロット: 10:00 = 20, 11:00 = 22, 12:00 = 24
-    time_slot = hours_offset * 2
+    # 時間スロット: 10:00 = 20
+    time_slot = 20
     setup_working_environment(date, time_slot)
 
     reservation = create(:reservation,
       stylist: stylist,
       customer: customer,
-      start_at: date + hours_offset.hours,
+      start_at: date + 10.hours,
       menus: [menu])
 
     accounting = create(:accounting,
@@ -61,8 +61,9 @@ RSpec.describe 'Stylists::Sales CSV Export' do
 
   before do
     sign_in stylist
-    create_accounting_with_payment(customer1, menu, 'cash', 10) # 10:00
-    create_accounting_with_payment(customer2, menu, 'credit_card', 11) # 11:00
+    # 異なる日付に予約を作成
+    create_accounting_with_payment(customer1, menu, 'cash', 0) # 月初の平日
+    create_accounting_with_payment(customer2, menu, 'credit_card', 1) # 翌日
   end
 
   describe 'POST /stylists/sales/export' do
