@@ -35,7 +35,11 @@ Rails.application.routes.draw do
 
   namespace :stylists do
     resources :products
-    resources :sales, only: [:index]
+    resources :sales, only: [:index] do
+      collection do
+        post :export
+      end
+    end
     get 'dashboard', to: 'dashboards#show'
     resource :qr_code, only: [:show]
     get 'schedules/:date', to: 'schedules#show', as: :schedules
