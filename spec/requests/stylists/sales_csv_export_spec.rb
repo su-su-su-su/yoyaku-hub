@@ -14,7 +14,7 @@ RSpec.describe 'Stylists::Sales CSV Export' do
   let(:current_year) { Date.current.year }
   let(:current_month) { Date.current.month }
 
-  def setup_working_environment(date, time_slot)
+  def setup_working_environment(date)
     unless WorkingHour.exists?(stylist: stylist, target_date: date)
       create(:working_hour,
         stylist: stylist,
@@ -23,22 +23,23 @@ RSpec.describe 'Stylists::Sales CSV Export' do
         end_time: '19:00')
     end
 
-    return if ReservationLimit.exists?(stylist: stylist, target_date: date, time_slot: time_slot)
+    # メニューが60分なので、10:00-11:00の全スロット(20, 21)に予約制限を設定
+    [20, 21].each do |slot|
+      next if ReservationLimit.exists?(stylist: stylist, target_date: date, time_slot: slot)
 
-    create(:reservation_limit,
-      stylist: stylist,
-      target_date: date,
-      time_slot: time_slot,
-      max_reservations: 1)
+      create(:reservation_limit,
+        stylist: stylist,
+        target_date: date,
+        time_slot: slot,
+        max_reservations: 1)
+    end
   end
 
   def create_accounting_with_payment(customer, menu, payment_method, day_offset = 0)
     date = Date.current.beginning_of_month + day_offset.days
     date += 1.day while weekend_days.include?(date.wday)
 
-    # 時間スロット: 10:00 = 20
-    time_slot = 20
-    setup_working_environment(date, time_slot)
+    setup_working_environment(date)
 
     reservation = create(:reservation,
       stylist: stylist,
