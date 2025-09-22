@@ -14,10 +14,28 @@ RSpec.describe 'Stylists::Sales CSV Export' do
   let(:current_month) { Date.current.month }
 
   def create_accounting_with_payment(customer, menu, payment_method)
+    # 営業時間を設定
+    date = Date.current.beginning_of_month
+    # 月初が土日の場合は平日に調整
+    date += 1.day while date.wday == 0 || date.wday == 6
+
+    create(:working_hour,
+      stylist: stylist,
+      target_date: date,
+      start_time: '09:00',
+      end_time: '19:00')
+
+    # 予約上限を設定
+    create(:reservation_limit,
+      stylist: stylist,
+      target_date: date,
+      time_slot: 20, # 10:00のスロット
+      max_reservations: 1)
+
     reservation = create(:reservation,
       stylist: stylist,
       customer: customer,
-      start_at: Date.current.beginning_of_month + 10.hours,
+      start_at: date + 10.hours,
       menus: [menu])
 
     accounting = create(:accounting,
