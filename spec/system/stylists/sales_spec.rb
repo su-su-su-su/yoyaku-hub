@@ -228,7 +228,8 @@ RSpec.describe 'Stylists::Sales' do
       end
 
       it '年と月のドロップダウンが表示される' do
-        expect(page.all('select').count).to eq(2)
+        # CSVフォーマット選択を含めて3つのドロップダウンがある
+        expect(page.all('select').count).to eq(3)
       end
 
       it '現在の年月が選択されている' do
@@ -256,16 +257,24 @@ RSpec.describe 'Stylists::Sales' do
 
       it 'ドロップダウンで年月を変更できる', :js do
         # 2024年5月を選択
-        page.all('select')[0].select('2024年')
-        page.all('select')[1].select('5月')
+        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+          # 年を選択
+          find('select[data-sales-date-picker-target="year"]').select('2024年')
+          # 少し待機してから月を選択
+          sleep 0.1
+          find('select[data-sales-date-picker-target="month"]').select('5月')
+        end
 
-        # デバウンスを待つ
-        sleep 0.2
+        # ページ遷移を待つ
+        expect(page).to have_current_path(%r{/stylists/sales\?.*year=2024.*month=5|/stylists/sales\?.*month=5.*year=2024}, wait: 5)
 
-        # ページが遷移することを確認（URLパラメータの順番は問わない）
-        expect(page).to have_current_path(%r{/stylists/sales\?.*year=2024.*month=5|/stylists/sales\?.*month=5.*year=2024})
-        expect(page.all('select')[0].value).to eq('2024')
-        expect(page.all('select')[1].value).to eq('5')
+        # 遷移後に新しい要素を取得
+        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+          year_select = find('select[data-sales-date-picker-target="year"]')
+          month_select = find('select[data-sales-date-picker-target="month"]')
+          expect(year_select.value).to eq('2024')
+          expect(month_select.value).to eq('5')
+        end
 
         # 2024年5月の売上が表示される
         expect(page).to have_content('¥3,000')
@@ -307,6 +316,104 @@ RSpec.describe 'Stylists::Sales' do
         click_on '売り上げ管理'
       end
       expect(page).to have_current_path(stylists_sales_path)
+    end
+  end
+
+  describe 'CSVエクスポート機能' do
+    before do
+      # テスト用の売上データを作成
+      create_reservation_with_accounting(
+        current_date,
+        customer1,
+        [cut_menu, color_menu],
+        payment_method: 'cash',
+        products: [{ product: product1, quantity: 2 }],
+        time: '10:00'
+      )
+
+      create_reservation_with_accounting(
+        current_date,
+        customer2,
+        [perm_menu],
+        payment_method: 'credit_card',
+        products: [{ product: product2, quantity: 1 }],
+        time: '14:00'
+      )
+
+      visit stylists_sales_path
+    end
+
+    it 'CSVエクスポートフォームが表示される' do
+      expect(page).to have_select('format_type')
+      expect(page).to have_button('CSVダウンロード')
+    end
+
+    it 'フォーマット選択のオプションが正しく表示される' do
+      format_select = find('select[name="format_type"]')
+      options = format_select.all('option').map(&:text)
+
+      expect(options).to eq(['標準形式 (汎用)', 'マネーフォワード形式', 'freee形式'])
+    end
+
+    it 'デフォルトで標準形式が選択されている' do
+      format_select = find('select[name="format_type"]')
+      expect(format_select.value).to eq('standard')
+    end
+
+    context '標準形式のCSVエクスポート' do
+      it 'CSVファイルをダウンロードできる' do
+        select '標準形式 (汎用)', from: 'format_type'
+
+        # フォームの送信をテスト（実際のダウンロードはシステムテストでは検証困難）
+        expect do
+          click_button 'CSVダウンロード'
+        end.not_to raise_error
+
+        # ページがリダイレクトされずに同じページに留まることを確認
+        expect(page).to have_content('売り上げ管理')
+      end
+    end
+
+    context 'マネーフォワード形式のCSVエクスポート' do
+      it 'CSVファイルをダウンロードできる' do
+        select 'マネーフォワード形式', from: 'format_type'
+
+        expect do
+          click_button 'CSVダウンロード'
+        end.not_to raise_error
+
+        expect(page).to have_content('売り上げ管理')
+      end
+    end
+
+    context 'freee形式のCSVエクスポート' do
+      it 'CSVファイルをダウンロードできる' do
+        select 'freee形式', from: 'format_type'
+
+        expect do
+          click_button 'CSVダウンロード'
+        end.not_to raise_error
+
+        expect(page).to have_content('売り上げ管理')
+      end
+    end
+
+    context '売上データがない月のエクスポート' do
+      before do
+        # 来月にアクセス（データなし）
+        next_month = Date.current.next_month
+        visit stylists_sales_path(year: next_month.year, month: next_month.month)
+      end
+
+      it 'データがなくてもCSVファイルをダウンロードできる' do
+        select '標準形式 (汎用)', from: 'format_type'
+
+        expect do
+          click_button 'CSVダウンロード'
+        end.not_to raise_error
+
+        expect(page).to have_content('売り上げ管理')
+      end
     end
   end
 

@@ -18,6 +18,13 @@
       = link_to '次月へ', stylists_sales_path(year: @month == 12 ? @year + 1 : @year, month: @month == 12 ? 1 : @month + 1),
                 class: "px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded"
 
+    = form_with url: export_stylists_sales_path, method: :post, local: true, data: { turbo: false }, class: "flex justify-center mt-4" do |f|
+      = f.hidden_field :year, value: @year
+      = f.hidden_field :month, value: @month
+      .flex.items-center.gap-3
+        = f.select :format_type, options_for_select([['標準形式 (汎用)', 'standard'], ['マネーフォワード形式', 'moneyforward'], ['freee形式', 'freee']], 'standard'), {}, class: "border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        = f.submit 'CSVダウンロード', class: "px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors cursor-pointer font-semibold"
+
   / 月間サマリー
   .grid.grid-cols-2.md:grid-cols-3.lg:grid-cols-6.gap-2.mb-6
     .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
