@@ -14,30 +14,36 @@ RSpec.describe 'Stylists::Sales CSV Export' do
   let(:current_year) { Date.current.year }
   let(:current_month) { Date.current.month }
 
-  def setup_working_environment(date)
-    create(:working_hour,
-      stylist: stylist,
-      target_date: date,
-      start_time: '09:00',
-      end_time: '19:00')
+  def setup_working_environment(date, time_slot)
+    unless WorkingHour.exists?(stylist: stylist, target_date: date)
+      create(:working_hour,
+        stylist: stylist,
+        target_date: date,
+        start_time: '09:00',
+        end_time: '19:00')
+    end
+
+    return if ReservationLimit.exists?(stylist: stylist, target_date: date, time_slot: time_slot)
 
     create(:reservation_limit,
       stylist: stylist,
       target_date: date,
-      time_slot: 20,
+      time_slot: time_slot,
       max_reservations: 1)
   end
 
-  def create_accounting_with_payment(customer, menu, payment_method)
+  def create_accounting_with_payment(customer, menu, payment_method, hours_offset = 10)
     date = Date.current.beginning_of_month
     date += 1.day while weekend_days.include?(date.wday)
 
-    setup_working_environment(date)
+    # 時間スロット: 10:00 = 20, 11:00 = 22, 12:00 = 24
+    time_slot = hours_offset * 2
+    setup_working_environment(date, time_slot)
 
     reservation = create(:reservation,
       stylist: stylist,
       customer: customer,
-      start_at: date + 10.hours,
+      start_at: date + hours_offset.hours,
       menus: [menu])
 
     accounting = create(:accounting,
@@ -55,8 +61,8 @@ RSpec.describe 'Stylists::Sales CSV Export' do
 
   before do
     sign_in stylist
-    create_accounting_with_payment(customer1, menu, 'cash')
-    create_accounting_with_payment(customer2, menu, 'credit_card')
+    create_accounting_with_payment(customer1, menu, 'cash', 10) # 10:00
+    create_accounting_with_payment(customer2, menu, 'credit_card', 11) # 11:00
   end
 
   describe 'POST /stylists/sales/export' do
