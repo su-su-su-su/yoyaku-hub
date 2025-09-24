@@ -229,7 +229,7 @@ module Stylists
 
     def generate_freee_csv(start_date, end_date)
       CSV.generate(encoding: Encoding::SJIS, row_sep: "\r\n") do |csv|
-        csv << %w[取引日 収支区分 決済状況 取引先 勘定科目 税区分 金額 備考]
+        csv << %w[発生日 収支区分 取引先 勘定科目 税区分 金額 備考]
         fetch_detailed_accountings(start_date, end_date).each do |accounting|
           process_freee_accounting(csv, accounting)
         end
@@ -260,7 +260,6 @@ module Stylists
       [
         reservation.start_at.strftime('%Y/%m/%d'),
         '収入',
-        '完了',
         customer_name,
         '売上高',
         '課税売上10%',
