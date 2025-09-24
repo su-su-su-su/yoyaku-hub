@@ -179,7 +179,7 @@ RSpec.describe 'Stylists::Sales CSV Export' do
         expect(response.headers['Content-Disposition']).to include("sales_freee_#{current_year}_#{current_month}.csv")
       end
 
-      it '決済状況が「完了」と表示される' do
+      it '正しいヘッダーが含まれている' do
         post export_stylists_sales_path, params: {
           year: current_year,
           month: current_month,
@@ -189,9 +189,8 @@ RSpec.describe 'Stylists::Sales CSV Export' do
         csv_content = response.body.force_encoding('SJIS').encode('UTF-8')
         csv = CSV.parse(csv_content, headers: true)
 
-        csv.each do |row|
-          expect(row['決済状況']).to eq('完了')
-        end
+        # ヘッダーの確認（決済状況は削除、取引日→発生日）
+        expect(csv.headers).to eq(%w[発生日 収支区分 取引先 勘定科目 税区分 金額 備考])
       end
 
       it '勘定科目が「売上高」に統一されている' do
