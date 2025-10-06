@@ -9,6 +9,14 @@
     .social-login.space-y-4.flex.justify-center
       = render 'devise/shared/google_auth_link', button_text: '美容師 新規登録', role: 'stylist'
 
+    .text-sm.text-gray-600.text-center.mt-4
+      = link_to "利用規約", terms_path, target: "_blank", rel: "noopener", class: "text-blue-600 hover:underline"
+      |  ・
+      = link_to "プライバシーポリシー", privacy_path, target: "_blank", rel: "noopener", class: "text-blue-600 hover:underline"
+      |  に
+      br
+      | 同意した上で登録してください。
+
     .my-6.border-t
 
     = form_for(resource, as: resource_name, url: stylist_registration_path, html: { data: { turbo: false }, class: 'space-y-4 mt-6' }) do |f|
@@ -18,3 +26,11 @@
 
       .actions.mt-8.flex.justify-center
         button.btn.btn-primary.w-72.py-3.text-base.rounded-lg.min-h-12 = t('devise.registrations.new.sign_up')
+
+      .text-sm.text-gray-600.text-center.mt-4
+        = link_to "利用規約", terms_path, target: "_blank", rel: "noopener", class: "text-blue-600 hover:underline"
+        |  ・
+        = link_to "プライバシーポリシー", privacy_path, target: "_blank", rel: "noopener", class: "text-blue-600 hover:underline"
+        |  に
+        br
+        | 同意した上で登録してください。
