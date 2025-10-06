@@ -394,4 +394,28 @@
     color: #3e5cd7;
     font-family: 'Noto Sans JP', sans-serif;
   }
+
+  /* 利用規約・プライバシーポリシーページのスタイル */
+  .terms-content,
+  .privacy-content {
+    font-size: 0.875rem;
+    line-height: 1.75;
+  }
+
+  .terms-content h2,
+  .privacy-content h2 {
+    font-size: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .terms-content p,
+  .privacy-content p {
+    margin-bottom: 0.75rem;
+  }
+
+  .terms-content ul li,
+  .privacy-content ul li {
+    margin-bottom: 0.5rem;
+  }
 }
