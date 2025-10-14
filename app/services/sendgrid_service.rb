@@ -61,7 +61,13 @@ class SendgridService
   def configure_http(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE # CRL取得エラーを回避
+    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+    # システムの証明書ストアを使用
+    cert_store = OpenSSL::X509::Store.new
+    cert_store.set_default_paths
+    http.cert_store = cert_store
+
     http
   end
 
