@@ -6,10 +6,10 @@ Rails.application.config.base_url = if ENV['BASE_URL'].present?
                                       ENV['BASE_URL']
                                     elsif Rails.env.production?
                                       # 本番環境のURL（環境変数で設定してください）
-                                      ENV.fetch('BASE_URL', 'https://yoyaku-hub.com')
+                                      ENV.fetch('BASE_URL', 'https://yoyakuhub.jp')
                                     elsif Rails.env.staging?
                                       # ステージング環境のURL（環境変数で設定してください）
-                                      ENV.fetch('BASE_URL', 'https://staging.yoyaku-hub.com')
+                                      ENV.fetch('BASE_URL', 'https://staging.yoyakuhub.jp')
                                     else
                                       # 開発環境
                                       'http://localhost:3000'
