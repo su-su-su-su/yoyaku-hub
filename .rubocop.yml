@@ -56,6 +56,7 @@ RSpec/MultipleExpectations:
 RSpec/MultipleMemoizedHelpers:
   Exclude:
     - spec/system/stylists/sales_spec.rb
+    - spec/mailers/reservation_mailer_spec.rb
 
 RSpec/NestedGroups:
   Exclude:
@@ -66,6 +67,8 @@ RSpec/LetSetup:
 Metrics/ClassLength:
   Exclude:
     - app/models/accounting.rb
+    - app/mailers/reservation_mailer.rb
+    - app/controllers/customers/reservations_controller.rb
 
 Metrics/CyclomaticComplexity:
   Exclude:
@@ -89,9 +92,18 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Exclude:
     - spec/requests/**/*
+    - lib/tasks/**/*.rake
 
 RSpec/NoExpectationExample:
   Exclude:
+
+RSpec/AnyInstance:
+  Exclude:
+    - spec/mailers/reservation_mailer_spec.rb
+
+RSpec/StubbedMock:
+  Exclude:
+    - spec/mailers/reservation_mailer_spec.rb
 
 Style/MultilineIfModifier:
   Enabled: false

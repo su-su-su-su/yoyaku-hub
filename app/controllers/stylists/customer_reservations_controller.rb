@@ -19,6 +19,7 @@ module Stylists
       build_reservation
 
       if @reservation.save
+        send_reservation_confirmation_to_customer(@reservation)
         redirect_with_toast stylists_schedules_path(date: @date), t('stylists.reservations.created'), type: :success
       else
         handle_validation_error
@@ -70,6 +71,19 @@ module Stylists
       @customers = User.none
       @active_menus = current_user.menus.where(is_active: true)
       render :new, status: :unprocessable_entity
+    end
+
+    def send_reservation_confirmation_to_customer(reservation)
+      mailer = ReservationMailer.new
+      result = mailer.reservation_confirmation(reservation)
+
+      if result[:success]
+        Rails.logger.info "美容師からの予約確認メール送信成功: Reservation ##{reservation.id}"
+      else
+        Rails.logger.error "美容師からの予約確認メール送信失敗: Reservation ##{reservation.id}, Error: #{result[:error]}"
+      end
+    rescue StandardError => e
+      Rails.logger.error "美容師からの確認メール送信中にエラーが発生: #{e.message}"
     end
   end
 end

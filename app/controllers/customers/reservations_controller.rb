@@ -35,6 +35,8 @@ module Customers
       @reservation = build_reservation
 
       if @reservation.save
+        send_reservation_confirmation_email(@reservation)
+        send_new_reservation_notification_to_stylist(@reservation)
         redirect_with_toast customers_reservation_path(@reservation), t('flash.reservation_confirmed'), type: :success
       else
         flash.now[:alert] = t('flash.reservation_failed')
@@ -44,6 +46,8 @@ module Customers
 
     def cancel
       @reservation.canceled!
+      send_cancellation_confirmation_email(@reservation)
+      send_cancellation_notification_to_stylist(@reservation)
       redirect_with_toast customers_reservations_path(date: @reservation.start_at.to_date),
         t('stylists.reservations.cancelled'), type: :success
     end
@@ -103,6 +107,58 @@ module Customers
       )
       reservation.menu_ids = @menu_ids
       reservation
+    end
+
+    def send_reservation_confirmation_email(reservation)
+      mailer = ReservationMailer.new
+      result = mailer.reservation_confirmation(reservation)
+
+      if result[:success]
+        Rails.logger.info "予約確認メール送信成功: Reservation ##{reservation.id}"
+      else
+        Rails.logger.error "予約確認メール送信失敗: Reservation ##{reservation.id}, Error: #{result[:error]}"
+      end
+    rescue StandardError => e
+      Rails.logger.error "メール送信中にエラーが発生: #{e.message}"
+    end
+
+    def send_cancellation_confirmation_email(reservation)
+      mailer = ReservationMailer.new
+      result = mailer.cancellation_confirmation(reservation)
+
+      if result[:success]
+        Rails.logger.info "予約キャンセル確認メール送信成功: Reservation ##{reservation.id}"
+      else
+        Rails.logger.error "予約キャンセル確認メール送信失敗: Reservation ##{reservation.id}, Error: #{result[:error]}"
+      end
+    rescue StandardError => e
+      Rails.logger.error "キャンセル確認メール送信中にエラーが発生: #{e.message}"
+    end
+
+    def send_new_reservation_notification_to_stylist(reservation)
+      mailer = ReservationMailer.new
+      result = mailer.new_reservation_notification(reservation)
+
+      if result[:success]
+        Rails.logger.info "美容師への新規予約通知メール送信成功: Reservation ##{reservation.id}"
+      else
+        Rails.logger.error "美容師への新規予約通知メール送信失敗: Reservation ##{reservation.id}, Error: #{result[:error]}"
+      end
+    rescue StandardError => e
+      Rails.logger.error "美容師への通知メール送信中にエラーが発生: #{e.message}"
+    end
+
+    def send_cancellation_notification_to_stylist(reservation)
+      mailer = ReservationMailer.new
+      result = mailer.cancellation_notification(reservation)
+
+      if result[:success]
+        Rails.logger.info "美容師への予約キャンセル通知メール送信成功: Reservation ##{reservation.id}"
+      else
+        Rails.logger.error "美容師への予約キャンセル通知メール送信失敗: Reservation ##{reservation.id}, Error: #{result[:error]}"
+      end
+    rescue StandardError => e
+      Rails.logger.error "美容師へのキャンセル通知メール送信中にエラーが発生: #{e.message}"
     end
   end
 end

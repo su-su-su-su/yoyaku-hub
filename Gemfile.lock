@@ -389,6 +389,7 @@ GEM
       rubocop (~> 1.61)
       rubocop-rspec (~> 3, >= 3.0.1)
     ruby-progressbar (1.13.0)
+    ruby_http_client (3.5.5)
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -405,6 +406,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sendgrid-ruby (6.7.0)
+      ruby_http_client (~> 3.4)
     simple_calendar (3.0.4)
       rails (>= 6.1)
     slim (5.2.1)
@@ -518,6 +521,7 @@ DEPENDENCIES
   rubocop-rspec_rails
   sassc-rails
   selenium-webdriver
+  sendgrid-ruby
   simple_calendar
   slim-rails
   slim_lint
