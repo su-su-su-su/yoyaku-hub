@@ -8,15 +8,15 @@ namespace :sendgrid do
     puts '=' * 60
 
     if ENV['SENDGRID_API_KEY'].blank?
-      puts "❌ SENDGRID_API_KEY が設定されていません"
+      puts '❌ SENDGRID_API_KEY が設定されていません'
       exit
     end
 
-    print "送信先メールアドレス: "
+    print '送信先メールアドレス: '
     to_email = $stdin.gets.chomp
 
     if to_email.blank?
-      puts "メールアドレスが入力されていません"
+      puts 'メールアドレスが入力されていません'
       exit
     end
 
@@ -59,7 +59,7 @@ namespace :sendgrid do
     )
 
     if result[:success]
-      puts "✅ 送信成功！"
+      puts '✅ 送信成功！'
       puts "   Message-ID: #{result[:message_id]}" if result[:message_id]
     else
       puts "❌ 送信失敗: #{result[:error]}"
@@ -95,11 +95,11 @@ namespace :sendgrid do
       begin
         response = http.request(request)
         if response.code == '200'
-          puts "✅ API接続: 成功"
+          puts '✅ API接続: 成功'
         else
           puts "❌ API接続: 失敗 (#{response.code})"
         end
-      rescue => e
+      rescue StandardError => e
         puts "❌ API接続: エラー (#{e.message})"
       end
     end
