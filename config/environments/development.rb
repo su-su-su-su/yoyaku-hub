@@ -39,7 +39,9 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
 
-  config.action_mailer.delivery_method = :letter_opener_web
+  # 実際のメール送信をテストする場合は :smtp に変更
+  # letter_opener_web を使用する場合は /letter_opener でメールプレビュー可能
+  config.action_mailer.delivery_method = ENV.fetch('MAIL_DELIVERY_METHOD', 'letter_opener_web').to_sym
 
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.

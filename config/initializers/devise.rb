@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Devise.setup do |config|
-  config.mailer_sender = ENV['MAILER_SENDER']
+  config.mailer_sender = ENV.fetch('MAILER_SENDER', ENV.fetch('SENDGRID_FROM_EMAIL', 'noreply@yoyakuhub.jp'))
 
   require 'devise/orm/active_record'
 

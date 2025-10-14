@@ -34,7 +34,7 @@ server '160.16.153.142', user: 'debian', roles: %w{app db web}
 # Global options
 # --------------
 set :ssh_options, {
-  keys: %w(~/.ssh/id_rsa),
+  keys: %w(~/.ssh/id_ed25519),
   forward_agent: true,
   auth_methods: %w(publickey)
 }
