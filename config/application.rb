@@ -50,5 +50,8 @@ module YoyakuHub
                        helper_specs: false,
                        routing_specs: false
     end
+
+    # Rack::Attack を有効化
+    config.middleware.use Rack::Attack
   end
 end

@@ -42,7 +42,7 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :timeoutable,
-    :omniauthable, omniauth_providers: [:google_oauth2]
+    :lockable, :omniauthable, omniauth_providers: [:google_oauth2]
 
   def self.from_omniauth(auth, role_for_new_user = nil)
     user = find_by(provider: auth.provider, uid: auth.uid)
