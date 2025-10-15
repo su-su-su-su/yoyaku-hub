@@ -23,6 +23,18 @@ Devise.setup do |config|
 
   config.reset_password_within = 6.hours
 
+  # アカウントロック設定
+  # 5回失敗したらアカウントをロック
+  config.maximum_attempts = 5
+  # ロック解除方法: :time（一定時間後に自動解除）、:email（メールで解除）、:both（両方）
+  config.lock_strategy = :failed_attempts
+  # :time の場合の自動解除時間（15分）
+  config.unlock_in = 15.minutes
+  # アンロック方法: :both（メールでも時間経過でも解除可能）
+  config.unlock_strategy = :both
+  # ロック解除用のキー
+  config.unlock_keys = [:email]
+
   # セッションタイムアウトの設定
   config.timeout_in = :timeout_in
 
