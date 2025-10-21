@@ -81,10 +81,10 @@ module Users
 
     def after_sign_up_path_for(resource)
       if resource.role == 'stylist'
-        edit_stylists_profile_path
+        # スタイリストは新規登録直後にサブスクリプション登録画面へ
+        new_subscription_path
       else
         edit_customers_profile_path
-
       end
     end
 
