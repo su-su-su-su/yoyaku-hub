@@ -473,8 +473,12 @@ class User < ApplicationRecord
       # 1. Stripeのサブスクリプションを即座に解約
       cancel_stripe_subscription if stripe_subscription_id.present?
 
-      # 2. ユーザーを無効化
-      update!(status: :inactive)
+      # 2. ユーザーを無効化し、Stripe関連フィールドをクリア
+      update!(
+        status: :inactive,
+        stripe_subscription_id: nil,
+        subscription_status: 'canceled'
+      )
     end
   end
 
