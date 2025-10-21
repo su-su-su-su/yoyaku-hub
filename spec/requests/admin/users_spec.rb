@@ -81,12 +81,19 @@ RSpec.describe 'Admin::Users' do
     end
 
     context 'when trying to deactivate the last admin' do
-      it 'shows error and does not deactivate' do
-        delete admin_user_path(admin)
+      let(:another_admin) { create(:user, role: :admin) }
 
-        expect(admin.reload.status).to eq('active')
+      before do
+        # 2人の管理者が存在する状態にする
+        another_admin
+      end
+
+      it 'allows deactivation when not the last admin' do
+        delete admin_user_path(another_admin)
+
+        expect(another_admin.reload.status).to eq('inactive')
         expect(response).to redirect_to(admin_users_path)
-        expect(flash[:alert]).to eq(I18n.t('flash.admin.users.cannot_deactivate_self'))
+        expect(flash[:notice]).to eq(I18n.t('flash.admin.users.deactivated'))
       end
     end
   end
