@@ -53,6 +53,8 @@ gem 'rqrcode'
 gem 'sassc-rails'
 gem 'sendgrid-ruby'
 gem 'simple_calendar'
+gem 'stripe'
+gem 'stripe_event'
 gem 'whenever', require: false
 
 group :development, :test do
