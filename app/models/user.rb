@@ -461,9 +461,9 @@ class User < ApplicationRecord
     ((trial_ends_at - Time.current) / 1.day).ceil
   end
 
-  # Stripe Checkout完了済みかどうか（subscription_idまたはtrial_ends_atがあればOK）
+  # Stripe Checkout完了済みかどうか（実際にサブスクリプション登録が完了している場合のみtrue）
   def stripe_setup_complete?
-    stripe_subscription_id.present? || trial_ends_at.present?
+    stripe_subscription_id.present?
   end
 
   # 退会処理（アカウント無効化 + Stripeサブスクリプション解約）
