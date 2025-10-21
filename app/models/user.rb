@@ -435,6 +435,7 @@ class User < ApplicationRecord
 
   # サブスクリプション関連メソッド
   def subscription_active?
+    return false unless stylist? # カスタマーは常にfalse
     return true if trial_active?
     return false if subscription_status.blank?
 
