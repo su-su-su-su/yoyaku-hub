@@ -11,6 +11,19 @@ Rails.application.routes.draw do
     passwords: 'users/passwords',
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
+  # Stripe Subscriptions
+  resource :subscription, only: [:new, :create] do
+    get :success, on: :member
+    get :cancel, on: :member
+  end
+
+  # Stripe Webhooks
+  mount StripeEvent::Engine, at: '/stripe/webhooks'
+
+  # Account (退会機能)
+  get 'account/deactivate', to: 'accounts#new', as: :new_deactivate_account
+  delete 'account/deactivate', to: 'accounts#destroy', as: :deactivate_account
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -276,3 +276,24 @@ ja:
 
   demo:
     profile_edit_disabled: "デモユーザーの情報は変更できません。"
+
+  accounts:
+    demo_user_cannot_deactivate: "デモユーザーは退会できません。"
+    deactivation_completed: "退会処理が完了しました。ご利用ありがとうございました。"
+    deactivation_failed: "退会処理に失敗しました。サポートにお問い合わせください。"
+    stripe_cancel_failed: "サブスクリプションの解約に失敗しました。サポートにお問い合わせください。"
+    deactivation_error: "退会処理中にエラーが発生しました。"
+    access_denied: "このページにアクセスする権限がありません。"
+
+  subscriptions:
+    already_exists: "すでに有効なサブスクリプションが存在します。"
+    checkout_creation_failed: "決済ページの作成に失敗しました。"
+    registration_completed: "サブスクリプションの登録が完了しました。"
+    registration_cancelled: "サブスクリプションの登録をキャンセルしました。"
+    access_denied: "このページにアクセスする権限がありません。"
+    stripe_not_configured: "Stripe設定が完了していません。管理者にお問い合わせください。"
+    invalid_email: "登録エラー: メールアドレスが無効です。正しいメールアドレスで再登録してください。"
+    registration_required: "サブスクリプションの登録が必要です。"
+
+  application:
+    account_inactive: "アカウントが無効化されています。サブスクリプションの状態をご確認ください。"

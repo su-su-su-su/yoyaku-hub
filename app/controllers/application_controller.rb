@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: { safari: 16.4, firefox: 121, ie: false }
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :check_demo_mode
+  before_action :check_subscription_status
 
   protected
 
@@ -96,4 +98,53 @@ class ApplicationController < ActionController::Base
     flash[:toast] = { message: message, type: type }
     redirect_back fallback_location: fallback_location
   end
+
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+  def check_subscription_status
+    return unless user_signed_in?
+
+    # ユーザーステータスが無効化されている場合、強制ログアウト
+    # （支払い失敗やサブスクリプション削除により無効化）
+    if current_user.inactive?
+      sign_out current_user
+      redirect_to new_user_session_path, alert: t('application.account_inactive')
+      return
+    end
+
+    return if current_user.customer? # カスタマーは課金対象外
+    return if current_user.admin? # 管理者は課金対象外
+    return if current_user.demo_user? # デモユーザーは課金対象外
+    return if current_user.subscription_exempt? # モニター等は課金対象外
+    return if controller_name == 'subscriptions' # サブスクリプション画面は常にアクセス可
+    return if controller_name == 'sessions' # セッション（ログイン・ログアウト）は常にアクセス可
+    return if controller_name == 'profiles' # プロフィール編集は常にアクセス可（新規登録直後）
+    return if devise_controller? # Devise関連は常にアクセス可
+
+    # Stripe APIキーが設定されていない場合
+    if Rails.configuration.stripe[:secret_key].blank?
+      # スタイリストでまだStripe Checkoutを完了していない場合のみ登録画面へ誘導
+      if current_user.stylist? && !current_user.stripe_setup_complete?
+        redirect_to new_subscription_path, alert: t('subscriptions.registration_required')
+        return
+      end
+      # それ以外はスキップ（開発環境用）
+      return
+    end
+
+    # スタイリストで、まだStripe Checkoutを完了していない場合は登録ページへ
+    if current_user.stylist? && !current_user.stripe_setup_complete?
+      redirect_to new_subscription_path, alert: t('subscriptions.registration_required')
+      return
+    end
+
+    # トライアル期間中またはサブスクリプション有効な場合は通過
+    return if current_user.subscription_active?
+
+    # サブスクリプションが必要な場合は登録ページへリダイレクト
+    return unless current_user.needs_subscription?
+
+    redirect_to new_subscription_path, alert: t('subscriptions.registration_required')
+  end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
 end
+# rubocop:enable Metrics/ClassLength
