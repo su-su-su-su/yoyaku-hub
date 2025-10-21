@@ -56,7 +56,8 @@ module Admin
     def user_params
       # roleの変更は管理者のみ、かつ自分以外のユーザーに対してのみ許可
       permitted = %i[family_name given_name family_name_kana given_name_kana
-                     email gender date_of_birth]
+                     email gender date_of_birth status
+                     subscription_exempt subscription_exempt_reason]
 
       # 管理者が他のユーザーのroleを変更する場合のみroleを許可
       permitted << :role if current_user.admin? && @user != current_user

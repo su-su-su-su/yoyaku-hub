@@ -49,6 +49,29 @@
           - if @user == current_user
             p.text-xs.text-gray-500.mt-1 自分のロールは変更できません
 
+      / サブスクリプション免除設定（スタイリストのみ）
+      - if @user.stylist?
+        h2.text-lg.font-semibold.mb-4.mt-6.border-b.pb-2 サブスクリプション設定
+        .bg-yellow-50.border.border-yellow-200.rounded-lg.p-4.mb-6
+          .form-group.mb-3
+            label.flex.items-center.cursor-pointer
+              = form.check_box :subscription_exempt, class: "checkbox checkbox-warning mr-2", data: { confirm_toggle: "モニター除外" }
+              span.font-semibold サブスクリプション免除（モニターキャンペーン等）
+          .form-group
+            = form.label :subscription_exempt_reason, "免除理由", class: "label"
+            = form.text_field :subscription_exempt_reason, placeholder: "例：モニターキャンペーン参加者", class: "input input-bordered w-full"
+          .text-sm.text-gray-600.mt-2
+            | ※ 免除を外すと、次回ログイン時にサブスクリプション登録が必要になります
+
+      / ユーザーステータス設定
+      h2.text-lg.font-semibold.mb-4.mt-6.border-b.pb-2 アカウント状態
+      .bg-red-50.border.border-red-200.rounded-lg.p-4.mb-6
+        .form-group
+          = form.label :status, "ステータス", class: "label"
+          = form.select :status, [['有効', 'active'], ['無効', 'inactive']], {}, class: "select select-bordered w-full", data: { confirm_change: "ユーザー無効化" }
+        .text-sm.text-gray-600.mt-2
+          | ※ 無効化すると、ユーザーはログインできなくなります
+
       h2.text-lg.font-semibold.mb-4.border-b.pb-2 アカウント情報
 
       .grid.grid-cols-1.md:grid-cols-2.gap-4.mb-6
@@ -58,6 +81,30 @@
         .text-sm
           .font-medium.text-gray-600 登録日:
           .mt-1 = @user.created_at.strftime('%Y年%m月%d日 %H:%M')
+
+        / サブスクリプション状態（スタイリストのみ）
+        - if @user.stylist?
+          .text-sm
+            .font-medium.text-gray-600 サブスクリプション状態:
+            .mt-1
+              - if @user.subscription_exempt?
+                span.badge.bg-purple-100.text-purple-800.px-2.py-1.rounded 免除（モニター等）
+              - elsif @user.trial_active?
+                span.badge.bg-blue-100.text-blue-800.px-2.py-1.rounded トライアル中（残り#{@user.trial_days_remaining}日）
+              - elsif @user.subscription_active?
+                span.badge.bg-green-100.text-green-800.px-2.py-1.rounded 有効
+              - else
+                span.badge.bg-red-100.text-red-800.px-2.py-1.rounded 未登録
+
+          - if @user.stripe_customer_id.present?
+            .text-sm
+              .font-medium.text-gray-600 Stripe Customer ID:
+              .mt-1.text-xs.font-mono = @user.stripe_customer_id
+
+          - if @user.stripe_subscription_id.present?
+            .text-sm
+              .font-medium.text-gray-600 Stripe Subscription ID:
+              .mt-1.text-xs.font-mono = @user.stripe_subscription_id
         - if @user.provider.present?
           .text-sm
             .font-medium.text-gray-600 認証方法:

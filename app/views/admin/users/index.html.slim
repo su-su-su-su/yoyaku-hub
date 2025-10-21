@@ -30,6 +30,7 @@
               th.bg-gray-50.text-left.py-3.px-4.text-sm メールアドレス
               th.bg-gray-50.text-left.py-3.px-4.text-sm ロール
               th.bg-gray-50.text-left.py-3.px-4.text-sm ステータス
+              th.bg-gray-50.text-left.py-3.px-4.text-sm サブスク
               th.bg-gray-50.text-left.py-3.px-4.text-sm 登録日
               th.bg-gray-50.text-center.py-3.px-4.text-sm 操作
           tbody
@@ -56,6 +57,18 @@
                     span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
                   - else
                     span.px-2.py-1.bg-gray-100.text-gray-800.rounded-full.text-xs 無効
+                td.py-3.px-4
+                  - if user.stylist?
+                    - if user.subscription_exempt?
+                      span.px-2.py-1.bg-purple-100.text-purple-800.rounded-full.text-xs 免除
+                    - elsif user.trial_active?
+                      span.px-2.py-1.bg-blue-100.text-blue-800.rounded-full.text-xs トライアル
+                    - elsif user.subscription_active?
+                      span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
+                    - else
+                      span.px-2.py-1.bg-red-100.text-red-800.rounded-full.text-xs 未登録
+                  - else
+                    span.text-xs.text-gray-400 -
                 td.py-3.px-4.text-sm.text-gray-600
                   = user.created_at.strftime('%Y/%m/%d')
                 td.py-3.px-4.text-center.space-x-2
@@ -90,11 +103,20 @@
           .flex.justify-between.items-center.text-xs.text-gray-500.mb-2
             span ID: #{user.id}
             span = user.created_at.strftime('%Y/%m/%d')
-          .mb-3
+          .mb-3.flex.gap-2.flex-wrap
             - if user.active?
               span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
             - else
               span.px-2.py-1.bg-gray-100.text-gray-800.rounded-full.text-xs 無効
+            - if user.stylist?
+              - if user.subscription_exempt?
+                span.px-2.py-1.bg-purple-100.text-purple-800.rounded-full.text-xs サブスク：免除
+              - elsif user.trial_active?
+                span.px-2.py-1.bg-blue-100.text-blue-800.rounded-full.text-xs サブスク：トライアル
+              - elsif user.subscription_active?
+                span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs サブスク：有効
+              - else
+                span.px-2.py-1.bg-red-100.text-red-800.rounded-full.text-xs サブスク：未登録
           .flex.gap-3.text-sm
             = link_to "詳細", admin_user_path(user), class: 'text-blue-600 hover:text-blue-800 underline'
             = link_to "編集", edit_admin_user_path(user), class: 'text-blue-600 hover:text-blue-800 underline'
