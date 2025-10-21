@@ -17,6 +17,9 @@ FactoryBot.define do
     date_of_birth { Date.new(2000, 4, 10) }
 
     role { :stylist }
+    # テスト環境ではサブスクリプション不要（デフォルトでスタイリストのため）
+    subscription_exempt { true }
+    subscription_exempt_reason { 'テストユーザー' }
 
     trait :with_kana do
       family_name_kana { 'ビヨウシ' }
@@ -34,6 +37,9 @@ FactoryBot.define do
 
     trait :stylist do
       role { :stylist }
+      # テスト環境ではサブスクリプション不要
+      subscription_exempt { true }
+      subscription_exempt_reason { 'テストユーザー' }
     end
 
     trait :with_oauth do
