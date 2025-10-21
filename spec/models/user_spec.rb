@@ -1372,5 +1372,283 @@ RSpec.describe User do
       end
     end
   end
+
+  # rubocop:disable RSpec/NestedGroups
+  describe 'subscription-related methods' do
+    let(:stylist) { create(:user, :stylist) }
+
+    describe '#subscription_active?' do
+      context 'when user has active stripe subscription' do
+        before do
+          stylist.update(
+            stripe_subscription_id: 'sub_test123',
+            subscription_status: 'active'
+          )
+        end
+
+        it 'returns true' do
+          expect(stylist.subscription_active?).to be true
+        end
+      end
+
+      context 'when user is in trial period' do
+        before do
+          stylist.update(
+            stripe_subscription_id: 'sub_test123',
+            subscription_status: 'trialing',
+            trial_ends_at: 1.month.from_now
+          )
+        end
+
+        it 'returns true' do
+          expect(stylist.subscription_active?).to be true
+        end
+      end
+
+      context 'when user has no stripe subscription' do
+        before do
+          stylist.update(
+            stripe_subscription_id: nil,
+            subscription_status: nil
+          )
+        end
+
+        it 'returns false' do
+          expect(stylist.subscription_active?).to be false
+        end
+      end
+
+      context 'when subscription is canceled' do
+        before do
+          stylist.update(
+            stripe_subscription_id: 'sub_test123',
+            subscription_status: 'canceled'
+          )
+        end
+
+        it 'returns false' do
+          expect(stylist.subscription_active?).to be false
+        end
+      end
+
+      context 'when user is not stylist' do
+        let(:customer) { create(:user, :customer) }
+
+        it 'returns false' do
+          expect(customer.subscription_active?).to be false
+        end
+      end
+    end
+
+    describe '#trial_active?' do
+      context 'when trial ends in the future' do
+        before do
+          stylist.update(trial_ends_at: 1.month.from_now)
+        end
+
+        it 'returns true' do
+          expect(stylist.trial_active?).to be true
+        end
+      end
+
+      context 'when trial has ended' do
+        before do
+          stylist.update(trial_ends_at: 1.day.ago)
+        end
+
+        it 'returns false' do
+          expect(stylist.trial_active?).to be false
+        end
+      end
+
+      context 'when trial_ends_at is nil' do
+        before do
+          stylist.update(trial_ends_at: nil)
+        end
+
+        it 'returns false' do
+          expect(stylist.trial_active?).to be false
+        end
+      end
+    end
+
+    describe '#needs_subscription?' do
+      context 'when user is customer' do
+        let(:customer) { create(:user, :customer) }
+
+        it 'returns false' do
+          expect(customer.needs_subscription?).to be false
+        end
+      end
+
+      context 'when user is admin' do
+        let(:admin) { create(:user, role: :admin) }
+
+        it 'returns false' do
+          expect(admin.needs_subscription?).to be false
+        end
+      end
+
+      context 'when stylist is subscription exempt' do
+        before do
+          stylist.update(
+            subscription_exempt: true,
+            subscription_exempt_reason: 'モニターキャンペーン'
+          )
+        end
+
+        it 'returns false' do
+          expect(stylist.needs_subscription?).to be false
+        end
+      end
+
+      context 'when stylist has active trial' do
+        before do
+          stylist.update(trial_ends_at: 1.month.from_now)
+        end
+
+        it 'returns false' do
+          expect(stylist.needs_subscription?).to be false
+        end
+      end
+
+      context 'when stylist has active subscription' do
+        before do
+          stylist.update(
+            stripe_subscription_id: 'sub_test123',
+            subscription_status: 'active'
+          )
+        end
+
+        it 'returns false' do
+          expect(stylist.needs_subscription?).to be false
+        end
+      end
+
+      context 'when stylist has no active trial or subscription' do
+        before do
+          stylist.update(
+            trial_ends_at: 1.day.ago,
+            stripe_subscription_id: nil,
+            subscription_status: nil,
+            subscription_exempt: false
+          )
+        end
+
+        it 'returns true' do
+          expect(stylist.needs_subscription?).to be true
+        end
+      end
+    end
+
+    describe '#stripe_setup_complete?' do
+      context 'when user has stripe_subscription_id' do
+        before do
+          stylist.update(
+            stripe_subscription_id: 'sub_test123',
+            trial_ends_at: nil
+          )
+        end
+
+        it 'returns true' do
+          expect(stylist.stripe_setup_complete?).to be true
+        end
+      end
+
+      context 'when user has trial_ends_at' do
+        before do
+          stylist.update(
+            stripe_subscription_id: nil,
+            trial_ends_at: 6.months.from_now
+          )
+        end
+
+        it 'returns true' do
+          expect(stylist.stripe_setup_complete?).to be true
+        end
+      end
+
+      context 'when user has both stripe_subscription_id and trial_ends_at' do
+        before do
+          stylist.update(
+            stripe_subscription_id: 'sub_test123',
+            trial_ends_at: 6.months.from_now
+          )
+        end
+
+        it 'returns true' do
+          expect(stylist.stripe_setup_complete?).to be true
+        end
+      end
+
+      context 'when user has neither stripe_subscription_id nor trial_ends_at' do
+        before do
+          stylist.update(
+            stripe_subscription_id: nil,
+            trial_ends_at: nil
+          )
+        end
+
+        it 'returns false' do
+          expect(stylist.stripe_setup_complete?).to be false
+        end
+      end
+    end
+
+    describe 'subscription_exempt' do
+      context 'when setting user as exempt' do
+        before do
+          stylist.update(
+            subscription_exempt: true,
+            subscription_exempt_reason: 'モニターキャンペーン参加者'
+          )
+        end
+
+        it 'exempts user from subscription requirements' do
+          expect(stylist.subscription_exempt?).to be true
+          expect(stylist.subscription_exempt_reason).to eq('モニターキャンペーン参加者')
+          expect(stylist.needs_subscription?).to be false
+        end
+      end
+
+      context 'when removing exemption' do
+        before do
+          stylist.update(
+            subscription_exempt: true,
+            subscription_exempt_reason: 'モニター'
+          )
+          stylist.update(
+            subscription_exempt: false,
+            subscription_exempt_reason: nil,
+            stripe_subscription_id: nil,
+            trial_ends_at: nil
+          )
+        end
+
+        it 'requires subscription again' do
+          expect(stylist.subscription_exempt?).to be false
+          expect(stylist.needs_subscription?).to be true
+        end
+      end
+    end
+
+    describe 'trial_used flag' do
+      context 'when preventing trial abuse' do
+        before do
+          stylist.update(
+            trial_used: true,
+            trial_ends_at: 1.day.ago,
+            stripe_subscription_id: nil
+          )
+        end
+
+        it 'marks trial as used' do
+          expect(stylist.trial_used?).to be true
+          expect(stylist.trial_active?).to be false
+        end
+      end
+    end
+  end
+  # rubocop:enable RSpec/NestedGroups
 end
 # rubocop:enable Metrics/BlockLength

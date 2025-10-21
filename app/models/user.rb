@@ -44,6 +44,9 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable, :timeoutable,
     :lockable, :omniauthable, omniauth_providers: [:google_oauth2]
 
+  # Stripe Customer作成は新規登録フロー内で手動で行うため、after_createコールバックは削除
+  # （ユーザーが新規登録後、即座にサブスクリプション登録画面へ遷移してStripe Checkoutを完了する）
+
   def self.from_omniauth(auth, role_for_new_user = nil)
     user = find_by(provider: auth.provider, uid: auth.uid)
 
@@ -430,7 +433,101 @@ class User < ApplicationRecord
     create_demo_reservation
   end
 
+  # サブスクリプション関連メソッド
+  def subscription_active?
+    return true if trial_active?
+    return false if subscription_status.blank?
+
+    %w[active trialing].include?(subscription_status)
+  end
+
+  def trial_active?
+    return false if trial_ends_at.blank?
+
+    trial_ends_at > Time.current
+  end
+
+  def needs_subscription?
+    return false unless stylist? # Stylistのみ課金対象
+    return false if subscription_exempt? # サブスク免除（モニター等）
+    return false if trial_active?
+
+    !subscription_active?
+  end
+
+  def trial_days_remaining
+    return 0 if trial_ends_at.blank? || trial_ends_at <= Time.current
+
+    ((trial_ends_at - Time.current) / 1.day).ceil
+  end
+
+  # Stripe Checkout完了済みかどうか（subscription_idまたはtrial_ends_atがあればOK）
+  def stripe_setup_complete?
+    stripe_subscription_id.present? || trial_ends_at.present?
+  end
+
+  # 退会処理（アカウント無効化 + Stripeサブスクリプション解約）
+  def deactivate_account!
+    transaction do
+      # 1. Stripeのサブスクリプションを即座に解約
+      cancel_stripe_subscription if stripe_subscription_id.present?
+
+      # 2. ユーザーを無効化
+      update!(status: :inactive)
+    end
+  end
+
   private
+
+  def should_create_stripe_customer?
+    # デモユーザーとダミーメールユーザーは除外
+    return false if demo_user?
+    return false if dummy_email?
+    return false if subscription_exempt? # サブスク免除（モニター等）は除外
+
+    # Stylistのみ Stripe Customer を作成する（課金対象）
+    # Admin と Customer は課金対象外
+    stylist?
+  end
+
+  def create_stripe_customer
+    return if stripe_customer_id.present?
+    return if Rails.configuration.stripe[:secret_key].blank?
+
+    begin
+      customer = Stripe::Customer.create(
+        email: email,
+        metadata: {
+          user_id: id,
+          role: role
+        }
+      )
+
+      # Stripe APIの結果を確実に保存するため、意図的にupdate_columnsを使用
+      # バリデーション・コールバックは不要（システム内部処理のため）
+      # rubocop:disable Rails/SkipsModelValidations
+      update_columns(
+        stripe_customer_id: customer.id,
+        trial_ends_at: 6.months.from_now,
+        trial_used: true
+      )
+      # rubocop:enable Rails/SkipsModelValidations
+    rescue Stripe::StripeError => e
+      Rails.logger.error "Stripe Customer作成エラー: #{e.message}"
+      # エラーが発生してもユーザー作成は継続
+    end
+  end
+
+  def cancel_stripe_subscription
+    return if stripe_subscription_id.blank?
+    return if Rails.configuration.stripe[:secret_key].blank?
+
+    Stripe::Subscription.cancel(stripe_subscription_id)
+    Rails.logger.info "退会処理: Stripeサブスクリプション解約 User ##{id}"
+  rescue Stripe::StripeError => e
+    Rails.logger.error "Stripe解約エラー (User ##{id}): #{e.message}"
+    raise # エラーの場合はロールバック
+  end
 
   def setup_demo_menus
     return unless menus.empty?
@@ -504,6 +601,7 @@ class User < ApplicationRecord
             updated_at: Time.current
           }
         end
+        # デモデータの一括作成のため、意図的にinsert_allを使用（パフォーマンス最適化）
         # rubocop:disable Rails/SkipsModelValidations
         ReservationLimit.insert_all(limits_data)
         # rubocop:enable Rails/SkipsModelValidations
