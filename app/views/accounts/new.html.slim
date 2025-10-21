@@ -1,0 +1,59 @@
+- content_for :title, '退会手続き'
+
+.container.mx-auto.px-4.py-4.md:py-6
+  .mb-4.text-center
+    h1.page-title-gradient 退会手続き
+
+  .bg-white.border.border-gray-200.rounded-lg.p-6.max-w-2xl.mx-auto
+    .bg-red-50.border.border-red-300.rounded-lg.p-6.mb-6
+      .flex.items-start.mb-4
+        svg.w-8.h-8.text-red-600.mr-3.flex-shrink-0(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z")
+        div
+          h2.text-xl.font-bold.text-red-800.mb-2 退会前に必ずご確認ください
+          p.text-sm.text-gray-700
+            | この操作は取り消すことができません。
+
+    .mb-6
+      h3.text-lg.font-bold.mb-3 退会すると以下が実行されます
+
+      ul.space-y-3
+        li.flex.items-start
+          svg.w-5.h-5.text-red-500.mr-2.mt-0.5.flex-shrink-0(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
+          div
+            p.font-semibold アカウントへのアクセスが即座に無効化されます
+            p.text-sm.text-gray-600 ログインできなくなります
+
+        li.flex.items-start
+          svg.w-5.h-5.text-red-500.mr-2.mt-0.5.flex-shrink-0(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
+          div
+            p.font-semibold サブスクリプションが即座に解約されます
+            p.text-sm.text-gray-600 以降の課金は発生しません
+
+        li.flex.items-start
+          svg.w-5.h-5.text-red-500.mr-2.mt-0.5.flex-shrink-0(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
+          div
+            p.font-semibold すべての機能が利用できなくなります
+            p.text-sm.text-gray-600 予約管理、顧客情報、メニュー管理などすべて
+
+    .bg-blue-50.border.border-blue-200.rounded-lg.p-4.mb-6
+      h3.text-sm.font-bold.text-blue-800.mb-2 アカウントデータについて
+      p.text-sm.text-gray-700
+        | アカウントデータは削除されず、データベースに保管されます。
+      p.text-sm.text-gray-700.mt-2
+        | 再度ご利用を希望される場合は、管理者による再有効化が必要です。サポートまでお問い合わせください。
+
+    .border-t.border-gray-300.pt-6.mt-6
+      .flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
+        = link_to 'キャンセル', stylists_dashboard_path, class: 'btn bg-gray-500 hover:bg-gray-600 text-white w-full md:w-auto text-center'
+
+        = button_to '退会する', \
+          deactivate_account_path, \
+          method: :delete, \
+          class: 'btn bg-red-600 hover:bg-red-700 text-white w-full md:w-auto', \
+          data: { \
+            turbo_confirm: "本当に退会しますか？\n\nこの操作は取り消せません。\n\n・アカウントが即座に無効化されます\n・サブスクリプションが解約されます\n・以降の課金は発生しません\n・すべての機能が利用できなくなります" \
+          }
