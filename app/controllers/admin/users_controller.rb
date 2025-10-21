@@ -19,7 +19,10 @@ module Admin
     def edit; end
 
     def update
-      if @user.update(user_params)
+      # ステータスがinactiveに変更される場合、Stripeサブスクリプションも解約
+      if deactivating_stylist?
+        handle_stylist_deactivation
+      elsif @user.update(user_params)
         redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.updated')
       else
         render :edit, status: :unprocessable_entity
@@ -84,6 +87,21 @@ module Admin
       scope = scope.where(role: params[:role]) if params[:role].present?
       scope = scope.where(status: params[:status]) if params[:status].present?
       scope
+    end
+
+    def deactivating_stylist?
+      user_params[:status] == 'inactive' && @user.status != 'inactive' && @user.stylist?
+    end
+
+    def handle_stylist_deactivation
+      @user.deactivate_account!
+      redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.deactivated')
+    rescue Stripe::StripeError => e
+      Rails.logger.error "管理者による無効化時のStripe解約失敗 (User ##{@user.id}): #{e.message}"
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.stripe_cancel_failed')
+    rescue StandardError => e
+      Rails.logger.error "管理者による無効化失敗 (User ##{@user.id}): #{e.message}"
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.deactivation_failed')
     end
   end
 end
