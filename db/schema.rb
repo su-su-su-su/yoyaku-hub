@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_15_100036) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_16_144836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -155,10 +155,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_15_100036) do
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
     t.datetime "locked_at"
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.string "subscription_status"
+    t.datetime "trial_ends_at"
+    t.boolean "subscription_exempt", default: false, null: false
+    t.string "subscription_exempt_reason"
+    t.boolean "trial_used", default: false, null: false
     t.index ["created_by_stylist_id"], name: "index_users_on_created_by_stylist_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["status"], name: "index_users_on_status"
+    t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", unique: true
+    t.index ["stripe_subscription_id"], name: "index_users_on_stripe_subscription_id"
+    t.index ["subscription_exempt"], name: "index_users_on_subscription_exempt"
+    t.index ["subscription_status"], name: "index_users_on_subscription_status"
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
