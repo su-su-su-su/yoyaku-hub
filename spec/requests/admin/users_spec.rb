@@ -97,4 +97,84 @@ RSpec.describe 'Admin::Users' do
       end
     end
   end
+
+  describe 'PATCH /admin/users/:id (update)' do
+    context 'when changing stylist status to inactive' do
+      before do
+        # Stripe APIモック
+        allow(Stripe::Subscription).to receive(:cancel).and_return(true)
+      end
+
+      it 'deactivates user and cancels Stripe subscription' do
+        patch admin_user_path(stylist_with_subscription), params: {
+          user: {
+            status: 'inactive'
+          }
+        }
+
+        expect(Stripe::Subscription).to have_received(:cancel).with('sub_test123')
+        expect(stylist_with_subscription.reload.status).to eq('inactive')
+        expect(stylist_with_subscription.stripe_subscription_id).to be_nil
+        expect(response).to redirect_to(admin_user_path(stylist_with_subscription))
+        expect(flash[:notice]).to eq(I18n.t('flash.admin.users.deactivated'))
+      end
+    end
+
+    context 'when updating other attributes' do
+      it 'updates user without affecting Stripe subscription' do
+        allow(Stripe::Subscription).to receive(:cancel)
+
+        patch admin_user_path(stylist_with_subscription), params: {
+          user: {
+            family_name: '新しい名前'
+          }
+        }
+
+        expect(Stripe::Subscription).not_to have_received(:cancel)
+        expect(stylist_with_subscription.reload.family_name).to eq('新しい名前')
+        expect(stylist_with_subscription.status).to eq('active')
+        expect(response).to redirect_to(admin_user_path(stylist_with_subscription))
+        expect(flash[:notice]).to eq(I18n.t('flash.admin.users.updated'))
+      end
+    end
+
+    context 'when changing customer status to inactive' do
+      let(:customer) { create(:user, :customer) }
+
+      it 'deactivates user without calling Stripe API' do
+        allow(Stripe::Subscription).to receive(:cancel)
+
+        patch admin_user_path(customer), params: {
+          user: {
+            status: 'inactive'
+          }
+        }
+
+        expect(Stripe::Subscription).not_to have_received(:cancel)
+        expect(customer.reload.status).to eq('inactive')
+        expect(response).to redirect_to(admin_user_path(customer))
+        expect(flash[:notice]).to eq(I18n.t('flash.admin.users.updated'))
+      end
+    end
+
+    context 'when Stripe subscription cancelation fails' do
+      before do
+        allow(Stripe::Subscription).to receive(:cancel).and_raise(
+          Stripe::InvalidRequestError.new('Subscription not found', 'subscription')
+        )
+      end
+
+      it 'shows error and does not deactivate user' do
+        patch admin_user_path(stylist_with_subscription), params: {
+          user: {
+            status: 'inactive'
+          }
+        }
+
+        expect(stylist_with_subscription.reload.status).to eq('active')
+        expect(response).to redirect_to(admin_user_path(stylist_with_subscription))
+        expect(flash[:alert]).to eq(I18n.t('flash.admin.users.stripe_cancel_failed'))
+      end
+    end
+  end
 end

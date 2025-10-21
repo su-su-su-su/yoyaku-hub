@@ -49,9 +49,8 @@ RSpec.describe 'Stripe Webhooks' do
 
       before do
         # Stripe::Subscription.retrieveをモック
-        subscription_mock = double('Stripe::Subscription',
-          trial_end: trial_end_time.to_i
-        )
+        subscription_mock = instance_double(Stripe::Subscription,
+          trial_end: trial_end_time.to_i)
         allow(Stripe::Subscription).to receive(:retrieve).with('sub_test123').and_return(subscription_mock)
       end
 
