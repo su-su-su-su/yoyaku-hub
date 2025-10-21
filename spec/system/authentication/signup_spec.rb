@@ -30,7 +30,7 @@ RSpec.describe 'User signup' do
   end
 
   context 'when signing up as a stylist' do
-    it 'allows registration with valid information' do
+    it 'allows registration with valid information and redirects to subscription' do
       visit new_stylist_registration_path
 
       fill_in 'user_email', with: 'stylist@example.com'
@@ -40,7 +40,7 @@ RSpec.describe 'User signup' do
       click_on '登録'
 
       expect(page).to have_css('#toast-container .toast-message', text: 'アカウント登録が完了しました')
-      expect(page).to have_current_path('/stylists/profile/edit', url: false)
+      expect(page).to have_current_path('/subscription/new', url: false)
     end
   end
 end
