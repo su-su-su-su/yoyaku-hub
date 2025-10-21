@@ -15,6 +15,8 @@ module Stylists
       @user = current_user
       @user.assign_attributes(stylist_params)
       if @user.save(context: :profile_completion)
+        # プロフィール保存後は常にダッシュボードへ
+        # （サブスク登録は新規登録時に済んでいるはず）
         redirect_with_toast stylists_dashboard_path, t('stylists.profiles.updated'), type: :success
       else
         render :edit, status: :unprocessable_entity

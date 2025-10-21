@@ -19,6 +19,9 @@ div.navbar class="bg-[#3e5cd7] text-white"
           = link_to '商品管理', stylists_products_path
         li
           = link_to '売り上げ管理', stylists_sales_path
+        - unless current_user.demo_user?
+          li
+            = link_to '退会', new_deactivate_account_path
         li
           = link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }
         li

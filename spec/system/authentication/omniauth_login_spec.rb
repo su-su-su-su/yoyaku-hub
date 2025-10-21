@@ -28,12 +28,12 @@ RSpec.describe 'OmniAuth Google Authentication' do
         click_link_or_button '美容師 新規登録'
       end
 
-      it 'successfully creates a stylist and redirects to profile edit' do
+      it 'successfully creates a stylist and redirects to subscription registration' do
         expect(page).to have_content I18n.t('devise.omniauth_callbacks.success', kind: 'Google')
         new_user = User.find_by(email: 'new.stylist@example.com')
         expect(new_user).to be_present
         expect(new_user.role).to eq('stylist')
-        expect(page).to have_current_path(edit_stylists_profile_path)
+        expect(page).to have_current_path(new_subscription_path)
       end
     end
 

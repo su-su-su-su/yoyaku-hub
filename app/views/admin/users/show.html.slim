@@ -55,6 +55,13 @@
       h2.text-lg.font-semibold.mb-4 アカウント情報
       dl.space-y-3
         .flex
+          dt.font-medium.text-gray-600.w-32 ステータス:
+          dd
+            - if @user.active?
+              span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
+            - else
+              span.px-2.py-1.bg-gray-100.text-gray-800.rounded-full.text-xs 無効
+        .flex
           dt.font-medium.text-gray-600.w-32 登録日:
           dd = @user.created_at.strftime('%Y年%m月%d日 %H:%M')
         .flex
@@ -73,6 +80,51 @@
                 = link_to "#{creator.family_name} #{creator.given_name}", admin_user_path(creator), class: "text-blue-600 hover:text-blue-800 underline"
               - else
                 | ID: #{@user.created_by_stylist_id}
+
+    / サブスクリプション情報（スタイリストのみ）
+    - if @user.stylist?
+      .bg-white.border.border-gray-200.rounded-lg.p-6
+        h2.text-lg.font-semibold.mb-4 サブスクリプション情報
+        dl.space-y-3
+          .flex
+            dt.font-medium.text-gray-600.w-40 状態:
+            dd
+              - if @user.subscription_exempt?
+                span.px-2.py-1.bg-purple-100.text-purple-800.rounded-full.text-xs 免除（モニター等）
+              - elsif @user.trial_active?
+                span.px-2.py-1.bg-blue-100.text-blue-800.rounded-full.text-xs トライアル中（残り#{@user.trial_days_remaining}日）
+              - elsif @user.subscription_active?
+                span.px-2.py-1.bg-green-100.text-green-800.rounded-full.text-xs 有効
+              - else
+                span.px-2.py-1.bg-red-100.text-red-800.rounded-full.text-xs 未登録
+
+          - if @user.subscription_exempt?
+            .flex
+              dt.font-medium.text-gray-600.w-40 免除理由:
+              dd = @user.subscription_exempt_reason.presence || '（未設定）'
+
+          - if @user.trial_ends_at.present?
+            .flex
+              dt.font-medium.text-gray-600.w-40 トライアル終了日:
+              dd = @user.trial_ends_at.strftime('%Y年%m月%d日')
+
+          - if @user.subscription_status.present?
+            .flex
+              dt.font-medium.text-gray-600.w-40 Stripe状態:
+              dd
+                span.font-mono.text-xs = @user.subscription_status
+
+          - if @user.stripe_customer_id.present?
+            .flex
+              dt.font-medium.text-gray-600.w-40 Stripe Customer:
+              dd
+                span.font-mono.text-xs = @user.stripe_customer_id
+
+          - if @user.stripe_subscription_id.present?
+            .flex
+              dt.font-medium.text-gray-600.w-40 Stripe Subscription:
+              dd
+                span.font-mono.text-xs = @user.stripe_subscription_id
 
   - if @reservations.any?
     .bg-white.border.border-gray-200.rounded-lg.overflow-hidden

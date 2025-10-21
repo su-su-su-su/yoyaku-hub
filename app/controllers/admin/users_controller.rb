@@ -19,24 +19,36 @@ module Admin
     def edit; end
 
     def update
-      if @user.update(user_params)
+      # ステータスがinactiveに変更される場合、Stripeサブスクリプションも解約
+      if deactivating_stylist?
+        handle_stylist_deactivation
+      elsif @user.update(user_params)
         redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.updated')
       else
         render :edit, status: :unprocessable_entity
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def destroy
       if @user == current_user
         redirect_to admin_users_path, alert: I18n.t('flash.admin.users.cannot_deactivate_self')
       elsif @user.admin? && User.where(role: :admin, status: :active).count <= 1
         redirect_to admin_users_path, alert: I18n.t('flash.admin.users.cannot_deactivate_last_admin')
-      elsif @user.update(status: :inactive)
-        redirect_to admin_users_path, notice: I18n.t('flash.admin.users.deactivated')
       else
-        redirect_to admin_users_path, alert: I18n.t('flash.admin.users.deactivation_failed')
+        begin
+          @user.deactivate_account!
+          redirect_to admin_users_path, notice: I18n.t('flash.admin.users.deactivated')
+        rescue Stripe::StripeError => e
+          Rails.logger.error "管理者による無効化時のStripe解約失敗 (User ##{@user.id}): #{e.message}"
+          redirect_to admin_users_path, alert: I18n.t('flash.admin.users.stripe_cancel_failed')
+        rescue StandardError => e
+          Rails.logger.error "管理者による無効化失敗 (User ##{@user.id}): #{e.message}"
+          redirect_to admin_users_path, alert: I18n.t('flash.admin.users.deactivation_failed')
+        end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def activate
       @user = User.with_inactive.find(params[:id])
@@ -56,7 +68,8 @@ module Admin
     def user_params
       # roleの変更は管理者のみ、かつ自分以外のユーザーに対してのみ許可
       permitted = %i[family_name given_name family_name_kana given_name_kana
-                     email gender date_of_birth]
+                     email gender date_of_birth status
+                     subscription_exempt subscription_exempt_reason]
 
       # 管理者が他のユーザーのroleを変更する場合のみroleを許可
       permitted << :role if current_user.admin? && @user != current_user
@@ -74,6 +87,21 @@ module Admin
       scope = scope.where(role: params[:role]) if params[:role].present?
       scope = scope.where(status: params[:status]) if params[:status].present?
       scope
+    end
+
+    def deactivating_stylist?
+      user_params[:status] == 'inactive' && @user.status != 'inactive' && @user.stylist?
+    end
+
+    def handle_stylist_deactivation
+      @user.deactivate_account!
+      redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.deactivated')
+    rescue Stripe::StripeError => e
+      Rails.logger.error "管理者による無効化時のStripe解約失敗 (User ##{@user.id}): #{e.message}"
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.stripe_cancel_failed')
+    rescue StandardError => e
+      Rails.logger.error "管理者による無効化失敗 (User ##{@user.id}): #{e.message}"
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.deactivation_failed')
     end
   end
 end

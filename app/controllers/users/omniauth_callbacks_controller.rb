@@ -61,13 +61,16 @@ module Users
     end
 
     def decide_redirect_path
-      if @user.profile_complete?
-        after_sign_in_path_for(@user)
-      elsif @user.stylist?
-        edit_stylists_profile_path
-      else
-        edit_customers_profile_path
+      # スタイリストで、まだStripe Checkoutを完了していない場合は登録画面へ
+      return new_subscription_path if @user.stylist? && !@user.stripe_setup_complete?
+
+      # プロフィールが未完成の場合は編集画面へ
+      unless @user.profile_complete?
+        return @user.stylist? ? edit_stylists_profile_path : edit_customers_profile_path
       end
+
+      # プロフィール完成済みの場合はダッシュボードへ
+      after_sign_in_path_for(@user)
     end
 
     def handle_general_omniauth_failure(auth_data)
