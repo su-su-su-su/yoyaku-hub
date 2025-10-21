@@ -12,6 +12,7 @@ ja:
         cannot_deactivate_last_admin: "最後の管理者は無効化できません"
         deactivated: "ユーザーを無効化しました"
         deactivation_failed: "ユーザーの無効化に失敗しました"
+        stripe_cancel_failed: "サブスクリプションの解約に失敗しました。サポートにお問い合わせください。"
         activated: "ユーザーを有効化しました"
         activation_failed: "ユーザーの有効化に失敗しました"
     customers:

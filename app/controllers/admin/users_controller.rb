@@ -26,17 +26,26 @@ module Admin
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def destroy
       if @user == current_user
         redirect_to admin_users_path, alert: I18n.t('flash.admin.users.cannot_deactivate_self')
       elsif @user.admin? && User.where(role: :admin, status: :active).count <= 1
         redirect_to admin_users_path, alert: I18n.t('flash.admin.users.cannot_deactivate_last_admin')
-      elsif @user.update(status: :inactive)
-        redirect_to admin_users_path, notice: I18n.t('flash.admin.users.deactivated')
       else
-        redirect_to admin_users_path, alert: I18n.t('flash.admin.users.deactivation_failed')
+        begin
+          @user.deactivate_account!
+          redirect_to admin_users_path, notice: I18n.t('flash.admin.users.deactivated')
+        rescue Stripe::StripeError => e
+          Rails.logger.error "管理者による無効化時のStripe解約失敗 (User ##{@user.id}): #{e.message}"
+          redirect_to admin_users_path, alert: I18n.t('flash.admin.users.stripe_cancel_failed')
+        rescue StandardError => e
+          Rails.logger.error "管理者による無効化失敗 (User ##{@user.id}): #{e.message}"
+          redirect_to admin_users_path, alert: I18n.t('flash.admin.users.deactivation_failed')
+        end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def activate
       @user = User.with_inactive.find(params[:id])
