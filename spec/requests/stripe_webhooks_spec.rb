@@ -39,11 +39,20 @@ RSpec.describe 'Stripe Webhooks' do
   # rubocop:disable RSpec/NestedGroups
   describe 'Webhook event handlers' do
     context 'checkout.session.completed event' do
+      let(:trial_end_time) { 1.month.from_now }
       let(:event) do
         build_stripe_event('checkout.session.completed', {
           customer: stylist.stripe_customer_id,
           subscription: 'sub_test123'
         })
+      end
+
+      before do
+        # Stripe::Subscription.retrieveをモック
+        subscription_mock = double('Stripe::Subscription',
+          trial_end: trial_end_time.to_i
+        )
+        allow(Stripe::Subscription).to receive(:retrieve).with('sub_test123').and_return(subscription_mock)
       end
 
       it 'updates user with subscription ID' do
@@ -52,15 +61,18 @@ RSpec.describe 'Stripe Webhooks' do
         end.to change { stylist.reload.stripe_subscription_id }.from(nil).to('sub_test123')
 
         expect(stylist.subscription_status).to eq('trialing')
+        expect(stylist.trial_ends_at).to be_within(1.second).of(trial_end_time)
       end
     end
 
     context 'customer.subscription.created event' do
+      let(:trial_end_time) { 1.month.from_now }
       let(:event) do
         build_stripe_event('customer.subscription.created', {
           id: 'sub_test123',
           customer: stylist.stripe_customer_id,
-          status: 'trialing'
+          status: 'trialing',
+          trial_end: trial_end_time.to_i
         })
       end
 
@@ -70,6 +82,7 @@ RSpec.describe 'Stripe Webhooks' do
         end.to change { stylist.reload.stripe_subscription_id }.from(nil).to('sub_test123')
 
         expect(stylist.subscription_status).to eq('trialing')
+        expect(stylist.trial_ends_at).to be_within(1.second).of(trial_end_time)
       end
     end
 

@@ -1558,8 +1558,9 @@ RSpec.describe User do
       context 'when user has trial_ends_at' do
         before do
           stylist.update(
-            stripe_subscription_id: nil,
-            trial_ends_at: 6.months.from_now
+            stripe_subscription_id: 'sub_test123',
+            trial_ends_at: 6.months.from_now,
+            subscription_status: 'trialing'
           )
         end
 

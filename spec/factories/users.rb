@@ -17,13 +17,6 @@ FactoryBot.define do
     date_of_birth { Date.new(2000, 4, 10) }
 
     role { :stylist }
-    # テスト環境ではサブスクリプション不要（デフォルトでスタイリストのため）
-    subscription_exempt { true }
-    subscription_exempt_reason { 'テストユーザー' }
-    # テスト用のStripeサブスクリプションIDをセット（ユニークにする）
-    sequence(:stripe_customer_id) { |n| "cus_test#{n}" }
-    sequence(:stripe_subscription_id) { |n| "sub_test#{n}" }
-    subscription_status { 'trialing' }
 
     trait :with_kana do
       family_name_kana { 'ビヨウシ' }
@@ -37,17 +30,16 @@ FactoryBot.define do
 
     trait :customer do
       role { :customer }
+      # カスタマーはサブスクリプション関連フィールドをnilに
+      subscription_exempt { false }
+      subscription_exempt_reason { nil }
+      stripe_customer_id { nil }
+      stripe_subscription_id { nil }
+      subscription_status { nil }
     end
 
     trait :stylist do
       role { :stylist }
-      # テスト環境ではサブスクリプション不要
-      subscription_exempt { true }
-      subscription_exempt_reason { 'テストユーザー' }
-      # テスト用のStripeサブスクリプションIDをセット（ユニークにする）
-      sequence(:stripe_customer_id) { |n| "cus_test#{n}" }
-      sequence(:stripe_subscription_id) { |n| "sub_test#{n}" }
-      subscription_status { 'trialing' }
     end
 
     trait :with_oauth do
