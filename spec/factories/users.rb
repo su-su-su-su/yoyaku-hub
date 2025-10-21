@@ -20,6 +20,10 @@ FactoryBot.define do
     # テスト環境ではサブスクリプション不要（デフォルトでスタイリストのため）
     subscription_exempt { true }
     subscription_exempt_reason { 'テストユーザー' }
+    # テスト用のStripeサブスクリプションIDをセット（ユニークにする）
+    sequence(:stripe_customer_id) { |n| "cus_test#{n}" }
+    sequence(:stripe_subscription_id) { |n| "sub_test#{n}" }
+    subscription_status { 'trialing' }
 
     trait :with_kana do
       family_name_kana { 'ビヨウシ' }
@@ -40,6 +44,10 @@ FactoryBot.define do
       # テスト環境ではサブスクリプション不要
       subscription_exempt { true }
       subscription_exempt_reason { 'テストユーザー' }
+      # テスト用のStripeサブスクリプションIDをセット（ユニークにする）
+      sequence(:stripe_customer_id) { |n| "cus_test#{n}" }
+      sequence(:stripe_subscription_id) { |n| "sub_test#{n}" }
+      subscription_status { 'trialing' }
     end
 
     trait :with_oauth do
