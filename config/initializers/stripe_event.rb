@@ -21,15 +21,20 @@ StripeEvent.configure do |events|
     # サブスクリプションIDを保存
     if session['subscription'].present?
       begin
-        Rails.logger.info "更新を実行: subscription_id=#{session['subscription']}, status=trialing"
+        # Stripeからサブスクリプション詳細を取得してトライアル終了日を確認
+        subscription = Stripe::Subscription.retrieve(session['subscription'])
+        trial_end = subscription.trial_end ? Time.at(subscription.trial_end) : nil
+
+        Rails.logger.info "更新を実行: subscription_id=#{session['subscription']}, status=trialing, trial_end=#{trial_end}"
         # Webhook処理ではバリデーションをスキップ（プロフィール未入力でも保存可能にする）
         user.update_columns(
           stripe_subscription_id: session['subscription'],
           subscription_status: 'trialing',
+          trial_ends_at: trial_end,
           updated_at: Time.current
         )
         user.reload  # データベースから再読み込み
-        Rails.logger.info "Checkout完了・更新成功: User ##{user.id}, Subscription: #{user.stripe_subscription_id}, Status: #{user.subscription_status}"
+        Rails.logger.info "Checkout完了・更新成功: User ##{user.id}, Subscription: #{user.stripe_subscription_id}, Status: #{user.subscription_status}, Trial ends: #{user.trial_ends_at}"
       rescue => e
         Rails.logger.error "Checkout完了時のエラー: User ##{user.id}, エラー: #{e.class} - #{e.message}"
       end
@@ -54,15 +59,17 @@ StripeEvent.configure do |events|
     Rails.logger.info "ユーザー発見: User ##{user.id}, 現在のsubscription_id: #{user.stripe_subscription_id || 'nil'}"
 
     begin
-      Rails.logger.info "更新を実行: subscription_id=#{subscription['id']}, status=#{subscription['status']}"
+      trial_end = subscription['trial_end'] ? Time.at(subscription['trial_end']) : nil
+      Rails.logger.info "更新を実行: subscription_id=#{subscription['id']}, status=#{subscription['status']}, trial_end=#{trial_end}"
       # Webhook処理ではバリデーションをスキップ（プロフィール未入力でも保存可能にする）
       user.update_columns(
         stripe_subscription_id: subscription['id'],
         subscription_status: subscription['status'],
+        trial_ends_at: trial_end,
         updated_at: Time.current
       )
       user.reload  # データベースから再読み込み
-      Rails.logger.info "サブスクリプション作成・更新成功: User ##{user.id}, Subscription: #{user.stripe_subscription_id}, Status: #{user.subscription_status}"
+      Rails.logger.info "サブスクリプション作成・更新成功: User ##{user.id}, Subscription: #{user.stripe_subscription_id}, Status: #{user.subscription_status}, Trial ends: #{user.trial_ends_at}"
     rescue => e
       Rails.logger.error "サブスクリプション作成時のエラー: User ##{user.id}, エラー: #{e.class} - #{e.message}"
     end
@@ -76,11 +83,15 @@ StripeEvent.configure do |events|
 
     next unless user
 
-    # サブスクリプションステータスのみを更新（ホワイトリスト方式）
+    # サブスクリプションステータスとトライアル終了日を更新（ホワイトリスト方式）
     allowed_statuses = %w[incomplete incomplete_expired trialing active past_due canceled unpaid paused]
     if allowed_statuses.include?(subscription['status'])
-      user.update(subscription_status: subscription['status'])
-      Rails.logger.info "サブスクリプション更新: User ##{user.id}, Status: #{subscription['status']}"
+      trial_end = subscription['trial_end'] ? Time.at(subscription['trial_end']) : nil
+      user.update(
+        subscription_status: subscription['status'],
+        trial_ends_at: trial_end
+      )
+      Rails.logger.info "サブスクリプション更新: User ##{user.id}, Status: #{subscription['status']}, Trial ends: #{trial_end}"
     else
       Rails.logger.warn "不正なステータス: User ##{user.id}, Status: #{subscription['status']}"
     end
