@@ -15,6 +15,8 @@ ja:
         stripe_cancel_failed: "サブスクリプションの解約に失敗しました。サポートにお問い合わせください。"
         activated: "ユーザーを有効化しました"
         activation_failed: "ユーザーの有効化に失敗しました"
+        exempted_and_cancelled: "ユーザーをサブスクリプション免除に設定し、Stripeサブスクリプションを解約しました"
+        exemption_failed: "サブスクリプション免除設定に失敗しました"
     customers:
       stylists:
         stylist_not_found: "指定されたスタイリストが見つかりません。"

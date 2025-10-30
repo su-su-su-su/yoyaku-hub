@@ -37,7 +37,7 @@ class SubscriptionsController < ApplicationController
       subscription_data: {
         trial_end: current_user.trial_ends_at&.to_i || TRIAL_PERIOD.from_now.to_i
       },
-      success_url: success_subscription_url,
+      success_url: "#{success_subscription_url}?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: cancel_subscription_url
     )
 
@@ -49,14 +49,14 @@ class SubscriptionsController < ApplicationController
   # rubocop:enable Metrics/AbcSize
 
   def success
+    # Stripe Checkout Sessionから即座にsubscription_idを取得して保存
+    # Webhookの到着を待たずに、ユーザー体験を向上させる
+    save_subscription_from_checkout_session
+
     flash[:notice] = t('subscriptions.registration_completed')
 
     # プロフィールが未完成の場合（新規登録直後）はプロフィール編集へ
-    if current_user.profile_complete?
-      redirect_to stylists_dashboard_path
-    else
-      redirect_to edit_stylists_profile_path
-    end
+    redirect_to_profile_or_dashboard
   end
 
   def cancel
@@ -70,6 +70,60 @@ class SubscriptionsController < ApplicationController
     return if current_user.stylist?
 
     redirect_to root_path, alert: t('subscriptions.access_denied')
+  end
+
+  def save_subscription_from_checkout_session
+    session_id = extract_session_id
+    return unless valid_session_id?(session_id)
+
+    retrieve_and_save_subscription(session_id)
+  rescue Stripe::StripeError => e
+    Rails.logger.error "Checkout Session取得エラー (User ##{current_user.id}): #{e.message}"
+    # エラーが発生してもWebhookで後から更新されるため、処理は続行
+  end
+
+  def extract_session_id
+    session_id = params[:session_id]
+    session_id = session_id.first while session_id.is_a?(Array)
+    Rails.logger.info "Session ID type: #{session_id.class}, value: #{session_id.inspect}"
+    session_id
+  end
+
+  def valid_session_id?(session_id)
+    session_id.present? && session_id.is_a?(String) && session_id != '{CHECKOUT_SESSION_ID}'
+  end
+
+  def retrieve_and_save_subscription(session_id)
+    session = Stripe::Checkout::Session.retrieve(
+      { id: session_id, expand: ['subscription'] }
+    )
+
+    return if session.subscription.blank?
+
+    save_subscription_data(session.subscription)
+  end
+
+  def save_subscription_data(subscription)
+    trial_end = subscription.trial_end ? Time.zone.at(subscription.trial_end) : nil
+
+    # rubocop:disable Rails/SkipsModelValidations
+    current_user.update_columns(
+      stripe_subscription_id: subscription.id,
+      subscription_status: subscription.status,
+      trial_ends_at: trial_end,
+      updated_at: Time.current
+    )
+    # rubocop:enable Rails/SkipsModelValidations
+
+    Rails.logger.info "Checkout成功時にサブスクリプション情報を即座に保存 (User ##{current_user.id}): #{subscription.id}"
+  end
+
+  def redirect_to_profile_or_dashboard
+    if current_user.profile_complete?
+      redirect_to stylists_dashboard_path
+    else
+      redirect_to edit_stylists_profile_path
+    end
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength

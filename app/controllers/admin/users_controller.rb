@@ -19,8 +19,11 @@ module Admin
     def edit; end
 
     def update
+      # subscription_exemptをtrueに変更する場合、Stripeサブスクリプションも解約
+      if exempting_subscription?
+        handle_subscription_exemption
       # ステータスがinactiveに変更される場合、Stripeサブスクリプションも解約
-      if deactivating_stylist?
+      elsif deactivating_stylist?
         handle_stylist_deactivation
       elsif @user.update(user_params)
         redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.updated')
@@ -87,6 +90,25 @@ module Admin
       scope = scope.where(role: params[:role]) if params[:role].present?
       scope = scope.where(status: params[:status]) if params[:status].present?
       scope
+    end
+
+    def exempting_subscription?
+      # チェックボックスは "1" または "true" を送信
+      ['1', 'true', true].include?(user_params[:subscription_exempt]) &&
+        !@user.subscription_exempt? &&
+        @user.stripe_subscription_id.present?
+    end
+
+    def handle_subscription_exemption
+      @user.cancel_stripe_subscription_for_exemption
+      @user.update(user_params)
+      redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.exempted_and_cancelled')
+    rescue Stripe::StripeError => e
+      Rails.logger.error "免除設定時のStripe解約失敗 (User ##{@user.id}): #{e.message}"
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.stripe_cancel_failed')
+    rescue StandardError => e
+      Rails.logger.error "免除設定失敗 (User ##{@user.id}): #{e.message}"
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.exemption_failed')
     end
 
     def deactivating_stylist?
