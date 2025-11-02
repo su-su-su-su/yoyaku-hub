@@ -35,7 +35,7 @@ RSpec.describe 'Stylists::Sales CSV Export' do
     end
   end
 
-  def create_accounting_with_payment(customer, menu, payment_method, day_offset = 0)
+  def get_nth_weekday_of_month(day_offset)
     # 月初から平日のみを収集し、指定された番目の平日を取得
     date = Date.current.beginning_of_month
     weekdays = []
@@ -46,8 +46,11 @@ RSpec.describe 'Stylists::Sales CSV Export' do
       date += 1.day
     end
 
-    # 指定された番目の平日を使用（0ベースのインデックス）
-    target_date = weekdays[day_offset]
+    weekdays[day_offset]
+  end
+
+  def create_accounting_with_payment(customer, menu, payment_method, day_offset = 0)
+    target_date = get_nth_weekday_of_month(day_offset)
     setup_working_environment(target_date)
 
     reservation = create(:reservation,
