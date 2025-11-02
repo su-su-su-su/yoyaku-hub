@@ -303,7 +303,8 @@ RSpec.describe ReservationMailer do
     it 'formats date with Japanese weekday' do
       expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
         wday = %w[日 月 火 水 木 金 土][reservation_date.wday]
-        expected_format = "#{reservation_date.year}年#{reservation_date.month}月#{reservation_date.day}日(#{wday})"
+        # strftimeの%dは0埋めされた日付を返す
+        expected_format = reservation_date.strftime("%Y年%m月%d日(#{wday})")
         expect(args[:html_content]).to include(expected_format)
         { success: true }
       end
