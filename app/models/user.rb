@@ -482,27 +482,6 @@ class User < ApplicationRecord
     end
   end
 
-  # サブスク免除設定時にStripeサブスクリプションをキャンセル（ユーザーステータスは維持）
-  def cancel_stripe_subscription_for_exemption
-    return if stripe_subscription_id.blank?
-    return if Rails.configuration.stripe[:secret_key].blank?
-
-    Stripe::Subscription.cancel(stripe_subscription_id)
-
-    # rubocop:disable Rails/SkipsModelValidations
-    update_columns(
-      stripe_subscription_id: nil,
-      subscription_status: 'canceled',
-      updated_at: Time.current
-    )
-    # rubocop:enable Rails/SkipsModelValidations
-
-    Rails.logger.info "免除設定: Stripeサブスクリプション解約 User ##{id}"
-  rescue Stripe::StripeError => e
-    Rails.logger.error "免除設定時のStripe解約エラー (User ##{id}): #{e.message}"
-    raise # エラーの場合はロールバック
-  end
-
   private
 
   def should_create_stripe_customer?

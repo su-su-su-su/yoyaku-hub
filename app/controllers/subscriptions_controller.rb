@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 class SubscriptionsController < ApplicationController
   # トライアル期間（6ヶ月）
   TRIAL_PERIOD = 6.months
@@ -165,3 +166,4 @@ class SubscriptionsController < ApplicationController
   end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 end
+# rubocop:enable Metrics/ClassLength

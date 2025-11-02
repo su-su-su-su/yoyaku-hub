@@ -112,7 +112,13 @@
             .flex
               dt.font-medium.text-gray-600.w-40 Stripe状態:
               dd
-                span.font-mono.text-xs = @user.subscription_status
+                - if @user.subscription_exempt?
+                  span.px-2.py-1.bg-purple-100.text-purple-800.rounded-full.text-xs
+                    | 免除適用中（100%割引）
+                  span.ml-2.font-mono.text-xs.text-gray-500
+                    | (#{@user.subscription_status})
+                - else
+                  span.font-mono.text-xs = @user.subscription_status
 
           - if @user.stripe_customer_id.present?
             .flex
@@ -125,6 +131,16 @@
               dt.font-medium.text-gray-600.w-40 Stripe Subscription:
               dd
                 span.font-mono.text-xs = @user.stripe_subscription_id
+
+          / 免除トグルボタン（サブスクリプションがある場合のみ表示）
+          - if @user.stripe_subscription_id.present?
+            .pt-4.mt-4.border-t.border-gray-200
+              - if @user.subscription_exempt?
+                = button_to toggle_subscription_exemption_admin_user_path(@user), method: :patch, class: "btn-warning w-full" do
+                  | 免除を解除する（通常課金に戻す）
+              - else
+                = button_to toggle_subscription_exemption_admin_user_path(@user), method: :patch, class: "btn-success w-full" do
+                  | 免除を適用する（100%割引クーポン）
 
   - if @reservations.any?
     .bg-white.border.border-gray-200.rounded-lg.overflow-hidden

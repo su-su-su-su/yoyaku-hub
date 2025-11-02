@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     resources :users do
       member do
         patch :activate
+        patch :toggle_subscription_exemption
       end
     end
     root to: 'users#index'
