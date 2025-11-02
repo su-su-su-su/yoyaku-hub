@@ -37,18 +37,19 @@
         = form.select :role, [['顧客', 'customer'], ['スタイリスト', 'stylist'], ['管理者', 'admin']], {}, class: "select select-bordered w-full"
 
     / サブスクリプション免除設定（スタイリストのみ）
-    - if user.stylist? || user.new_record?
+    - if user.stylist? && user.stripe_subscription_id.present?
       .bg-yellow-50.border.border-yellow-200.rounded-lg.p-4.mb-4
-        h3.text-lg.font-bold.text-yellow-800.mb-3 サブスクリプション設定
+        h3.text-lg.font-bold.text-yellow-800.mb-3 サブスクリプション免除設定
         .form-group.mb-3
           label.flex.items-center.cursor-pointer
-            = form.check_box :subscription_exempt, class: "checkbox checkbox-warning mr-2", data: { confirm_toggle: "モニター除外" }
-            span.font-semibold サブスクリプション免除（モニターキャンペーン等）
+            = form.check_box :subscription_exempt, class: "checkbox checkbox-warning mr-2"
+            span.font-semibold サブスクリプション免除（100%割引クーポン適用）
         .form-group
           = form.label :subscription_exempt_reason, "免除理由", class: "label"
           = form.text_field :subscription_exempt_reason, placeholder: "例：モニターキャンペーン参加者", class: "input input-bordered w-full"
         .text-sm.text-gray-600.mt-2
-          | ※ 免除を外すと、次回ログイン時にサブスクリプション登録が必要になります
+          p ※ チェックを入れるとStripeで100%割引クーポンが適用されます
+          p ※ チェックを外すと割引が解除され通常課金に戻ります
 
     / ユーザーステータス設定
     .bg-red-50.border.border-red-200.rounded-lg.p-4.mb-4

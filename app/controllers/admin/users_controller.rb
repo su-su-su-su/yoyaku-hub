@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
+  # rubocop:disable Metrics/ClassLength
   class UsersController < ApplicationController
     before_action :set_user, only: %i[show edit update destroy]
 
@@ -19,8 +20,11 @@ module Admin
     def edit; end
 
     def update
+      # subscription_exemptの変更を検知してStripeと同期
+      if subscription_exempt_changed?
+        handle_subscription_exempt_change
       # ステータスがinactiveに変更される場合、Stripeサブスクリプションも解約
-      if deactivating_stylist?
+      elsif deactivating_stylist?
         handle_stylist_deactivation
       elsif @user.update(user_params)
         redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.updated')
@@ -59,6 +63,59 @@ module Admin
       end
     end
 
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def toggle_subscription_exemption
+      @user = User.with_inactive.find(params[:id])
+
+      if @user.stripe_subscription_id.blank?
+        redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.no_subscription')
+        return
+      end
+
+      begin
+        if @user.subscription_exempt?
+          # 免除解除: 割引を削除
+          # discounts配列を空にすることで全ての割引を削除
+          Stripe::Subscription.update(
+            @user.stripe_subscription_id,
+            { discounts: [] }
+          )
+
+          @user.update!(subscription_exempt: false, subscription_exempt_reason: nil)
+          redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.exemption_removed')
+        else
+          # 免除適用: クーポンを適用（新しいAPI形式）
+          coupon_id = ENV['STRIPE_EXEMPTION_COUPON_ID'] || ENV.fetch('STRIPE_MONITOR_COUPON_ID', nil)
+
+          unless coupon_id
+            Rails.logger.error '免除用クーポンIDが環境変数に設定されていません'
+            redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.exemption_coupon_missing')
+            return
+          end
+          Stripe::Subscription.update(
+            @user.stripe_subscription_id,
+            {
+              discounts: [
+                { coupon: coupon_id }
+              ]
+            }
+          )
+          @user.update!(
+            subscription_exempt: true,
+            subscription_exempt_reason: 'モニター免除（100%割引クーポン適用）'
+          )
+          redirect_to admin_user_path(@user), notice: I18n.t('flash.admin.users.exemption_applied')
+        end
+      rescue Stripe::StripeError => e
+        Rails.logger.error "免除トグル時のエラー (User ##{@user.id}): #{e.message}"
+        redirect_to admin_user_path(@user), alert: "Stripeエラー: #{e.message}"
+      rescue StandardError => e
+        Rails.logger.error "免除トグル失敗 (User ##{@user.id}): #{e.message}"
+        redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.exemption_toggle_error')
+      end
+    end
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+
     private
 
     def set_user
@@ -89,6 +146,52 @@ module Admin
       scope
     end
 
+    def subscription_exempt_changed?
+      # Stripeサブスクリプションがあり、subscription_exemptが変更される場合
+      return false if @user.stripe_subscription_id.blank?
+
+      # チェックボックスの値を正規化（"0" = false, "1" = true）
+      new_value = ['1', 'true', true].include?(user_params[:subscription_exempt])
+      new_value != @user.subscription_exempt?
+    end
+
+    def handle_subscription_exempt_change
+      new_exempt = ['1', 'true', true].include?(user_params[:subscription_exempt])
+
+      begin
+        update_stripe_subscription_exemption(new_exempt)
+        update_user_and_redirect(new_exempt)
+      rescue Stripe::StripeError => e
+        Rails.logger.error "免除設定変更時のエラー (User ##{@user.id}): #{e.message}"
+        redirect_to edit_admin_user_path(@user), alert: "Stripeエラー: #{e.message}"
+      end
+    end
+
+    def update_stripe_subscription_exemption(exempt)
+      if exempt
+        coupon_id = ENV['STRIPE_EXEMPTION_COUPON_ID'] || ENV.fetch('STRIPE_MONITOR_COUPON_ID', nil)
+        return handle_missing_coupon unless coupon_id
+
+        Stripe::Subscription.update(@user.stripe_subscription_id, { discounts: [{ coupon: coupon_id }] })
+      else
+        Stripe::Subscription.update(@user.stripe_subscription_id, { discounts: [] })
+      end
+    end
+
+    def handle_missing_coupon
+      Rails.logger.error '免除用クーポンIDが環境変数に設定されていません'
+      redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.exemption_coupon_missing')
+    end
+
+    def update_user_and_redirect(exempt)
+      if @user.update(user_params)
+        message_key = exempt ? 'flash.admin.users.exemption_applied' : 'flash.admin.users.exemption_removed'
+        redirect_to admin_user_path(@user), notice: I18n.t(message_key)
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
     def deactivating_stylist?
       user_params[:status] == 'inactive' && @user.status != 'inactive' && @user.stylist?
     end
@@ -104,4 +207,5 @@ module Admin
       redirect_to admin_user_path(@user), alert: I18n.t('flash.admin.users.deactivation_failed')
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

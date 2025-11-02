@@ -13,7 +13,7 @@ RSpec.describe 'Admin::Users' do
 
   before do
     sign_in admin
-    # Stripe APIキーをモック設定
+    # Stripe APIキーをモック設定（他のテストと同じ方式）
     allow(Rails.configuration.stripe).to receive(:[]).with(:secret_key).and_return('sk_test_123')
   end
 
@@ -100,15 +100,14 @@ RSpec.describe 'Admin::Users' do
 
   describe 'PATCH /admin/users/:id (update)' do
     context 'when changing stylist status to inactive' do
-      before do
-        # Stripe APIモック
-        allow(Stripe::Subscription).to receive(:cancel).and_return(true)
-      end
-
       it 'deactivates user and cancels Stripe subscription' do
+        # Stripe APIモック
+        allow(Stripe::Subscription).to receive(:cancel).with('sub_test123').and_return(true)
+
         patch admin_user_path(stylist_with_subscription), params: {
           user: {
-            status: 'inactive'
+            status: 'inactive',
+            subscription_exempt: stylist_with_subscription.subscription_exempt ? '1' : '0'
           }
         }
 
@@ -126,7 +125,8 @@ RSpec.describe 'Admin::Users' do
 
         patch admin_user_path(stylist_with_subscription), params: {
           user: {
-            family_name: '新しい名前'
+            family_name: '新しい名前',
+            subscription_exempt: stylist_with_subscription.subscription_exempt ? '1' : '0'
           }
         }
 
@@ -167,7 +167,8 @@ RSpec.describe 'Admin::Users' do
       it 'shows error and does not deactivate user' do
         patch admin_user_path(stylist_with_subscription), params: {
           user: {
-            status: 'inactive'
+            status: 'inactive',
+            subscription_exempt: stylist_with_subscription.subscription_exempt ? '1' : '0'
           }
         }
 

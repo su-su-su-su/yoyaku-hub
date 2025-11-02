@@ -35,16 +35,28 @@ RSpec.describe 'Stylists::Sales CSV Export' do
     end
   end
 
-  def create_accounting_with_payment(customer, menu, payment_method, day_offset = 0)
-    date = Date.current.beginning_of_month + day_offset.days
-    date += 1.day while weekend_days.include?(date.wday)
+  def get_nth_weekday_of_month(day_offset)
+    # 月初から平日のみを収集し、指定された番目の平日を取得
+    date = Date.current.beginning_of_month
+    weekdays = []
 
-    setup_working_environment(date)
+    # 月内の平日を収集（最大20日分まで探索）
+    20.times do
+      weekdays << date unless weekend_days.include?(date.wday)
+      date += 1.day
+    end
+
+    weekdays[day_offset]
+  end
+
+  def create_accounting_with_payment(customer, menu, payment_method, day_offset = 0)
+    target_date = get_nth_weekday_of_month(day_offset)
+    setup_working_environment(target_date)
 
     reservation = create(:reservation,
       stylist: stylist,
       customer: customer,
-      start_at: date + 10.hours,
+      start_at: target_date + 10.hours,
       menus: [menu])
 
     accounting = create(:accounting,
