@@ -44,3 +44,10 @@
 /config/credentials/production.key
 
 /config/credentials/staging.key
+
+# Development notes and temporary documentation
+/CLAUDE.md
+/STATUS_*.md
+/SECURITY_AUDIT_*.md
+/*_SETUP.md
+/STRIPE_SETUP.md

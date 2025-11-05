@@ -312,4 +312,118 @@ RSpec.describe ReservationMailer do
       mailer.reservation_confirmation(reservation)
     end
   end
+
+  describe '#reminder_email' do
+    let(:mailer) { described_class.new }
+
+    it 'sends reminder email to customer' do
+      expect_any_instance_of(SendgridService).to receive(:send_email).with(
+        hash_including(to: customer.email)
+      ).and_return({ success: true })
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes tomorrow time in subject' do
+      expected_subject = '【YOYAKU HUB】明日13:00のご予約のお知らせ'
+
+      expect_any_instance_of(SendgridService).to receive(:send_email).with(
+        hash_including(subject: expected_subject)
+      ).and_return({ success: true })
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes customer name in email content' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('山田 花子')
+        expect(args[:text_content]).to include('山田 花子')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes stylist name in email content' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('田中 太郎')
+        expect(args[:text_content]).to include('田中 太郎')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes menu name in email content' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('カット')
+        expect(args[:text_content]).to include('カット')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes total price in email content' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('¥3,000')
+        expect(args[:text_content]).to include('¥3,000')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes total duration in email content' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('60分')
+        expect(args[:text_content]).to include('60分')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes reservation detail URL' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include("/customers/reservations/#{reservation.id}")
+        expect(args[:text_content]).to include("/customers/reservations/#{reservation.id}")
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes reminder message about cancellation' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('ご予約の変更・キャンセルが必要な場合は、マイページから行えます')
+        expect(args[:text_content]).to include('ご予約の変更・キャンセルが必要な場合は、マイページから行えます')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'includes friendly closing message' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        expect(args[:html_content]).to include('お会いできることを楽しみにしております')
+        expect(args[:text_content]).to include('お会いできることを楽しみにしております')
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+
+    it 'formats reservation date with Japanese weekday' do
+      expect_any_instance_of(SendgridService).to receive(:send_email) do |_, args|
+        wday = %w[日 月 火 水 木 金 土][reservation_date.wday]
+        expected_format = reservation_date.strftime("%Y年%m月%d日(#{wday})")
+        expect(args[:html_content]).to include(expected_format)
+        expect(args[:text_content]).to include(expected_format)
+        { success: true }
+      end
+
+      mailer.reminder_email(reservation)
+    end
+  end
 end
