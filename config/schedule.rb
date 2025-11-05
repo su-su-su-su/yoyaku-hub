@@ -33,6 +33,12 @@ every 1.day, at: '2:00 am' do
   rake 'demo:daily_cleanup'
 end
 
+# 予約リマインダーメール送信
+# 毎日午前11時（日本時間）に実行 - 明日の予約をリマインド
+every 1.day, at: '11:00 am' do
+  runner 'ReservationReminderJob.perform_later'
+end
+
 # バックアップタスク（さくらのオブジェクトストレージ契約後に有効化）
 # # 日次バックアップ - 毎日午前3時
 # every 1.day, at: '3:00 am' do

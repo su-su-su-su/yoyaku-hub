@@ -114,6 +114,24 @@ class ReservationMailer
     )
   end
 
+  # 予約前日のリマインダーメール
+  def reminder_email(reservation)
+    @reservation = reservation
+    @customer = reservation.customer
+    @stylist = reservation.stylist
+    @menus = reservation.menus
+
+    html_content = render_reminder_html
+    text_content = render_reminder_text
+
+    @service.send_email(
+      to: @customer.email,
+      subject: "【YOYAKU HUB】明日#{format_time(@reservation.start_at)}のご予約のお知らせ",
+      html_content: html_content,
+      text_content: text_content
+    )
+  end
+
   private
 
   def format_date(datetime)
@@ -124,6 +142,10 @@ class ReservationMailer
   def format_full_datetime(datetime)
     wday = %w[日 月 火 水 木 金 土][datetime.wday]
     datetime.strftime("%Y年%m月%d日(#{wday}) %H:%M")
+  end
+
+  def format_time(datetime)
+    datetime.strftime('%H:%M')
   end
 
   def render_reservation_confirmation_html
@@ -590,6 +612,93 @@ class ReservationMailer
           <div class="detail-value">
             #{@menus.map(&:name).join('<br>')}
           </div>
+        </div>
+      </div>
+    HTML
+  end
+
+  def render_reminder_html
+    reservation_url = "#{Rails.application.config.base_url}/customers/reservations/#{@reservation.id}"
+
+    content = <<~CONTENT
+      <p>#{@customer.family_name} #{@customer.given_name}様</p>
+      <p>いつもYOYAKU HUBをご利用いただき、ありがとうございます。<br>
+      明日のご予約についてお知らせいたします。</p>
+
+      #{reminder_details_section}
+
+      <p style="text-align: center;">
+        <a href="#{reservation_url}" class="button">予約の詳細を確認</a>
+      </p>
+
+      <p>ご予約の変更・キャンセルが必要な場合は、マイページから行えます。</p>
+      <p>明日はお気をつけてお越しくださいませ。<br>
+      お会いできることを楽しみにしております。</p>
+    CONTENT
+
+    email_layout(content)
+  end
+
+  def render_reminder_text
+    reservation_url = "#{Rails.application.config.base_url}/customers/reservations/#{@reservation.id}"
+
+    <<~TEXT
+      #{@customer.family_name} #{@customer.given_name}様
+
+      いつもYOYAKU HUBをご利用いただき、ありがとうございます。
+      明日のご予約についてお知らせいたします。
+
+      【明日のご予約内容】
+      日時: #{format_full_datetime(@reservation.start_at)}
+      スタイリスト: #{@stylist.family_name} #{@stylist.given_name}
+
+      メニュー:
+      #{@menus.map { |m| "・#{m.name}" }.join("\n")}
+
+      合計時間: #{@menus.sum(&:duration)}分
+      合計金額: #{number_to_currency(@menus.sum(&:price))}
+
+      予約の詳細はこちら:
+      #{reservation_url}
+
+      ご予約の変更・キャンセルが必要な場合は、マイページから行えます。
+
+      明日はお気をつけてお越しくださいませ。
+      お会いできることを楽しみにしております。
+
+      --
+      このメールは自動送信されています。
+      返信はできませんのでご了承ください。
+
+      YOYAKU HUB
+    TEXT
+  end
+
+  def reminder_details_section
+    <<~HTML
+      <div class="reservation-details">
+        <h3>明日のご予約内容</h3>
+        <div class="detail-row">
+          <div class="detail-label">日時</div>
+          <div class="detail-value">#{format_full_datetime(@reservation.start_at)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">スタイリスト</div>
+          <div class="detail-value">#{@stylist.family_name} #{@stylist.given_name}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">メニュー</div>
+          <div class="detail-value">
+            #{@menus.map(&:name).join('<br>')}
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">合計時間</div>
+          <div class="detail-value">#{@menus.sum(&:duration)}分</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">合計金額</div>
+          <div class="detail-value">#{number_to_currency(@menus.sum(&:price))}</div>
         </div>
       </div>
     HTML
