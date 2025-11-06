@@ -36,7 +36,7 @@ end
 # 予約リマインダーメール送信
 # 毎日午前11時（日本時間）に実行 - 明日の予約をリマインド
 every 1.day, at: '11:00 am' do
-  runner 'ReservationReminderJob.perform_later'
+  rake 'reminder:send'
 end
 
 # バックアップタスク（さくらのオブジェクトストレージ契約後に有効化）
