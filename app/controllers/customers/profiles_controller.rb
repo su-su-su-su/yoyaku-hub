@@ -17,7 +17,9 @@ module Customers
       @user = current_user
       @user.assign_attributes(customer_params)
       if @user.save(context: :profile_completion)
-        redirect_with_toast customers_dashboard_path, t('customers.profiles.updated'), type: :success
+        # 保存されたURL（スタイリストメニューページなど）があればそちらへリダイレクト
+        redirect_path = stored_location_for(:user) || customers_dashboard_path
+        redirect_with_toast redirect_path, t('customers.profiles.updated'), type: :success
       else
         render :edit, status: :unprocessable_entity
       end

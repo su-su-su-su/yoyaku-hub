@@ -96,6 +96,58 @@ RSpec.describe 'Customers::Profiles' do
         expect(page).to have_current_path(root_path)
       end
     end
+
+    context 'when accessing via stylist QR code/URL' do
+      let(:stylist) { create(:user, :stylist) }
+      let!(:menu) { create(:menu, stylist: stylist, name: 'カット', price: 6600, duration: 60, is_active: true) } # rubocop:disable RSpec/LetSetup
+
+      it 'redirects to the stylist menu page after login' do
+        # 未ログインでスタイリストメニューページにアクセス（stored_locationを保存）
+        visit customers_stylist_menus_path(stylist)
+
+        # ログインページにリダイレクト
+        expect(page).to have_current_path(new_user_session_path)
+
+        # カスタマーでログイン
+        fill_in 'user_email', with: customer.email
+        fill_in 'user_password', with: 'testtest'
+        click_on 'ログイン'
+
+        # stored_locationにより、元のスタイリストメニューページにリダイレクトされることを確認
+        expect(page).to have_current_path(customers_stylist_menus_path(stylist), ignore_query: true)
+        expect(page).to have_content("#{stylist.family_name} #{stylist.given_name} さんのメニュー一覧")
+        expect(page).to have_content('カット')
+      end
+    end
+
+    context 'when registering directly (not via stylist URL)' do
+      let(:direct_customer) do
+        # プロフィール未完了の新規カスタマーを作成
+        create(:user, :customer,
+          family_name: nil,
+          given_name: nil,
+          family_name_kana: nil,
+          given_name_kana: nil,
+          gender: nil,
+          date_of_birth: nil)
+      end
+
+      it 'redirects to customer dashboard after profile registration' do
+        # プロフィール未完了のカスタマーでログイン
+        sign_in direct_customer
+
+        # プロフィール編集ページにアクセス
+        visit edit_customers_profile_path
+
+        # プロフィール情報を入力
+        fill_in_profile_form(valid_attributes)
+        click_on '登録'
+
+        # 従来通りダッシュボードにリダイレクト（stored_locationがないため）
+        expect(page).to have_current_path(customers_dashboard_path)
+        expect(page).to have_css('#toast-container .toast-message', text: I18n.t('customers.profiles.updated'))
+      end
+    end
   end
 
   private
