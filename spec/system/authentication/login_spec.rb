@@ -102,5 +102,61 @@ RSpec.describe 'User login' do
       expect(page).to have_content('YOYAKU HUB')
     end
   end
+
+  context 'when accessing via stylist QR code/URL' do
+    let(:stylist) { create(:user, :stylist) }
+    let!(:menu) { create(:menu, stylist: stylist, name: 'カット', price: 6600, duration: 60, is_active: true) } # rubocop:disable RSpec/LetSetup
+
+    context 'with existing customer account' do
+      it 'redirects to the stylist menu page after login' do
+        # スタイリストのメニューページにアクセス（未ログイン）
+        visit customers_stylist_menus_path(stylist)
+
+        # ログインページにリダイレクトされることを確認
+        expect(page).to have_current_path(new_user_session_path)
+
+        # ログイン
+        fill_in 'user_email', with: customer.email
+        fill_in 'user_password', with: 'testtest'
+        click_on 'ログイン'
+
+        # 元のスタイリストメニューページにリダイレクトされることを確認
+        expect(page).to have_current_path(customers_stylist_menus_path(stylist), ignore_query: true)
+        expect(page).to have_content("#{stylist.family_name} #{stylist.given_name} さんのメニュー一覧")
+        expect(page).to have_content('カット')
+      end
+    end
+
+    context 'with direct login (not via stylist URL)' do
+      it 'redirects to customer dashboard as usual' do
+        visit new_user_session_path
+
+        fill_in 'user_email', with: customer.email
+        fill_in 'user_password', with: 'testtest'
+        click_on 'ログイン'
+
+        # 従来通りダッシュボードにリダイレクト
+        expect(page).to have_current_path('/customers/dashboard', url: false)
+      end
+    end
+
+    context 'when stylist logs in via direct login' do
+      it 'always redirects to stylist dashboard regardless of stored location' do
+        # スタイリストメニューページにアクセス（ストレージに保存される）
+        visit customers_stylist_menus_path(stylist)
+
+        # ログインページにリダイレクト
+        expect(page).to have_current_path(new_user_session_path)
+
+        # スタイリストとしてログイン
+        fill_in 'user_email', with: stylist.email
+        fill_in 'user_password', with: 'testtest'
+        click_on 'ログイン'
+
+        # スタイリストは常にダッシュボードへ（stored_locationを無視）
+        expect(page).to have_current_path('/stylists/dashboard', url: false)
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength

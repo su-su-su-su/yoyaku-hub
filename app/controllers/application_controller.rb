@@ -15,7 +15,8 @@ class ApplicationController < ActionController::Base
     when 'stylist'
       stylists_dashboard_path
     when 'customer'
-      customers_dashboard_path
+      # 保存されたURLがあればそちらへリダイレクト（スタイリストメニューページなど）
+      stored_location_for(:user) || customers_dashboard_path
     else
       root_path
     end
