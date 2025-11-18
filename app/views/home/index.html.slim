@@ -67,6 +67,157 @@
           p.text-gray-600.text-left
             | 月額料金に加えて追加料金が発生する不透明な料金体系。YOYAKU HUBは明確でシンプルな料金体系で、美容師の経済的負担を軽減します。
 
+  section#optimization-feature.optimization-feature.bg-white.py-12.sm:py-24
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      .section-title.text-center.mb-16
+        h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+          | 独自の予約最適化アルゴリズム
+        p.text-lg.text-gray-600.max-w-3xl.mx-auto
+          | 隙間時間を自動的に最小化する、YOYAKU HUB独自の予約管理システム
+
+      .optimization-demo.max-w-4xl.mx-auto.mb-12
+        .bg-gradient-to-br.from-blue-50.to-white.rounded-2xl.p-8.border.border-blue-200
+          h3.text-xl.font-bold.mb-6.text-center
+            | 予約最適化システムの仕組み
+
+          .grid.grid-cols-1.md:grid-cols-2.gap-8.mb-8
+            .after-optimization.bg-white.rounded-xl.p-6.border-4.border-blue-600
+              h4.font-bold.text-gray-800.mb-4
+                span.text-green-600 ✅
+                | YOYAKU HUBの最適化
+              p.text-xs.text-gray-600.mb-2
+                | 60分カットを予約する時の画面：
+              .schedule-visual.space-y-2.mb-3
+                .time-block.bg-gray-300.rounded.p-2.text-sm.relative
+                  .flex.justify-between.items-center
+                    span 10:00-10:30
+                    span.font-bold.text-gray-600 ×予約済
+                .time-block.bg-green-100.rounded.p-2.text-sm.relative.border-2.border-green-400
+                  .flex.justify-between.items-center
+                    span 10:30-11:00
+                    span.font-bold.text-green-600 ◎推奨
+                .time-block.bg-yellow-100.rounded.p-2.text-sm.relative.border.border-yellow-400
+                  .flex.justify-between.items-center
+                    span 11:00-11:30
+                    span.font-bold.text-yellow-600 △調整推奨
+                .time-block.bg-green-100.rounded.p-2.text-sm.relative.border-2.border-green-400
+                  .flex.justify-between.items-center
+                    span 11:30-12:00
+                    span.font-bold.text-green-600 ◎推奨
+                .time-block.bg-gray-300.rounded.p-2.text-sm.relative
+                  .flex.justify-between.items-center
+                    span 12:00-12:30
+                    span.font-bold.text-gray-600 ×時間が足りない
+                .time-block.bg-gray-300.rounded.p-2.text-sm.relative
+                  .flex.justify-between.items-center
+                    span 12:30-13:00
+                    span.font-bold.text-gray-600 ×予約済
+              p.text-xs.text-green-600.mb-2
+                | ↓システムが10:30（◎）を自動推奨
+              .result-visual.bg-green-50.rounded.p-2.text-xs
+                | 結果：10:30から連続して予約が入り、隙間ゼロで効率最大化
+
+            .before-optimization.bg-white.rounded-xl.p-6.border.border-gray-300
+              h4.font-bold.text-gray-800.mb-4
+                span.text-red-600 ❌
+                | 通常の予約システム
+              p.text-xs.text-gray-600.mb-2
+                | 60分カットを予約する時の画面：
+              .schedule-visual.space-y-2.mb-3
+                .time-block.bg-gray-300.rounded.p-2.text-sm.relative
+                  .flex.justify-between.items-center
+                    span 10:00-10:30
+                    span.font-bold.text-gray-600 ×予約済
+                .time-block.bg-blue-50.rounded.p-2.text-sm.relative.border.border-blue-300
+                  .flex.justify-between.items-center
+                    span 10:30-11:00
+                    span.font-bold.text-blue-600 ○空き
+                .time-block.bg-blue-50.rounded.p-2.text-sm.relative.border.border-blue-300
+                  .flex.justify-between.items-center
+                    span 11:00-11:30
+                    span.font-bold.text-blue-600 ○空き
+                .time-block.bg-blue-50.rounded.p-2.text-sm.relative.border.border-blue-300
+                  .flex.justify-between.items-center
+                    span 11:30-12:00
+                    span.font-bold.text-blue-600 ○空き
+                .time-block.bg-gray-300.rounded.p-2.text-sm.relative
+                  .flex.justify-between.items-center
+                    span 12:00-12:30
+                    span.font-bold.text-gray-600 ×時間が足りない
+                .time-block.bg-gray-300.rounded.p-2.text-sm.relative
+                  .flex.justify-between.items-center
+                    span 12:30-13:00
+                    span.font-bold.text-gray-600 ×予約済
+              p.text-xs.text-orange-600.mb-2
+                | ↓全て○なので、お客様は11:00-12:00を選択した場合
+              .result-visual.bg-red-50.rounded.p-2.text-xs
+                | 結果：10:30-11:00（30分）と12:00-12:30（30分）が使えない隙間に
+                br
+                | 合計60分の無駄が発生！
+
+          .algorithm-explanation.bg-blue-50.rounded-xl.p-6
+            h4.font-bold.mb-3
+              | システムが自動で判定する3段階の予約可否
+            .grid.grid-cols-1.md:grid-cols-3.gap-4
+              .status-card
+                .symbol.text-2xl.font-bold.text-green-600.mb-2
+                  | ◎
+                p.text-sm.font-bold.mb-1
+                  | 最適な予約枠
+                p.text-xs.text-gray-600
+                  | 前後に十分な余裕があり、他の予約も入れやすい時間帯
+              .status-card
+                .symbol.text-2xl.font-bold.text-yellow-600.mb-2
+                  | △
+                p.text-sm.font-bold.mb-1
+                  | 調整推奨枠
+                p.text-xs.text-gray-600
+                  | 予約可能だが、隙間時間が発生しやすいため別の時間を推奨
+              .status-card
+                .symbol.text-2xl.font-bold.text-gray-400.mb-2
+                  | ×
+                p.text-sm.font-bold.mb-1
+                  | 予約不可
+                p.text-xs.text-gray-600
+                  | 既に予約済み、または営業時間外
+
+      .impact-stats.grid.grid-cols-3.gap-2.sm:gap-4.md:gap-8.max-w-4xl.mx-auto
+        .stat-card.text-center.bg-white.rounded-lg.sm:rounded-xl.p-3.sm:p-4.md:p-6.shadow-md.border.border-gray-200
+          .number.text-lg.sm:text-2xl.md:text-4xl.font-bold.text-blue-600.mb-1.sm:mb-2
+            | 10-15%
+          p.text-xs.sm:text-sm.md:text-base.text-gray-800.font-bold
+            | 稼働率向上
+          p.text-xs.sm:text-sm.text-gray-600.mt-1.sm:mt-2.hidden.sm:block
+            | 隙間時間を最小化することで実現
+
+        .stat-card.text-center.bg-white.rounded-lg.sm:rounded-xl.p-3.sm:p-4.md:p-6.shadow-md.border.border-gray-200
+          .number.text-lg.sm:text-2xl.md:text-4xl.font-bold.text-blue-600.mb-1.sm:mb-2
+            | 8人/月
+          p.text-xs.sm:text-sm.md:text-base.text-gray-800.font-bold
+            | 追加施術可能
+          p.text-xs.sm:text-sm.text-gray-600.mt-1.sm:mt-2.hidden.sm:block
+            | 週2回の最適化により実現
+
+        .stat-card.text-center.bg-white.rounded-lg.sm:rounded-xl.p-3.sm:p-4.md:p-6.shadow-md.border.border-gray-200
+          .number.text-lg.sm:text-2xl.md:text-4xl.font-bold.text-blue-600.mb-1.sm:mb-2
+            | 6~7万円/月
+          p.text-xs.sm:text-sm.md:text-base.text-gray-800.font-bold
+            | 売上増加
+          p.text-xs.sm:text-sm.text-gray-600.mt-1.sm:mt-2.hidden.sm:block
+            | 予約枠増加により実現
+
+      p.text-xs.text-center.text-gray-500.mt-4
+        | ※週2回程度の最適化効果を想定した試算値です。実際の効果はご利用状況により異なります。
+
+      .feature-note.text-center.mt-8.bg-yellow-50.rounded-xl.p-6.max-w-3xl.mx-auto.border.border-yellow-200
+        p.text-gray-800
+          | デモでも実際の予約最適化システムをお試しいただけます
+        .mt-4.flex.justify-center.gap-4.flex-wrap
+          = link_to algorithm_explanation_path, class: "inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+            | 詳しい仕組みを見る
+          = link_to demo_path, class: "inline-block bg-white text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transition"
+            | デモを試す
+
   section#benefits.benefits.bg-gray-50.py-12.sm:py-24
     .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
       .section-title.text-center.mb-16

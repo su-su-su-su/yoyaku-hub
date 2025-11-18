@@ -1,0 +1,405 @@
+.algorithm-explanation-page
+  .container
+    .header-section
+      .logo YOYAKU HUB
+      h1  予約最適化アルゴリズム
+      .subtitle 美容師の時間を最大限活用する賢い仕組み
+
+    / 実際の画面イメージ
+    .actual-screen.animate-in
+      h2  実際の予約画面イメージ
+      .screen-mockup
+        p style="margin-bottom: 15px;"
+          strong 2025年3月の予約カレンダー
+        .table-wrapper style="overflow-x: auto; -webkit-overflow-scrolling: touch;"
+          table.screen-table
+            thead
+              tr
+                th 時刻
+                th
+                  | 月
+                  br
+                  | 17日
+                th
+                  | 火
+                  br
+                  | 18日
+                th
+                  | 水
+                  br
+                  | 19日
+                th
+                  | 木
+                  br
+                  | 20日
+            tbody
+              tr
+                td 10:00
+                td
+                  span.symbol-cross ×
+                td
+                  span.symbol-circle ◎
+                td
+                  span.symbol-circle ◎
+                td
+                  span.symbol-triangle △
+              tr style="background: #e8e8e8;"
+                td 10:30
+                td
+                  span.symbol-cross ×
+                td
+                  span.symbol-triangle △
+                td
+                  span.symbol-circle ◎
+                td
+                  span.symbol-circle ◎
+              tr
+                td 11:00
+                td
+                  span.symbol-circle ◎
+                td
+                  span.symbol-circle ◎
+                td
+                  span.symbol-cross ×
+                td
+                  span.symbol-triangle △
+        p style="margin-top: 15px; color: #666;"
+          small ※ 実際の画面では、◎をクリックすると予約画面に進みます
+
+    / インタラクティブデモ
+    .interactive-demo
+      h2 style="color: #856404; margin-bottom: 20px;"  インタラクティブデモ
+      p style="margin-bottom: 20px;" 美容師のメニュー構成を選択して、アルゴリズムの動作を体験してください！
+
+      .demo-controls
+        button.demo-button.active onclick="showCase('case60')" ケース1: 60分メニューのみ
+        button.demo-button onclick="showCase('case90')" ケース2: 90分が最小
+        button.demo-button onclick="showCase('special')" ケース3: 特殊ケース
+        button.demo-button onclick="showCase('case30')" ケース4: 30分メニューあり（△なし）
+
+      #demo-result.screen-mockup
+        / デモ結果がここに表示される
+        p ボタンをクリックして、異なるメニュー構成での動作を確認してください
+
+    / 既存のコンテンツ（簡略化）
+    .intro-box
+      h2 style="color: #3b82f6; margin-bottom: 15px;"  このシステムの目的
+      p
+        | 美容師さんの1日の時間を
+        strong 無駄なく使う
+        | ための予約システムです。
+        br
+        | 隙間時間を最小化することで、
+        strong 稼働率が10-15%向上
+        | します。
+
+    / CTA
+    .cta-section
+      h2 style="color: white; font-size: 2em; margin-bottom: 20px;"
+        | この仕組みを実際に体験してみませんか？
+      p style="font-size: 1.2em; margin-bottom: 20px;"
+        | デモで実際の動作をお試しいただけます
+      = link_to "デモを試してみる", demo_path, class: "cta-button"
+      = link_to "トップページに戻る", root_path, class: "cta-button", style: "margin-left: 20px;"
+
+javascript:
+  function showCase(caseType) {
+      // ボタンのアクティブ状態を更新
+      document.querySelectorAll('.demo-button').forEach(btn => {
+          btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // 結果エリアを取得
+      const result = document.getElementById('demo-result');
+
+      if (caseType === 'case60') {
+          result.innerHTML = `
+              <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                  <h3 style="color: #3b82f6; margin-bottom: 15px;">ケース1: 最小施術時間60分の場合</h3>
+                  <p style="margin-bottom: 10px;"><strong>メニュー例：</strong>カット60分、カラー120分など</p>
+                  <p style="margin-bottom: 10px;"><strong>最小施術時間：</strong>60分</p>
+                  <p style="margin-bottom: 10px;"><strong>状況：</strong>11:00-12:00 お客様A、14:00- お客様B</p>
+                  <p><strong>新規予約：</strong>カットで予約したい</p>
+              </div>
+
+              <h4 style="margin-bottom: 15px;">予約可能時間と判定理由：</h4>
+              <table class="screen-table" style="width: 100%; margin-bottom: 20px;">
+                  <thead>
+                      <tr style="background: #f0f0f0;">
+                          <th style="width: 80px;">時刻</th>
+                          <th>状況</th>
+                          <th style="width: 60px;">判定</th>
+                          <th>理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><strong>11:30</strong></td>
+                          <td style="background: #ffcdd2;">時間不足</td>
+                          <td><span class="symbol-cross">×</span></td>
+                          <td>11:00からお客様Aと重複</td>
+                      </tr>
+                      <tr>
+                          <td><strong>12:00</strong></td>
+                          <td style="background: #d4edda;">空き（隣接）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>前の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr>
+                          <td><strong>12:30</strong></td>
+                          <td style="background: #fff3cd;">空き（隙間あり）</td>
+                          <td><span class="symbol-triangle">△</span></td>
+                          <td>前に30分隙間（60分メニューが入らない）</td>
+                      </tr>
+                      <tr>
+                          <td><strong>13:00</strong></td>
+                          <td style="background: #d4edda;">空き（隣接）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>次の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr>
+                          <td><strong>13:30</strong></td>
+                          <td style="background: #ffcdd2;">時間不足</td>
+                          <td><span class="symbol-cross">×</span></td>
+                          <td>14:00からお客様Bと重複</td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px;">
+                  <h4 style="color: #856404; margin-bottom: 10px;">💡 ポイント</h4>
+                  <p>12:30に予約を入れると、12:00-12:30の<strong>30分が無駄</strong>になります。</p>
+                  <p>この30分には60分メニューを入れられないため、△で別の時間を推奨します。</p>
+              </div>
+          `;
+      } else if (caseType === 'case30') {
+          result.innerHTML = `
+              <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                  <h3 style="color: #3b82f6; margin-bottom: 15px;">ケース4: 最小施術時間30分の場合</h3>
+                  <p style="margin-bottom: 10px;"><strong>メニュー構成：</strong>シャンプー30分、カット60分</p>
+                  <p style="margin-bottom: 10px;"><strong>最小施術時間：</strong>30分</p>
+                  <p style="margin-bottom: 10px;"><strong>状況：</strong>11:00-12:00 お客様A、14:00- お客様B</p>
+                  <p><strong>新規予約：</strong>カットで予約したい</p>
+              </div>
+
+              <h4 style="margin-bottom: 15px;">予約可能時間と判定理由：</h4>
+              <table class="screen-table" style="width: 100%; margin-bottom: 20px;">
+                  <thead>
+                      <tr>
+                          <th style="width: 80px;">時刻</th>
+                          <th>状況</th>
+                          <th style="width: 60px;">判定</th>
+                          <th>理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><strong>12:00</strong></td>
+                          <td style="background: #d4edda;">空き（隣接）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>前の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr>
+                          <td><strong>12:30</strong></td>
+                          <td style="background: #d4edda;">空き（30分隙間あり）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>前に30分隙間 → 30分メニューで埋められる！</td>
+                      </tr>
+                      <tr>
+                          <td><strong>13:00</strong></td>
+                          <td style="background: #d4edda;">空き（60分隙間あり）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>前に60分隙間 → 60分または30分×2で埋められる！</td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                  <h4 style="color: #856404; margin-bottom: 10px;">✅ なぜ△が表示されないのか？</h4>
+                  <p style="margin-bottom: 10px;">30分メニューがある場合、<strong>すべての隙間が30分の倍数で埋められる</strong>ため、無駄な隙間が発生しません。</p>
+                  <ul style="margin-left: 20px; margin-bottom: 10px;">
+                      <li>30分隙間 → 30分メニュー1つで完全に埋まる</li>
+                      <li>60分隙間 → 60分メニュー1つ または 30分メニュー2つで埋まる</li>
+                      <li>90分隙間 → 60分+30分 または 30分×3で埋まる</li>
+                  </ul>
+                  <p><strong>結論：</strong>どんな隙間も有効活用できるため、△（調整推奨）の概念自体が不要になり、<strong>予約記号ガイドは表示されません！</strong></p>
+              </div>
+
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px;">
+                  <h4 style="color: #856404; margin-bottom: 10px;">💡 システムの挙動</h4>
+                  <p>最小施術時間が30分の場合：</p>
+                  <ul style="margin-left: 20px;">
+                      <li>アルゴリズムの特殊ケース判定が実質的に無効化される</li>
+                      <li>30分単位ですべての時間が活用可能</li>
+                      <li>お客様はどの時間を選んでも効率的な予約配置が可能</li>
+                  </ul>
+              </div>
+          `;
+      } else if (caseType === 'case90') {
+          result.innerHTML = `
+              <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                  <h3 style="color: #3b82f6; margin-bottom: 15px;">ケース2: 最小施術時間90分の場合</h3>
+                  <p style="margin-bottom: 10px;"><strong>メニュー：</strong>パーマ90分、カラー120分</p>
+                  <p style="margin-bottom: 10px;"><strong>最小施術時間：</strong>90分</p>
+                  <p style="margin-bottom: 10px;"><strong>状況：</strong>10:00から営業開始、13:00- お客様B</p>
+                  <p><strong>新規予約：</strong>パーマで予約したい</p>
+              </div>
+
+              <h4 style="margin-bottom: 15px;">予約可能時間と判定理由：</h4>
+              <table class="screen-table" style="width: 100%; margin-bottom: 20px;">
+                  <thead>
+                      <tr>
+                          <th style="width: 80px;">時刻</th>
+                          <th>状況</th>
+                          <th style="width: 60px;">判定</th>
+                          <th>詳細な理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><strong>10:00</strong></td>
+                          <td style="background: #d4edda;">✅ 営業開始（隣接）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>営業開始時刻なので隙間なし ✅<br>10:00〜11:30（90分）で終了</td>
+                      </tr>
+                      <tr>
+                          <td><strong>10:30</strong></td>
+                          <td style="background: #fff3cd;">⚠️ 特殊ケース</td>
+                          <td><span class="symbol-triangle">△</span></td>
+                          <td>
+                              前の隙間: 10:00-10:30 = 30分<br>
+                              後の隙間: 12:00-13:00 = 60分<br>
+                              <strong>合計: 30分 + 60分 = 90分（最小施術時間と同じ！）</strong><br>
+                              → 90分の時間が「30分」と「60分」に分断される
+                          </td>
+                      </tr>
+                      <tr>
+                          <td><strong>11:00</strong></td>
+                          <td style="background: #fff3cd;">⚠️ 特殊ケース</td>
+                          <td><span class="symbol-triangle">△</span></td>
+                          <td>
+                              前の隙間: 10:00-11:00 = 60分<br>
+                              後の隙間: 12:30-13:00 = 30分<br>
+                              <strong>合計: 60分 + 30分 = 90分（最小施術時間と同じ！）</strong><br>
+                              → 90分の時間が「60分」と「30分」に分断される
+                          </td>
+                      </tr>
+                      <tr>
+                          <td><strong>11:30</strong></td>
+                          <td style="background: #d4edda;">✅ お客様Bと隣接</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>次の予約と隣接（隙間0分）✅<br>11:30〜13:00（90分）で終了</td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                  <h4 style="color: #856404; margin-bottom: 10px;">📊 判定の理由（高度なケース）</h4>
+                  <p style="margin-bottom: 10px;"><strong>10:30が△（特殊ケース）：</strong><br>
+                  もし10:30に予約を入れなければ、10:00-13:00の間に別の90分メニューが1つ入る可能性があります。しかし10:30に入れると、90分の時間が「30分」と「60分」に分断され、どちらも90分メニューが入らなくなります。</p>
+
+                  <p style="margin-bottom: 10px;"><strong>11:00が△（特殊ケース）：</strong><br>
+                  同様に、90分の時間を「60分」と「30分」に分断してしまうため、効率的ではありません。</p>
+
+                  <p><strong>💡 重要：</strong>最小施術時間が90分の場合、60分以下の隙間には90分メニューを入れることができません。
+                  このケースでは、10:30や11:00に予約を入れると、本来なら1つの90分メニューが入る時間を分断してしまうため、△の判定になります。</p>
+              </div>
+          `;
+      } else if (caseType === 'special') {
+          result.innerHTML = `
+              <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                  <h3 style="color: #3b82f6; margin-bottom: 15px;">ケース3: 前後の隙間の合計が最小施術時間と同じ（特殊ケース）</h3>
+                  <p style="margin-bottom: 10px;"><strong>メニュー：</strong>カラー120分、パーマ180分など</p>
+                  <p style="margin-bottom: 10px;"><strong>最小施術時間：</strong>120分</p>
+                  <p style="margin-bottom: 10px;"><strong>状況：</strong>9:00-10:00 お客様A、14:00- お客様B</p>
+                  <p><strong>新規予約：</strong>カラー（120分）で予約したい</p>
+              </div>
+
+              <h4 style="margin-bottom: 15px;">予約可能時間と判定理由：</h4>
+              <table class="screen-table" style="width: 100%; margin-bottom: 20px;">
+                  <thead>
+                      <tr>
+                          <th style="width: 80px;">時刻</th>
+                          <th>状況</th>
+                          <th style="width: 60px;">判定</th>
+                          <th>詳細な理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td><strong>10:00</strong></td>
+                          <td style="background: #d4edda;">✅ 空き（隣接）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>前の予約と隣接（隙間0分）<br>10:00〜12:00（120分）で終了</td>
+                      </tr>
+                      <tr>
+                          <td><strong>10:30</strong></td>
+                          <td style="background: #fff3cd;">⚠️ 特殊ケース</td>
+                          <td><span class="symbol-triangle">△</span></td>
+                          <td>
+                              前の隙間: 10:00-10:30 = <strong>30分</strong><br>
+                              後の隙間: 12:30-14:00 = <strong>90分</strong><br>
+                              <strong style="color: #d32f2f;">合計: 30分 + 90分 = 120分（最小施術時間と同じ！）</strong><br>
+                              → 120分の連続時間が「30分」と「90分」に分断される
+                          </td>
+                      </tr>
+                      <tr>
+                          <td><strong>11:00</strong></td>
+                          <td style="background: #fff3cd;">⚠️ 特殊ケース</td>
+                          <td><span class="symbol-triangle">△</span></td>
+                          <td>
+                              前の隙間: 10:00-11:00 = <strong>60分</strong><br>
+                              後の隙間: 13:00-14:00 = <strong>60分</strong><br>
+                              <strong style="color: #d32f2f;">合計: 60分 + 60分 = 120分（最小施術時間と同じ！）</strong><br>
+                              → 120分の連続時間が「60分」と「60分」に分断される
+                          </td>
+                      </tr>
+                      <tr>
+                          <td><strong>11:30</strong></td>
+                          <td style="background: #fff3cd;">⚠️ 特殊ケース</td>
+                          <td><span class="symbol-triangle">△</span></td>
+                          <td>
+                              前の隙間: 10:00-11:30 = <strong>90分</strong><br>
+                              後の隙間: 13:30-14:00 = <strong>30分</strong><br>
+                              <strong style="color: #d32f2f;">合計: 90分 + 30分 = 120分（最小施術時間と同じ！）</strong><br>
+                              → 120分の連続時間が「90分」と「30分」に分断される
+                          </td>
+                      </tr>
+                      <tr>
+                          <td><strong>12:00</strong></td>
+                          <td style="background: #d4edda;">✅ 空き（隣接）</td>
+                          <td><span class="symbol-circle">◎</span></td>
+                          <td>次の予約と隣接（隙間0分）<br>12:00〜14:00（120分）でぴったり</td>
+                      </tr>
+                      <tr>
+                          <td><strong>13:00</strong></td>
+                          <td style="background: #ffcdd2;">❌ 時間不足</td>
+                          <td><span class="symbol-cross">×</span></td>
+                          <td>14:00からお客様Bのため、60分しかない</td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                  <h4 style="color: #856404; margin-bottom: 10px;">📊 判定の理由（特殊ケース）</h4>
+                  <p style="margin-bottom: 10px;"><strong>3つの時間すべてが△（特殊ケース）：</strong><br>
+                  • 10:30: 前30分 + 後90分 = <strong>120分</strong><br>
+                  • 11:00: 前60分 + 後60分 = <strong>120分</strong><br>
+                  • 11:30: 前90分 + 後30分 = <strong>120分</strong></p>
+
+                  <p style="margin-bottom: 10px;">どの時間に予約を入れても、前後の隙間の合計が120分（最小施術時間）と同じになります。<br>
+                  本来なら10:00-12:00と12:00-14:00に2つの120分メニューが入るところを、1つの予約が時間を分断してしまいます。</p>
+
+                  <p><strong>💡 重要：</strong>「前の隙間 + 後の隙間 = 最小施術時間」という条件を満たす時、すべて△（調整推奨）になります。これがアルゴリズムの核心です！</p>
+              </div>
+          `;
+      }
+
+      result.classList.add('animate-in');
+  }
+
+  // ページ読み込み時に最初のケースを表示
+  document.addEventListener('DOMContentLoaded', function() {
+      showCase('case60');
+  });
