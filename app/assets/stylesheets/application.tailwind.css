@@ -739,3 +739,23 @@
     }
   }
 }
+
+/* ブランドカラー用のカスタムクラス */
+@layer utilities {
+  .bg-brand-blue {
+    background-color: #3e5cd7;
+  }
+
+  .text-brand-blue {
+    color: #3e5cd7;
+  }
+
+  .border-brand-blue {
+    border-color: #3e5cd7;
+  }
+
+  .from-brand-blue {
+    --tw-gradient-from: #3e5cd7;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(62, 92, 215, 0));
+  }
+}
