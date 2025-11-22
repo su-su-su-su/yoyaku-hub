@@ -8,4 +8,6 @@ class StaticPagesController < ApplicationController
   def tokushoho; end
 
   def monitor_campaign; end
+
+  def algorithm_explanation; end
 end

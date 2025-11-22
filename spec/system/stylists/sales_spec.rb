@@ -288,11 +288,11 @@ RSpec.describe 'Stylists::Sales' do
     end
 
     it '売り上げ管理へのリンクが表示される' do
-      expect(page).to have_link('売り上げ管理')
+      expect(page).to have_link('売上管理')
     end
 
     it '売り上げ管理ページへ遷移できる' do
-      click_on '売り上げ管理'
+      click_on '売上管理'
       expect(page).to have_current_path(stylists_sales_path)
       expect(page).to have_content('売り上げ管理')
     end

@@ -2,188 +2,609 @@
 - content_for :meta_description, 'YOYAKU HUBはフリーランス美容師の予約管理、顧客管理、会計をシンプルにするプラットフォーム。複数ツールの煩雑さ、非効率な予約管理、不透明な料金体系の悩みを解決し、あなたの時間と収益を最大化します。'
 
 .home-page
-  .text-white.py-3.text-center.relative style="background-color: #E4B802;"
-    .container.max-w-7xl.mx-auto.px-4
-      p.font-bold.text-lg
+  / ヒーローセクション
+  section.hero.relative.overflow-hidden.pt-12.pb-24.sm:pt-20.sm:pb-32.lg:pt-24.lg:pb-40 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
+    / 背景装飾（アニメーション付きぼかし円）
+    .absolute.inset-0.overflow-hidden
+      .absolute.w-96.h-96.rounded-full.bg-white.opacity-10.blur-3xl style="top: -10%; left: -5%; animation: float 20s ease-in-out infinite;"
+      .absolute.w-80.h-80.rounded-full.bg-blue-300.opacity-20.blur-3xl style="top: 40%; right: -10%; animation: float 15s ease-in-out infinite reverse;"
+      .absolute.w-64.h-64.rounded-full.bg-purple-300.opacity-15.blur-3xl style="bottom: -10%; left: 30%; animation: float 18s ease-in-out infinite;"
+
+    / アニメーション定義
+    style
+      | @keyframes float {
+      |   0%, 100% { transform: translateY(0px) translateX(0px); }
+      |   50% { transform: translateY(-30px) translateX(20px); }
+      | }
+      | @keyframes slideDown {
+      |   from { transform: translateY(-100%); opacity: 0; }
+      |   to { transform: translateY(0); opacity: 1; }
+      | }
+      | @keyframes fadeInUp {
+      |   from { transform: translateY(20px); opacity: 0; }
+      |   to { transform: translateY(0); opacity: 1; }
+      | }
+      | @keyframes pulse-slow {
+      |   0%, 100% { opacity: 1; }
+      |   50% { opacity: 0.8; }
+      | }
+
+    / キャンペーンバッジ（アニメーション付き）
+    div class="absolute left-1/2 transform -translate-x-1/2 z-20" style="top: -2rem;"
+      div class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-full shadow-lg font-bold whitespace-nowrap" style="font-size: 0.75rem;"
         | 🎉 今なら半年無料キャンペーン実施中！
-        br
-        | お早めにご登録ください
-  section.hero.bg-gradient-to-br.from-blue-50.to-blue-100.pt-12.sm:pt-24.pb-12.sm:pb-24.relative.overflow-hidden
+
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8.relative.z-10.mt-8
+      .grid.grid-cols-1.lg:grid-cols-2.gap-12.items-center
+        / 左側：テキストとCTA
+        .text-white style="animation: fadeInUp 0.8s ease-out 0.2s both;"
+          h1.text-3xl.sm:text-4xl.md:text-5xl.lg:text-6xl.font-bold.mb-6.leading-tight
+            span.block.whitespace-nowrap フリーランス美容師の
+            span.block.whitespace-nowrap 予約・顧客・会計を
+            span.inline-block.text-yellow-300.whitespace-nowrap 一元管理
+
+          p.text-lg.md:text-xl.mb-8.text-blue-100.leading-relaxed
+            | あなたの時間を施術に集中できるように。
+            br
+            | 複雑な管理業務をシンプルに。
+
+          / CTAボタン
+          .flex.flex-col.sm:flex-row.gap-4.mb-8
+            = link_to new_stylist_registration_path, class: "bg-white text-brand-blue px-8 py-4 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-200 text-center"
+              | 無料で始める
+
+            = link_to demo_path, class: "bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-brand-blue transition-all duration-200 text-center"
+              | デモを試す
+
+          / セキュリティ・支払いの安心テキスト（PC用）
+          div class="hidden lg:flex flex-col sm:flex-row gap-4 text-sm text-blue-100"
+            .flex.items-center.gap-2
+              svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
+                path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"
+              span SSL暗号化通信
+
+            .flex.items-center.gap-2
+              svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
+                path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"
+                path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"
+              span 安心の決済システム
+
+          / スマホ専用：アプリ画面モックアップ（PCでは非表示）
+          div class="mt-12 lg:hidden relative max-w-[300px] mx-auto block overflow-hidden" style="max-height: 500px;"
+            / 背景の装飾（光る円）
+            div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-blue rounded-full blur-3xl opacity-20 z-0"
+
+            / スマホ本体の枠（iPhone風）
+            div class="relative z-10 bg-slate-800 rounded-[2.5rem] p-2 shadow-2xl border-4 border-slate-800" style="margin-bottom: -100px;"
+              / 画面の内側
+              div class="bg-white rounded-[2rem] overflow-hidden h-[450px] relative"
+
+                / ステータスバー風の余白
+                .h-6.bg-brand-blue.w-full.absolute.top-0.z-20
+
+                / 上部ナビゲーションバー
+                .bg-brand-blue.text-white.pt-6.pb-2.px-3.flex.justify-between.items-center
+                  p.text-xs.font-bold YOYAKU HUB
+                  .w-5.h-5.flex.items-center.justify-center
+                    svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7")
+
+                / ヘッダー
+                .bg-white.border-b.border-gray-100.pt-3.pb-3.px-4.text-center
+                  h3 class="text-sm font-bold page-title-gradient" スタイリストメニュー
+
+                / メニューカードグリッド
+                .p-3.pt-2
+                  .grid.grid-cols-2.gap-2
+                    / 1. 予約表
+                    div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 text-center"
+                      .w-8.h-8.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-1.mx-auto
+                        svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+                      p class="text-[10px] font-bold text-gray-700" 予約表
+
+                    / 2. メニュー管理
+                    div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 text-center"
+                      .w-8.h-8.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-1.mx-auto
+                        svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+                      p class="text-[10px] font-bold text-gray-700" メニュー管理
+
+                    / 3. シフト管理
+                    div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 text-center"
+                      .w-8.h-8.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-1.mx-auto
+                        svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+                      p class="text-[10px] font-bold text-gray-700" シフト管理
+
+                    / 4. 顧客管理
+                    div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 text-center"
+                      .w-8.h-8.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-1.mx-auto
+                        svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z")
+                      p class="text-[10px] font-bold text-gray-700" 顧客管理
+
+                    / 5. 商品管理
+                    div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 text-center"
+                      .w-8.h-8.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-1.mx-auto
+                        svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z")
+                      p class="text-[10px] font-bold text-gray-700" 商品管理
+
+                    / 6. 売上管理
+                    div class="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 text-center"
+                      .w-8.h-8.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-1.mx-auto
+                        svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+                      p class="text-[10px] font-bold text-gray-700" 売上管理
+
+          / セキュリティ・支払いの安心テキスト（スマホ用 - モックアップの下）
+          div class="mt-8 flex lg:hidden flex-col sm:flex-row gap-4 text-sm text-blue-100 justify-center"
+            .flex.items-center.gap-2
+              svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
+                path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"
+              span SSL暗号化通信
+
+            .flex.items-center.gap-2
+              svg.w-5.h-5 fill="currentColor" viewBox="0 0 20 20"
+                path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"
+                path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"
+              span 安心の決済システム
+
+        / 右側：CSSで作るリアルなアプリ画面モックアップ
+        div class="w-full lg:w-7/12 relative hidden lg:block"
+          / 背景の円（装飾）
+          div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full blur-3xl opacity-60 z-0" style="width: 120%; height: 120%;"
+
+          / メインのダッシュボードカード
+          div class="relative z-10 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-w-md mx-auto lg:mr-0" style="box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15);"
+
+            / 上部ナビゲーションバー
+            .bg-brand-blue.text-white.px-4.py-3.flex.justify-between.items-center
+              p.text-sm.font-bold YOYAKU HUB
+              .w-6.h-6.flex.items-center.justify-center
+                svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7")
+
+            / ヘッダー
+            .bg-white.border-b.border-gray-100.px-6.py-4.text-center
+              h2.text-lg.font-bold.text-gray-800.page-title-gradient スタイリストメニュー
+
+            / メニューカードグリッド
+            .p-4.pb-6
+              .grid.grid-cols-2.gap-2.5
+                / 1. 予約表
+                div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 text-center"
+                  .w-10.h-10.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-2.mx-auto
+                    svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+                  p class="text-xs font-bold text-gray-700" 予約表
+
+                / 2. メニュー管理
+                div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 text-center"
+                  .w-10.h-10.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-2.mx-auto
+                    svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+                  p class="text-xs font-bold text-gray-700" メニュー管理
+
+                / 3. シフト管理
+                div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 text-center"
+                  .w-10.h-10.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-2.mx-auto
+                    svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+                  p class="text-xs font-bold text-gray-700" シフト管理
+
+                / 4. 顧客管理
+                div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 text-center"
+                  .w-10.h-10.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-2.mx-auto
+                    svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z")
+                  p class="text-xs font-bold text-gray-700" 顧客管理
+
+                / 5. 商品管理
+                div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 text-center"
+                  .w-10.h-10.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-2.mx-auto
+                    svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z")
+                  p class="text-xs font-bold text-gray-700" 商品管理
+
+                / 6. 売上管理
+                div class="bg-white rounded-lg p-3 shadow-sm border border-gray-100 text-center"
+                  .w-10.h-10.rounded-full.bg-gray-50.text-gray-600.flex.items-center.justify-center.mb-2.mx-auto
+                    svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+                  p class="text-xs font-bold text-gray-700" 売上管理
+
+  / セクション全体の背景を少しグレー(bg-slate-50)にして、白いカードを際立たせます
+  section#problems.bg-slate-50.py-16.sm:py-24
     .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-    .hero-content.flex.flex-col.items-center.gap-16.lg:flex-row.lg:gap-16.lg:text-left
-      .hero-text.flex-1.order-1.text-center.lg:order-0.lg:text-left
-        h1.text-2xl.sm:text-4xl.font-bold.mb-5.text-gray-800.md:text-5xl style="line-height: 1.3;"
-
-          | フリーランス美容師のための
-          br
-          | 予約・顧客管理・会計
-          br
-          | 管理システム
-        p.text-lg.text-gray-600.mb-8
-          | あなたの時間を施術に集中できるように
-        div.flex.flex-col.items-center.gap-3.lg:flex-row.lg:items-baseline.lg:justify-start.lg:gap-3
-
-          a.cta-button.btn-primary.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-blue-800[href=new_user_session_path]
-            | ログイン
-
-          a.cta-button.btn-primary.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-blue-800[href=demo_path]
-            | デモを試す
-
-          div.flex.justify-center.gap-3
-            a.cta-button.secondary.bg-white.text-blue-600.border.border-blue-600.py-2.px-5.rounded-md.font-medium.cursor-pointer.transition.duration-300.ease-in-out.hover:bg-gray-50[href=new_stylist_registration_path]
-              | 会員登録がまだの美容師方はこちらから
-
-  section#problems.problems.bg-white.py-12.sm:py-24
-    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-      .section-title.text-center.mb-16
-        h2.text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
-          | フリーランスという
+      
+      / --- ヘッダー部分 ---
+      .text-center.mb-16.max-w-3xl.mx-auto
+        h2.text-3xl.font-bold.text-slate-900.mb-6.leading-tight.md:text-4xl
+          | フリーランスという働き方に
           br.md:hidden
-          | 働き方に
-          br.md:hidden
-          | もっと自由と安心を
-        p.text-lg.text-gray-600.max-w-3xl.mx-auto
-          | 多くのフリーランス美容師さんが日々感じている悩みに対する解決策を提供します
-      .problem-cards.grid.grid-cols-1.gap-8.md:grid-cols-2.lg:grid-cols-3
-        .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
-          .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
-            img src="/images/Complex tool management.svg" alt="複数ツール管理" class="w-full h-full object-contain"
-          h3.text-xl.font-bold.mb-4
-            | 複数ツールの管理が煩雑
-          p.text-gray-600.text-left
-            | 予約、顧客管理、会計と別々のツールを使い分けることによる時間のロスと混乱。YOYAKU HUBはこれらを一つのプラットフォームに統合します。
-        .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
-          .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
-            img src="/images/Inefficient scheduling.svg" alt="非効率な予約管理" class="w-full h-full object-contain"
-          h3.text-xl.font-bold.mb-4
-            | 非効率な予約管理
-          p.text-gray-600.text-left
-            | 予約の隙間時間が発生し、効率的に仕事ができない問題。スマートな予約最適化機能で隙間時間を自動的に調整します。
-        .problem-card.bg-white.rounded-xl.p-8.shadow-md.border.border-gray-200
-          .icon.w-26.h-26.mx-auto.mb-6.flex.items-center.justify-center
-            img src="/images/Opaque pricing.svg" alt="不透明な料金体系" class="w-full h-full object-contain"
-          h3.text-xl.font-bold.mb-4
-            | 不透明な料金体系
-          p.text-gray-600.text-left
-            | 月額料金に加えて追加料金が発生する不透明な料金体系。YOYAKU HUBは明確でシンプルな料金体系で、美容師の経済的負担を軽減します。
-
-  section#benefits.benefits.bg-gray-50.py-12.sm:py-24
+          span.relative.whitespace-nowrap.mx-2
+            span.relative.z-10 もっと自由と安心を
+            / 下線を蛍光ペン風のあしらいに変更
+            span.absolute.bottom-1.left-0.w-full.h-3.bg-blue-200.bg-opacity-50.rounded-sm.-z-0
+        
+        p.text-lg.text-slate-600.leading-relaxed
+          | 多くのフリーランス美容師さんが日々感じている悩みに対する
+          br.hidden.md:inline
+          | 解決策を提供します
+  
+      / --- カードグリッド ---
+      .grid.grid-cols-1.gap-8.md:grid-cols-3
+        
+        / 1. 複数ツールの管理
+        .bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100
+          / 画像エリア（高さを固定してガタつきを防ぐ）
+          .h-48.flex.items-center.justify-center.mb-6
+            img.w-full.h-full.object-contain(
+              src="/images/Complex tool management.svg"
+              alt="複数ツール管理"
+            )
+          
+          .text-content
+            h3.text-xl.font-bold.text-slate-900.mb-3.text-center.md:text-left
+              | 複数ツールの管理が煩雑
+            p.text-slate-600.leading-relaxed.text-sm.md:text-base.text-center.md:text-left
+              | 予約、顧客管理、会計と別々のツールを使い分けることによる時間のロスと混乱。YOYAKU HUBはこれらを一つのプラットフォームに統合します。
+  
+        / 2. 非効率な予約管理
+        .bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100
+          .h-48.flex.items-center.justify-center.mb-6
+            img.w-full.h-full.object-contain(
+              src="/images/Inefficient scheduling.svg"
+              alt="非効率な予約管理"
+            )
+          
+          .text-content
+            h3.text-xl.font-bold.text-slate-900.mb-3.text-center.md:text-left
+              | 非効率な予約管理
+            p.text-slate-600.leading-relaxed.text-sm.md:text-base.text-center.md:text-left
+              | 予約の隙間時間が発生し、効率的に仕事ができない問題。スマートな予約最適化機能で隙間時間を自動的に調整します。
+  
+        / 3. 不透明な料金体系
+        .bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100
+          .h-48.flex.items-center.justify-center.mb-6
+            img.w-full.h-full.object-contain(
+              src="/images/Opaque pricing.svg"
+              alt="不透明な料金体系"
+            )
+          
+          .text-content
+            h3.text-xl.font-bold.text-slate-900.mb-3.text-center.md:text-left
+              | 不透明な料金体系
+            p.text-slate-600.leading-relaxed.text-sm.md:text-base.text-center.md:text-left
+              | 月額料金に加えて追加料金が発生する不透明な料金体系。YOYAKU HUBは明確でシンプルな料金体系で、美容師の経済的負担を軽減します。
+  
+  section#features.features.bg-gray-50.py-12.sm:py-24
     .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
       .section-title.text-center.mb-16
         h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
-          | 現場に根ざした課題解決を
-          br
-          | テクノロジーの力で
+          | 充実の機能一覧
         p.text-lg.text-gray-600.max-w-3xl.mx-auto
-          | YOYAKU HUBが提供する価値と導入後の効果についてご案内します
-      .benefit-cards.grid.grid-cols-1.gap-8.sm:grid-cols-2.lg:grid-cols-4
-        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-            | ⏱
-          h3.text-xl.font-bold.mb-4
-            | 時間の節約
-          p.text-gray-600.text-left
-            | 事務作業時間を削減。その時間を自分の為の時間や休息に充てられます。
-        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-            | 💰
-          h3.text-xl.font-bold.mb-4
-            | 収益アップ
-          p.text-gray-600.text-left
-            | 隙間時間の最適化により、毎月の予約枠増加が可能に。売上アップにつながります。
-        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-            | 📊
-          h3.text-xl.font-bold.mb-4
-            | データ分析
-          p.text-gray-600.text-left
-            | 顧客データや売上の分析機能で、自分の強みや改善点を可視化。戦略的な経営判断ができます。
-        .benefit-card.bg-white.rounded-xl.p-8.shadow-md.text-center
-          .icon.w-20.h-20.mx-auto.mb-5.flex.items-center.justify-center.text-6xl
-            | 💸
-          h3.text-xl.font-bold.mb-4
-            | 固定費削減
-          p.text-gray-600.text-left
-            | 複数のサービス料を統合することで、月間のサブスクリプション費用を削減できます。
-
-  section#pricing.pricing.bg-white.py-12.sm:py-24
-    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
-      .section-title.text-center.mb-16
-        h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
-          | 料金プラン
-        p.text-lg.text-gray-600.max-w-3xl.mx-auto.mb-8
-          | シンプルで分かりやすい料金体系
-          br
-          | 現在ベータ版として無料でご利用いただけます
-
-      .pricing-content.max-w-4xl.mx-auto
-        .pricing-card.bg-white.rounded-xl.p-8.shadow-lg.border.border-gray-200
-          .text-center.mb-8
-            h3.text-2xl.font-bold.mb-2.text-gray-800
-              | スタンダードプラン
-            .pricing-display.mt-6
-              .price
-                | ¥3,850
-                span.text-lg.text-gray-600.font-normal
-                  | /月
-
-          .features-list.mb-8
-            ul.space-y-3
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+          | フリーランス美容師の業務をトータルサポートする機能を搭載
+      .features-list.max-w-4xl.mx-auto
+        .grid.grid-cols-2.gap-3.md:gap-6
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/online-booking.svg" alt="ネット予約機能" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | ネット予約機能
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+              p.text-xs.md:text-sm.text-gray-600
+                | お客様がWebから24時間予約可能
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/chart.svg" alt="カルテ機能" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | カルテ機能
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+              p.text-xs.md:text-sm.text-gray-600
+                | 施術履歴を記録・管理
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/customer-management.svg" alt="顧客管理" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | 顧客管理
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+              p.text-xs.md:text-sm.text-gray-600
+                | お客様情報を一元管理
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/accounting.svg" alt="会計機能" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | 会計機能
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+              p.text-xs.md:text-sm.text-gray-600
+                | 簡単に売上を記録・管理
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/sales-analysis.svg" alt="売上分析" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | 売上分析
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+              p.text-xs.md:text-sm.text-gray-600
+                | 売上データを可視化して経営判断をサポート
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/product-management.svg" alt="店販・物販管理" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | 店販・物販管理
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
+              p.text-xs.md:text-sm.text-gray-600
+                | 商品の登録・売上を管理
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/optimization.svg" alt="予約の最適化機能" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
                 | 予約の最適化機能
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
-                | 予約関連のメール通知
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
-                | 予約前日にリマインダー通知
-              li.flex.items-center
-                span.mr-3 style="color: #3e5cd7;" ✓
-                | モバイル対応
+              p.text-xs.md:text-sm.text-gray-600
+                | 隙間時間を最小化する独自アルゴリズム
+          .feature-item.bg-white.rounded-lg.p-3.md:p-6.shadow-sm.border.border-gray-200.flex.flex-col.md:flex-row.items-start
+            .icon.w-12.h-12.md:w-20.md:h-20.mb-2.md:mb-0.md:mr-4.flex.items-center.justify-center.flex-shrink-0.mx-auto.md:mx-0
+              img src="/images/notification.svg" alt="メール通知・リマインダー" class="w-full h-full object-contain"
+            .content.text-center.md:text-left
+              h3.text-sm.md:text-lg.font-bold.mb-1.md:mb-2
+                | メール通知・リマインダー
+              p.text-xs.md:text-sm.text-gray-600
+                | 予約確認・前日リマインダーを自動送信
 
-          .text-center.mt-8
-            = link_to new_stylist_registration_path, class: "btn-primary px-8 py-3 text-lg"
-              | 無料で試してみる
+  section#optimization-feature class="py-24 bg-white overflow-hidden"
+    div class="container max-w-7xl mx-auto px-4"
+      div class="text-center mb-16"
+        h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4"
+          | 「◎・△・×」の自動判定で
+          br
+          span class="relative inline-block mx-2"
+            span class="relative z-10" 予約の隙間
+            span class="absolute bottom-1 left-0 w-full h-3 bg-yellow-200 bg-opacity-60 -rotate-1"
+          | をゼロにする
+        p class="text-lg text-slate-500 max-w-3xl mx-auto"
+          | 独自のアルゴリズムが予約状況を分析。最適化したを時間に案内します。
 
-        .bg-yellow-50.rounded-xl.p-8.border.border-yellow-200.mt-8
-          h3.text-xl.font-bold.mb-4.text-yellow-800
-            | 📢 現在ベータ版として無料公開中
-          p.text-gray-700.mb-4
-            | サービス品質向上のため、現在すべての機能を無料でご利用いただけます。
-          ul.space-y-2.text-gray-700
-            li
-              | •
-              strong ベータ版ユーザー特典：
-              |  今ご登録の方には半年無料の特別価格
-            li
-              | •
-              strong 有料化移行：
-              |  最低1ヶ月前に事前告知いたします
-            li
-              | •
-              strong 追加料金なし：
-              |  表示価格のみでシンプルな料金体系
-          p.text-sm.text-gray-600.mt-4
-            | ※正式な開始時期は決定次第、ご登録メールアドレスにお知らせいたします
+      .comparison-container.max-w-5xl.mx-auto
+        .text-center.mb-8
+          span.text-brand-blue 60分カット
+          | を予約したい場合
+
+        div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start"
+
+          / --- 左側：通常の予約システム (Before) ---
+          .before-optimization.bg-slate-50.rounded-xl.p-4.md:p-6 class="border border-slate-200"
+            h4.font-bold.mb-4 class="text-slate-600 flex items-center justify-center"
+              span.mr-2 ❌
+              | 通常の予約システム
+
+            p.text-xs.mb-3.text-center class="text-slate-500"
+              | 全て「空き」と表示されるため...
+
+            .schedule-visual.space-y-2.mb-4
+              .time-block.rounded.p-2.text-xs.md:text-sm.relative class="bg-slate-200 text-slate-400"
+                .flex.justify-between.items-center
+                  span 10:00-10:30
+                  span.font-bold ×予約済
+
+              / 10:30 - 12:30 の空きゾーン
+              .bg-white.rounded-lg.border.border-slate-300.overflow-hidden
+                .time-block.p-2.text-xs.md:text-sm.border-b.border-slate-100
+                  .flex.justify-between.items-center
+                    span 10:30-11:00
+                    span.font-bold.text-blue-400 ○空き
+
+                / ユーザーが選びがちな時間帯
+                .time-block.p-2.text-xs.md:text-sm.bg-blue-50
+                  .flex.justify-between.items-center
+                    span 11:00-11:30
+                    div
+                      span.font-bold.text-blue-600 ○空き
+                      span class="text-[10px] text-slate-500 block" (ここを選ぶと...)
+
+                .time-block.p-2.text-xs.md:text-sm.border-t.border-slate-100
+                  .flex.justify-between.items-center
+                    span 11:30-12:00
+                    span.font-bold.text-blue-400 ○空き
+
+              .time-block.rounded.p-2.text-xs.md:text-sm.relative class="bg-slate-200 text-slate-400"
+                .flex.justify-between.items-center
+                  span 12:00-12:30
+                  span.font-bold class="text-[10px]" ×時間が足りない
+
+              .time-block.rounded.p-2.text-xs.md:text-sm.relative class="bg-slate-200 text-slate-400"
+                .flex.justify-between.items-center
+                  span 12:30-13:00
+                  span.font-bold ×予約済
+
+            .result-visual.bg-red-50.rounded.p-3.text-xs.text-red-600.border.border-red-100
+              p.font-bold.mb-1 結果：
+              | 11:00〜を選ぶと、10:30-11:00（30分）と12:00-12:30（30分）が使えない合計60分の隙間が発生！
+
+          / --- 右側：YOYAKU HUB (After) ---
+          .after-optimization.bg-white.rounded-xl.p-4.md:p-6.shadow-xl.relative.border-2.border-brand-blue.transform.md:-translate-y-2
+            / 推奨バッジ
+            div.absolute.-top-4.left-1/2.transform.-translate-x-1/2.bg-brand-blue.text-white.px-4.py-1.rounded-full.text-sm.font-bold.shadow-lg
+              | YOYAKU HUB ✅
+
+            h4.font-bold.mb-4.mt-2.text-brand-blue.flex.items-center.justify-center
+              | 自動判定画面
+
+            p.text-xs.mb-3.text-center class="text-slate-500"
+              | 隙間ができない時間を推奨
+
+            .schedule-visual.space-y-2.mb-4
+              .time-block.rounded.p-2.text-xs.md:text-sm.relative class="bg-slate-100 text-slate-400"
+                .flex.justify-between.items-center
+                  span 10:00-10:30
+                  span.font-bold ×予約済
+
+              / --- 判定エリア ---
+              .bg-white.rounded-lg.border-2.border-blue-100.overflow-hidden
+                / 10:30 ◎
+                .time-block.p-2.text-xs.md:text-sm.bg-blue-50.border-b.border-blue-100
+                  .flex.justify-between.items-center
+                    span.font-bold.text-slate-700 10:30-11:00
+                    span.font-bold.text-brand-blue ◎ 推奨
+
+                / 11:00 △
+                .time-block.p-2.text-xs.md:text-sm.bg-amber-50.relative
+                  .flex.justify-between.items-center
+                    span.text-slate-600 11:00-11:30
+                    span.font-bold.text-amber-500 △ 調整推奨
+
+                / 11:30 ◎ (後ろ詰め)
+                .time-block.p-2.text-xs.md:text-sm.bg-blue-50.border-t.border-blue-100
+                  .flex.justify-between.items-center
+                    span.font-bold.text-slate-700 11:30-12:00
+                    span.font-bold.text-brand-blue ◎ 推奨
+
+              .time-block.rounded.p-2.text-xs.md:text-sm.relative class="bg-slate-100 text-slate-400"
+                .flex.justify-between.items-center
+                  span 12:00-12:30
+                  span.font-bold class="text-[10px]" ×時間が足りない
+
+              .time-block.rounded.p-2.text-xs.md:text-sm.relative class="bg-slate-100 text-slate-400"
+                .flex.justify-between.items-center
+                  span 12:30-13:00
+                  span.font-bold ×予約済
+
+            .result-visual.bg-blue-50.rounded.p-3.text-xs.border.border-blue-100.text-brand-blue
+              p.font-bold.mb-1 結果：
+              | 10:30〜(前詰め)か11:30〜(後ろ詰め)を推奨し、隙間ゼロを実現！
+
+      div class="mt-8 md:mt-12 grid grid-cols-3 gap-4 md:gap-6 text-center max-w-4xl mx-auto"
+        div class="p-4 md:p-6"
+          p.text-3xl.md:text-4xl.font-bold.text-brand-blue.mb-2 15% UP
+          p class="font-bold text-slate-700 text-sm md:text-base" 稼働率向上
+        div class="p-4 md:p-6 border-x-0 md:border-x border-slate-200"
+          p.text-3xl.md:text-4xl.font-bold.text-brand-blue.mb-2 8人/月
+          p class="font-bold text-slate-700 text-sm md:text-base" 追加施術可能
+        div class="p-4 md:p-6"
+          p.text-3xl.md:text-4xl.font-bold.text-brand-blue.mb-2 +7万円
+          p class="font-bold text-slate-700 text-sm md:text-base" 売上増加見込み
+
+      div class="text-center mt-6 md:mt-10"
+        p class="text-xs text-slate-400 mb-6" ※週2回程度の最適化効果を想定した試算値です
+        = link_to algorithm_explanation_path, class: "text-brand-blue font-bold hover:underline inline-flex items-center text-sm md:text-base"
+          | 仕組みを詳しく見る
+          svg class="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor"
+            path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"
+
+  section#benefits.benefits.bg-gray-50.py-16.sm:py-24
+      .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+        .section-title.text-center.mb-16
+          h2.text-2xl.sm:text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.border-b-4.border-blue-600.pb-2.px-4
+            | YOYAKU HUBがある生活
+          p.text-lg.text-gray-600.max-w-3xl.mx-auto
+            | 業務効率化の先にある、あなたらしい自由な働き方
+        
+        .benefit-cards.grid.grid-cols-1.gap-8.md:grid-cols-2
+          / 1. プライベートの充実 (時間の節約 -> 豊かな休日)
+          .benefit-card.bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100.flex.flex-col.md:flex-row.items-center.gap-6.hover:shadow-lg.transition-shadow
+            .icon.w-24.h-24.flex-shrink-0.bg-blue-50.rounded-full.flex.items-center.justify-center.text-4xl
+              | ☕️
+            .content.text-center.md:text-left
+              h3.text-xl.font-bold.mb-2.text-slate-800
+                | サロンワークが終われば、即オフタイム
+              p.text-slate-600.leading-relaxed
+                | 帰宅後の予約返信や集計作業はもう不要。スマホ一つで完結するから、サロンを出た瞬間から自分の時間。趣味や休息にフルコミットできます。
+  
+          / 2. 精神的な余裕 (収益アップ -> 安心感)
+          .benefit-card.bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100.flex.flex-col.md:flex-row.items-center.gap-6.hover:shadow-lg.transition-shadow
+            .icon.w-24.h-24.flex-shrink-0.bg-yellow-50.rounded-full.flex.items-center.justify-center.text-4xl
+              | 🧘‍♀️
+            .content.text-center.md:text-left
+              h3.text-xl.font-bold.mb-2.text-slate-800
+                | 「隙間」への不安が消える
+              p.text-slate-600.leading-relaxed
+                | 「予約が入らないかも」という不安から解放されます。自動最適化があなたの代わりにスケジュールを埋めてくれるので、目の前のお客様に集中できます。
+  
+          / 3. 経営者としての成長 (データ分析 -> 戦略的思考)
+          .benefit-card.bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100.flex.flex-col.md:flex-row.items-center.gap-6.hover:shadow-lg.transition-shadow
+            .icon.w-24.h-24.flex-shrink-0.bg-purple-50.rounded-full.flex.items-center.justify-center.text-4xl
+              | 🚀
+            .content.text-center.md:text-left
+              h3.text-xl.font-bold.mb-2.text-slate-800
+                | 「感覚」から「戦略」へ
+              p.text-slate-600.leading-relaxed
+                | リピート率や単価が可視化されることで、自分の強みが明確に。ただ数をこなす働き方から、価値を高める働き方へシフトできます。
+  
+          / 4. シンプルな思考 (固定費削減 -> ストレスフリー)
+          .benefit-card.bg-white.rounded-2xl.p-8.shadow-sm.border.border-slate-100.flex.flex-col.md:flex-row.items-center.gap-6.hover:shadow-lg.transition-shadow
+            .icon.w-24.h-24.flex-shrink-0.bg-green-50.rounded-full.flex.items-center.justify-center.text-4xl
+              | 🕊
+            .content.text-center.md:text-left
+              h3.text-xl.font-bold.mb-2.text-slate-800
+                | 管理のストレスをゼロに
+              p.text-slate-600.leading-relaxed
+                | 複数のアプリを行き来するストレスや、不透明な手数料へのモヤモヤを一掃。シンプルなツールと料金体系で、思考もクリアになります。
+
+  section#pricing.pricing.bg-white.py-16.sm:py-24
+    .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8
+      
+      / --- ヘッダー ---
+      .section-title.text-center.mb-16
+        h2.text-3xl.font-bold.mb-4.relative.inline-block.md:text-4xl.text-slate-900
+          | 料金プラン
+          / 下線装飾
+          span.absolute.bottom-0.left-0.w-full.h-3.bg-blue-100.rounded-sm.-z-10.transform.-rotate-1
+        p.text-lg.text-slate-600.max-w-3xl.mx-auto
+          | 機能はすべてフルアクセス。
+          br
+          | シンプルなワンプランです。
+  
+      / --- プライシングカード本体 ---
+      .max-w-4xl.mx-auto
+        / カード全体を枠線と影で囲む（目立たせるためにborder-blue-200を使用）
+        .bg-white.rounded-3xl.shadow-2xl.overflow-hidden.border.border-slate-100.relative
+          
+          / 背景装飾（右上と左下のぼかし）
+          .absolute.top-0.right-0.-mt-16.-mr-16.w-64.h-64.rounded-full.bg-blue-50.blur-3xl.opacity-50
+          .absolute.bottom-0.left-0.-mb-16.-ml-16.w-64.h-64.rounded-full.bg-purple-50.blur-3xl.opacity-50
+  
+          .grid.grid-cols-1.md:grid-cols-12
+            
+            / --- 左側：価格とCTA (メイン) ---
+            .col-span-1.md:col-span-7.p-8.md:p-12.flex.flex-col.justify-center.relative.z-10
+              .mb-6
+                span.bg-blue-100.text-brand-blue.text-xs.font-bold.px-3.py-1.rounded-full.uppercase.tracking-wide
+                  | Standard Plan
+                h3.text-3xl.font-bold.text-slate-900.mt-3
+                  | スタンダードプラン
+              
+              / 価格表示エリア
+              .mb-8
+                .flex.items-baseline.gap-2.text-slate-400
+                  span.line-through.text-lg 通常 ¥3,850
+                  span |/月
+                .flex.items-baseline.gap-1
+                  span.text-5xl.md:text-6xl.font-bold.text-slate-900 ¥0
+                  span.text-xl.font-bold.text-brand-blue 今なら半年無料
+              
+              p.text-slate-600.mb-8.leading-relaxed
+                | 予約、顧客管理、会計など、YOYAKU HUBのすべての機能を制限なくご利用いただけます。
+  
+              / CTAボタン
+              = link_to new_stylist_registration_path, class: "block w-full text-center bg-brand-blue text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                | 今すぐ無料で始める
+  
+  
+            / --- 右側：機能リストとベータ詳細 (サブ) ---
+            .col-span-1.md:col-span-5.bg-slate-50.p-8.md:p-12.border-l.border-slate-100.relative.z-10
+              
+              / 機能リスト
+              h4.font-bold.text-slate-900.mb-6 含まれる機能
+              ul.space-y-4.mb-10
+                - features = ["ネット予約機能", "カルテ・顧客管理", "会計・売上分析", "店販・物販管理", "予約の最適化機能", "予約関連のメール通知", "リマインダー自動送信"]
+                - features.each do |feature|
+                  li.flex.items-center.text-slate-600.text-sm
+                    .w-5.h-5.rounded-full.bg-green-100.text-green-600.flex.items-center.justify-center.mr-3.flex-shrink-0
+                      svg.w-3.h-3(fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3")
+                        path(stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7")
+                    = feature
 
   section.footer-links.bg-gray-100.py-6.sm:py-8
     .container.max-w-7xl.mx-auto.px-4.sm:px-6.lg:px-8

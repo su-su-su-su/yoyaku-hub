@@ -21,16 +21,16 @@ RSpec.describe 'デモモード機能' do
       visit '/demo'
 
       expect(page).to have_content 'YOYAKU HUB デモ体験'
-      expect(page).to have_content 'ログイン不要で実際の機能をお試しいただけます'
-      expect(page).to have_link 'スタイリストとして体験する'
-      expect(page).to have_link 'カスタマーとして体験する'
+      expect(page).to have_content '実際の機能を今すぐ、手軽にお試しいただけます'
+      expect(page).to have_link 'スタイリストとして始める'
+      expect(page).to have_link 'カスタマーとして始める'
     end
 
     it 'デモの特徴が正しく表示される' do
       visit '/demo'
 
-      expect(page).to have_content '個別のデモ環境を提供'
-      expect(page).to have_content 'デモ用アカウント情報は変更不可'
+      expect(page).to have_content 'デモ環境について'
+      expect(page).to have_content '入力されたデータは一時的なものです'
     end
   end
 

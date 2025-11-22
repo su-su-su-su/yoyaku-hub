@@ -418,4 +418,344 @@
   .privacy-content ul li {
     margin-bottom: 0.5rem;
   }
+
+  /* 予約最適化アルゴリズムページ */
+  .algorithm-explanation-page {
+    font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    padding: 20px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  .algorithm-explanation-page .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .algorithm-explanation-page .header-section {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .algorithm-explanation-page .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #3b82f6;
+    margin-bottom: 20px;
+  }
+
+  .algorithm-explanation-page h1 {
+    color: #3b82f6;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+
+  .algorithm-explanation-page .subtitle {
+    color: #666;
+    font-size: 1.2em;
+  }
+
+  .algorithm-explanation-page .actual-screen {
+    background: #f8f9fa;
+    border: 2px solid #3b82f6;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 40px;
+  }
+
+  .algorithm-explanation-page .screen-mockup {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+
+  .algorithm-explanation-page .screen-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .algorithm-explanation-page .screen-table th,
+  .algorithm-explanation-page .screen-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .algorithm-explanation-page .screen-table th {
+    background: #f0f0f0;
+    font-weight: bold;
+  }
+
+  .symbol-circle {
+    color: #3b82f6;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  .symbol-triangle {
+    color: #60a5fa;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  .symbol-cross {
+    color: #9ca3af;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  .algorithm-explanation-page .interactive-demo {
+    background: #fff3cd;
+    border: 3px solid #FFC107;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 40px;
+  }
+
+  .demo-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .demo-button {
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s;
+  }
+
+  .demo-button:hover {
+    background: #1e40af;
+    transform: translateY(-2px);
+  }
+
+  .demo-button.active {
+    background: #1d4ed8;
+  }
+
+  #demo-result {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .algorithm-explanation-page .intro-box {
+    background: #f0f4ff;
+    border-left: 5px solid #3b82f6;
+    padding: 25px;
+    margin-bottom: 40px;
+    border-radius: 10px;
+  }
+
+  .algorithm-explanation-page .legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .legend-item {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .legend-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  }
+
+  .algorithm-explanation-page .cta-section {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .algorithm-explanation-page .cta-button {
+    display: inline-block;
+    padding: 15px 40px;
+    background: white;
+    color: #3b82f6;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.2em;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .algorithm-explanation-page .cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  /* アニメーション */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  /* モバイル対応 */
+  @media (max-width: 768px) {
+    .algorithm-explanation-page {
+      padding: 10px;
+    }
+
+    .algorithm-explanation-page .container {
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    .algorithm-explanation-page h1 {
+      font-size: 1.8em;
+    }
+
+    .algorithm-explanation-page .subtitle {
+      font-size: 1em;
+    }
+
+    /* テーブルをスクロール可能にする */
+    .algorithm-explanation-page .screen-mockup {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .algorithm-explanation-page .screen-table {
+      min-width: 400px;
+      font-size: 0.9em;
+    }
+
+    .algorithm-explanation-page .screen-table th,
+    .algorithm-explanation-page .screen-table td {
+      padding: 8px 5px;
+      font-size: 0.85em;
+    }
+
+    /* デモボタンの調整 */
+    .demo-controls {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .demo-button {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 0.9em;
+    }
+
+    /* インタラクティブデモ内のテーブル */
+    #demo-result {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 15px;
+    }
+
+    #demo-result .screen-table {
+      min-width: 500px;
+    }
+
+    /* CTAボタンの調整 */
+    .algorithm-explanation-page .cta-section {
+      padding: 25px 15px;
+    }
+
+    .algorithm-explanation-page .cta-section h2 {
+      font-size: 1.5em;
+    }
+
+    .algorithm-explanation-page .cta-button {
+      display: block;
+      width: 100%;
+      margin: 10px 0 !important;
+      padding: 12px 20px;
+      font-size: 1em;
+    }
+
+    /* シンボルサイズの調整 */
+    .symbol-circle,
+    .symbol-triangle,
+    .symbol-cross {
+      font-size: 1.2em;
+    }
+
+    /* パディングの調整 */
+    .algorithm-explanation-page .actual-screen {
+      padding: 20px 15px;
+    }
+
+    .algorithm-explanation-page .interactive-demo {
+      padding: 20px 15px;
+    }
+
+    .algorithm-explanation-page .intro-box {
+      padding: 20px 15px;
+    }
+  }
+
+  /* より小さい画面向け */
+  @media (max-width: 480px) {
+    .algorithm-explanation-page .container {
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .algorithm-explanation-page h1 {
+      font-size: 1.5em;
+    }
+
+    .algorithm-explanation-page .screen-table {
+      min-width: 350px;
+      font-size: 0.8em;
+    }
+
+    .algorithm-explanation-page .screen-table th,
+    .algorithm-explanation-page .screen-table td {
+      padding: 6px 4px;
+      font-size: 0.8em;
+    }
+  }
+}
+
+/* ブランドカラー用のカスタムクラス */
+@layer utilities {
+  .bg-brand-blue {
+    background-color: #3e5cd7;
+  }
+
+  .text-brand-blue {
+    color: #3e5cd7;
+  }
+
+  .border-brand-blue {
+    border-color: #3e5cd7;
+  }
+
+  .from-brand-blue {
+    --tw-gradient-from: #3e5cd7;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(62, 92, 215, 0));
+  }
 }

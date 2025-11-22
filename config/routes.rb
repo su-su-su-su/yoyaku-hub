@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get '/privacy', to: 'static_pages#privacy'
   get '/tokushoho', to: 'static_pages#tokushoho'
   get '/monitor-campaign', to: 'static_pages#monitor_campaign'
+  get '/how-it-works', to: 'static_pages#algorithm_explanation', as: :algorithm_explanation
   get '/demo', to: 'demo#index', as: :demo
   get 'home/index'
   devise_for :users, skip: %i[registrations sessions], controllers: {

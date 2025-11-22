@@ -1,0 +1,444 @@
+.algorithm-explanation-page.bg-slate-50.min-h-screen.py-12.font-sans.text-slate-600
+  .container.max-w-4xl.mx-auto.px-4
+
+    / --- ヘッダー ---
+    .header-section.text-center.mb-16
+      .inline-block.mb-4
+        span.font-bold.tracking-widest.text-sm.text-brand-blue YOYAKU HUB
+      h1.text-3xl.md:text-4xl.font-bold.text-slate-900.mb-4 予約最適化アルゴリズム
+      p.text-lg.text-slate-500 美容師の時間を最大限活用する賢い仕組み
+
+    / --- 実際の画面イメージ ---
+    .actual-screen.animate-in.bg-white.rounded-2xl.shadow-lg.border.border-slate-100.p-6.md:p-8.mb-12
+      .flex.items-center.mb-6
+        .w-1.h-6.rounded-full.mr-3.bg-brand-blue
+        h2.text-xl.font-bold.text-slate-900 実際の予約画面イメージ
+      
+      .screen-mockup
+        .flex.items-center.justify-between.mb-4
+          p.font-bold.text-slate-700 2025年3月の予約カレンダー
+          .flex.gap-2.text-xs
+            span.flex.items-center
+              span.w-2.h-2.rounded-full.bg-blue-100.mr-1
+              span ◎:予約可
+            span.flex.items-center
+              span.w-2.h-2.rounded-full.bg-amber-100.mr-1
+              span △:調整推奨
+
+        .table-wrapper.overflow-x-auto.rounded-lg.border.border-slate-200
+          table.screen-table.w-full.border-collapse.text-sm.whitespace-nowrap
+            thead.bg-slate-50.text-slate-500
+              tr
+                th.p-3.font-medium.text-left.border-b 時刻
+                th.p-3.font-medium.text-center.border-b
+                  | 月
+                  span.block.text-xs.text-slate-400 17日
+                th.p-3.font-medium.text-center.border-b
+                  | 火
+                  span.block.text-xs.text-slate-400 18日
+                th.p-3.font-medium.text-center.border-b
+                  | 水
+                  span.block.text-xs.text-slate-400 19日
+                th.p-3.font-medium.text-center.border-b
+                  | 木
+                  span.block.text-xs.text-slate-400 20日
+            tbody.divide-y.divide-slate-100
+              tr.hover:bg-slate-50.transition-colors
+                td.p-3.font-bold.text-slate-700 10:00
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-slate-100.text-slate-400.font-bold ×
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-blue-100.text-blue-600.font-bold ◎
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-blue-100.text-blue-600.font-bold ◎
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-amber-100.text-amber-600.font-bold △
+              tr.bg-slate-50.hover:bg-slate-100.transition-colors
+                td.p-3.font-bold.text-slate-700 10:30
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-slate-100.text-slate-400.font-bold ×
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-amber-100.text-amber-600.font-bold △
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-blue-100.text-blue-600.font-bold ◎
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-blue-100.text-blue-600.font-bold ◎
+              tr.hover:bg-slate-50.transition-colors
+                td.p-3.font-bold.text-slate-700 11:00
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-blue-100.text-blue-600.font-bold ◎
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-blue-100.text-blue-600.font-bold ◎
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-slate-100.text-slate-400.font-bold ×
+                td.p-3.text-center
+                  span.inline-flex.items-center.justify-center.w-8.h-8.rounded-full.bg-amber-100.text-amber-600.font-bold △
+        
+        p.mt-4.text-xs.text-slate-400.text-right
+          | ※ 実際の画面では、◎をクリックすると予約画面に進みます
+
+    / --- インタラクティブデモ ---
+    .interactive-demo.bg-white.rounded-2xl.shadow-lg.border.border-amber-100.p-6.md:p-8.mb-12.relative.overflow-hidden
+      .absolute.top-0.left-0.w-full.h-1.bg-amber-400
+      
+      .text-center.mb-8
+        h2.text-xl.font-bold.text-amber-600.mb-2 インタラクティブデモ
+        p.text-slate-600 美容師のメニュー構成を選択して、アルゴリズムの動作を体験してください！
+
+      / タブ風ボタン
+      .demo-controls.flex.flex-wrap.justify-center.gap-3.mb-8
+        button.demo-button.px-4.py-2.rounded-full.border.border-slate-200.text-sm.font-bold.transition-all(onclick="showCase('case60')" class="hover:bg-slate-50 focus:ring-2 focus:ring-blue-200")
+          | ケース1: 60分のみ
+        button.demo-button.px-4.py-2.rounded-full.border.border-slate-200.text-sm.font-bold.transition-all(onclick="showCase('case90')" class="hover:bg-slate-50 focus:ring-2 focus:ring-blue-200")
+          | ケース2: 90分が最小
+        button.demo-button.px-4.py-2.rounded-full.border.border-slate-200.text-sm.font-bold.transition-all(onclick="showCase('special')" class="hover:bg-slate-50 focus:ring-2 focus:ring-blue-200")
+          | ケース3: 特殊ケース
+        button.demo-button.px-4.py-2.rounded-full.border.border-slate-200.text-sm.font-bold.transition-all(onclick="showCase('case30')" class="hover:bg-slate-50 focus:ring-2 focus:ring-blue-200")
+          | ケース4: 30分あり
+
+      / 結果表示エリア
+      #demo-result.transition-all.duration-300.ease-in-out
+        / デモ結果がここに表示される
+        .text-center.py-12.text-slate-400
+          | ボタンをクリックして、異なるメニュー構成での動作を確認してください
+
+    / --- 既存のコンテンツ（簡略化） ---
+    .intro-box.bg-blue-50.rounded-2xl.p-8.mb-12.text-center.border.border-blue-100
+      h2.text-xl.font-bold.mb-4.text-brand-blue このシステムの目的
+      p.text-lg.text-slate-700.leading-relaxed
+        | 美容師さんの1日の時間を
+        strong.mx-1.text-brand-blue 無駄なく使う
+        | ための予約システムです。
+        br
+        | 隙間時間を最小化することで、
+        strong.mx-1.text-brand-blue 稼働率が10-15%向上
+        | します。
+
+    / --- CTA ---
+    div.rounded-2xl.p-10.text-center.text-white.shadow-xl.bg-gradient-to-br.from-brand-blue.to-indigo-600
+      h2.text-2xl.md:text-3xl.font-bold.mb-6
+        | この仕組みを実際に体験してみませんか？
+      p.text-lg.mb-8.opacity-90
+        | デモで実際の動作をお試しいただけます
+
+      .flex.flex-col.md:flex-row.justify-center.gap-4
+        = link_to demo_path, class: "bg-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-50 hover:-translate-y-1 transition-all duration-300 text-brand-blue" do
+          | デモを試してみる
+        = link_to root_path, class: "bg-transparent border border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white/10 transition-all duration-300" do
+          | トップページに戻る
+
+/ --- JavaScript ---
+/ JavaScript内のHTMLクラスもTailwindに書き換えました
+javascript:
+  function showCase(caseType) {
+      // ボタンのアクティブ状態を更新 (Tailwindクラスの着脱)
+      document.querySelectorAll('.demo-button').forEach(btn => {
+          btn.classList.remove('bg-brand-blue', 'text-white', 'border-brand-blue', 'shadow-md');
+          btn.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+      });
+
+      // クリックされたボタン
+      const activeBtn = event.target;
+      activeBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+      activeBtn.classList.add('bg-brand-blue', 'text-white', 'border-brand-blue', 'shadow-md');
+
+      // 結果エリアを取得
+      const result = document.getElementById('demo-result');
+      
+      // 共通のテーブルスタイル
+      const tableClasses = "w-full border-collapse text-sm whitespace-nowrap";
+      const thClasses = "p-3 font-medium text-left bg-slate-50 text-slate-500 border-b";
+      const tdClasses = "p-3 border-b text-slate-700";
+      
+      // 共通のバッジスタイル
+      const badgeBase = "inline-flex items-center justify-center px-2 py-1 rounded-full text-xs font-bold gap-1";
+      const badgeBlue = `${badgeBase} bg-blue-100 text-blue-700 border border-blue-200`;
+      const badgeAmber = `${badgeBase} bg-amber-100 text-amber-700 border border-amber-200`;
+      const badgeRed = `${badgeBase} bg-red-100 text-red-700 border border-red-200`;
+      
+      // シンボルスタイル
+      const symBase = "inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm";
+      const symCircle = `${symBase} bg-blue-100 text-blue-600`;
+      const symTriangle = `${symBase} bg-amber-100 text-amber-600`;
+      const symCross = `${symBase} bg-slate-100 text-slate-400`;
+      const symError = `${symBase} bg-red-100 text-red-600`;
+
+      if (caseType === 'case60') {
+          result.innerHTML = `
+              <div class="bg-blue-50 p-6 rounded-xl mb-8 border border-blue-100">
+                  <h3 class="text-lg font-bold text-brand-blue mb-3 flex items-center"><span class="mr-2 text-2xl">✂️</span> ケース1: 最小施術時間60分の場合</h3>
+                  <div class="space-y-2 text-sm text-slate-700">
+                    <p><strong class="text-slate-900">メニュー例：</strong>カット60分、カラー120分など</p>
+                    <p><strong class="text-slate-900">最小施術時間：</strong>60分</p>
+                    <p><strong class="text-slate-900">状況：</strong>11:00-12:00 お客様A、14:00- お客様B</p>
+                    <p class="font-bold text-blue-800 bg-blue-100 inline-block px-2 py-1 rounded">新規予約：カット（60分）で予約したい</p>
+                  </div>
+              </div>
+
+              <h4 class="font-bold text-slate-800 mb-4">予約可能時間と判定理由：</h4>
+              <div class="overflow-x-auto rounded-lg border border-slate-200 mb-8">
+                <table class="${tableClasses}">
+                  <thead>
+                      <tr>
+                          <th class="${thClasses}">時刻</th>
+                          <th class="${thClasses}">状況</th>
+                          <th class="${thClasses} text-center">判定</th>
+                          <th class="${thClasses}">理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr class="hover:bg-slate-50">
+                          <td class="${tdClasses} font-bold">11:30</td>
+                          <td class="${tdClasses}"><span class="${badgeRed}">時間不足</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symError}">×</span></td>
+                          <td class="${tdClasses} text-slate-500">11:00からお客様Aと重複</td>
+                      </tr>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">12:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">空き（隣接）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">前の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr class="bg-amber-50/50 hover:bg-amber-50">
+                          <td class="${tdClasses} font-bold">12:30</td>
+                          <td class="${tdClasses}"><span class="${badgeAmber}">空き（隙間あり）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symTriangle}">△</span></td>
+                          <td class="${tdClasses}">前に30分隙間（60分メニューが入らない）</td>
+                      </tr>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">13:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">空き（隣接）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">次の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr class="hover:bg-slate-50">
+                          <td class="${tdClasses} font-bold">13:30</td>
+                          <td class="${tdClasses}"><span class="${badgeRed}">時間不足</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symError}">×</span></td>
+                          <td class="${tdClasses} text-slate-500">14:00からお客様Bと重複</td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="bg-amber-50 p-5 rounded-lg border border-amber-100 text-amber-900 text-sm">
+                  <h4 class="font-bold text-amber-700 mb-2 flex items-center"><span class="mr-2">💡</span> ポイント</h4>
+                  <p class="mb-1">12:30に予約を入れると、12:00-12:30の<strong class="bg-amber-200 px-1 rounded">30分が無駄</strong>になります。</p>
+                  <p>この30分には60分メニューを入れられないため、△で別の時間を推奨します。</p>
+              </div>
+          `;
+      } else if (caseType === 'case30') {
+          result.innerHTML = `
+              <div class="bg-blue-50 p-6 rounded-xl mb-8 border border-blue-100">
+                  <h3 class="text-lg font-bold text-brand-blue mb-3 flex items-center"><span class="mr-2 text-2xl">✂️</span> ケース4: 最小施術時間30分の場合</h3>
+                  <div class="space-y-2 text-sm text-slate-700">
+                    <p><strong class="text-slate-900">メニュー構成：</strong>シャンプー30分、カット60分</p>
+                    <p><strong class="text-slate-900">最小施術時間：</strong>30分</p>
+                    <p><strong class="text-slate-900">状況：</strong>11:00-12:00 お客様A、14:00- お客様B</p>
+                    <p class="font-bold text-blue-800 bg-blue-100 inline-block px-2 py-1 rounded">新規予約：カット（60分）で予約したい</p>
+                  </div>
+              </div>
+
+              <h4 class="font-bold text-slate-800 mb-4">予約可能時間と判定理由：</h4>
+              <div class="overflow-x-auto rounded-lg border border-slate-200 mb-8">
+                <table class="${tableClasses}">
+                  <thead>
+                      <tr>
+                          <th class="${thClasses}">時刻</th>
+                          <th class="${thClasses}">状況</th>
+                          <th class="${thClasses} text-center">判定</th>
+                          <th class="${thClasses}">理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">12:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">空き（隣接）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">前の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">12:30</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">空き（30分隙間）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">前に30分隙間 → 30分メニューで埋まる！</td>
+                      </tr>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">13:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">空き（60分隙間）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">前に60分隙間 → 60分または30分×2で埋まる！</td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="bg-green-50 p-5 rounded-lg border border-green-100 text-green-900 text-sm mb-6">
+                  <h4 class="font-bold text-green-700 mb-2 flex items-center"><span class="mr-2">✅</span> なぜ△が表示されないのか？</h4>
+                  <p class="mb-2">30分メニューがある場合、<strong>すべての隙間が30分の倍数で埋められる</strong>ため、無駄な隙間が発生しません。</p>
+                  <ul class="list-disc list-inside space-y-1 ml-2 text-green-800 opacity-80">
+                      <li>30分隙間 → 30分メニュー1つで完全に埋まる</li>
+                      <li>60分隙間 → 60分メニュー1つ または 30分メニュー2つで埋まる</li>
+                      <li>90分隙間 → 60分+30分 または 30分×3で埋まる</li>
+                  </ul>
+                  <p class="mt-2 font-bold">結論：どんな隙間も有効活用できるため、△（調整推奨）の概念自体が不要になります！</p>
+              </div>
+          `;
+      } else if (caseType === 'case90') {
+          result.innerHTML = `
+              <div class="bg-blue-50 p-6 rounded-xl mb-8 border border-blue-100">
+                  <h3 class="text-lg font-bold text-brand-blue mb-3 flex items-center"><span class="mr-2 text-2xl">✂️</span> ケース2: 最小施術時間90分の場合</h3>
+                  <div class="space-y-2 text-sm text-slate-700">
+                    <p><strong class="text-slate-900">メニュー：</strong>パーマ90分、カラー120分</p>
+                    <p><strong class="text-slate-900">最小施術時間：</strong>90分</p>
+                    <p><strong class="text-slate-900">状況：</strong>10:00から営業開始、13:00- お客様B</p>
+                    <p class="font-bold text-blue-800 bg-blue-100 inline-block px-2 py-1 rounded">新規予約：パーマ（90分）で予約したい</p>
+                  </div>
+              </div>
+
+              <h4 class="font-bold text-slate-800 mb-4">予約可能時間と判定理由：</h4>
+              <div class="overflow-x-auto rounded-lg border border-slate-200 mb-8">
+                <table class="${tableClasses}">
+                  <thead>
+                      <tr>
+                          <th class="${thClasses}">時刻</th>
+                          <th class="${thClasses}">状況</th>
+                          <th class="${thClasses} text-center">判定</th>
+                          <th class="${thClasses}">詳細な理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">10:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">✅ 営業開始</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">営業開始時刻なので隙間なし<br><span class="text-xs text-slate-400">10:00〜11:30（90分）で終了</span></td>
+                      </tr>
+                      <tr class="bg-amber-50/50 hover:bg-amber-50">
+                          <td class="${tdClasses} font-bold">10:30</td>
+                          <td class="${tdClasses}"><span class="${badgeAmber}">⚠️ 特殊ケース</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symTriangle}">△</span></td>
+                          <td class="${tdClasses}">
+                             前の隙間: 30分 / 後の隙間: 60分<br>
+                             <strong class="text-amber-600">合計90分が「30分と60分」に分断される</strong>
+                          </td>
+                      </tr>
+                      <tr class="bg-amber-50/50 hover:bg-amber-50">
+                          <td class="${tdClasses} font-bold">11:00</td>
+                          <td class="${tdClasses}"><span class="${badgeAmber}">⚠️ 特殊ケース</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symTriangle}">△</span></td>
+                          <td class="${tdClasses}">
+                             前の隙間: 60分 / 後の隙間: 30分<br>
+                             <strong class="text-amber-600">合計90分が「60分と30分」に分断される</strong>
+                          </td>
+                      </tr>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">11:30</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">✅ お客様Bと隣接</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">次の予約と隣接（隙間0分）<br><span class="text-xs text-slate-400">11:30〜13:00（90分）で終了</span></td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 text-slate-200 text-sm">
+                  <h4 class="font-bold text-white mb-2 flex items-center"><span class="mr-2">📊</span> 判定の理由（高度なケース）</h4>
+                  <p class="mb-2">最小施術時間が90分の場合、60分以下の隙間には90分メニューを入れることができません。</p>
+                  <p class="text-amber-300">10:30や11:00に予約を入れると、本来なら1つの90分メニューが入る時間を分断してしまうため、△の判定になります。</p>
+              </div>
+          `;
+      } else if (caseType === 'special') {
+          result.innerHTML = `
+              <div class="bg-blue-50 p-6 rounded-xl mb-8 border border-blue-100">
+                  <h3 class="text-lg font-bold text-brand-blue mb-3 flex items-center"><span class="mr-2 text-2xl">✂️</span> ケース3: 特殊ケース（120分）</h3>
+                  <div class="space-y-2 text-sm text-slate-700">
+                    <p><strong class="text-slate-900">メニュー：</strong>カラー120分、パーマ180分など</p>
+                    <p><strong class="text-slate-900">最小施術時間：</strong>120分</p>
+                    <p><strong class="text-slate-900">状況：</strong>9:00-10:00 お客様A、14:00- お客様B</p>
+                    <p class="font-bold text-blue-800 bg-blue-100 inline-block px-2 py-1 rounded">新規予約：カラー（120分）で予約したい</p>
+                  </div>
+              </div>
+
+              <h4 class="font-bold text-slate-800 mb-4">予約可能時間と判定理由：</h4>
+              <div class="overflow-x-auto rounded-lg border border-slate-200 mb-8">
+                <table class="${tableClasses}">
+                  <thead>
+                      <tr>
+                          <th class="${thClasses}">時刻</th>
+                          <th class="${thClasses}">状況</th>
+                          <th class="${thClasses} text-center">判定</th>
+                          <th class="${thClasses}">詳細な理由</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">10:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">✅ 空き（隣接）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">前の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr class="bg-amber-50/50 hover:bg-amber-50">
+                          <td class="${tdClasses} font-bold">10:30</td>
+                          <td class="${tdClasses}"><span class="${badgeAmber}">⚠️ 特殊ケース</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symTriangle}">△</span></td>
+                          <td class="${tdClasses}">
+                             前: 30分 / 後: 90分<br>
+                             <strong class="text-red-600">合計120分が分断される</strong>
+                          </td>
+                      </tr>
+                      <tr class="bg-amber-50/50 hover:bg-amber-50">
+                          <td class="${tdClasses} font-bold">11:00</td>
+                          <td class="${tdClasses}"><span class="${badgeAmber}">⚠️ 特殊ケース</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symTriangle}">△</span></td>
+                          <td class="${tdClasses}">
+                             前: 60分 / 後: 60分<br>
+                             <strong class="text-red-600">合計120分が分断される</strong>
+                          </td>
+                      </tr>
+                      <tr class="bg-amber-50/50 hover:bg-amber-50">
+                          <td class="${tdClasses} font-bold">11:30</td>
+                          <td class="${tdClasses}"><span class="${badgeAmber}">⚠️ 特殊ケース</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symTriangle}">△</span></td>
+                          <td class="${tdClasses}">
+                             前: 90分 / 後: 30分<br>
+                             <strong class="text-red-600">合計120分が分断される</strong>
+                          </td>
+                      </tr>
+                      <tr class="bg-blue-50/50 hover:bg-blue-50">
+                          <td class="${tdClasses} font-bold">12:00</td>
+                          <td class="${tdClasses}"><span class="${badgeBlue}">✅ 空き（隣接）</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symCircle}">◎</span></td>
+                          <td class="${tdClasses}">次の予約と隣接（隙間0分）</td>
+                      </tr>
+                      <tr class="hover:bg-slate-50">
+                          <td class="${tdClasses} font-bold">13:00</td>
+                          <td class="${tdClasses}"><span class="${badgeRed}">❌ 時間不足</span></td>
+                          <td class="${tdClasses} text-center"><span class="${symError}">×</span></td>
+                          <td class="${tdClasses}">14:00まで残り60分しかない</td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 text-slate-200 text-sm">
+                  <h4 class="font-bold text-white mb-2 flex items-center"><span class="mr-2">📊</span> 判定の理由（特殊ケース）</h4>
+                  <p class="mb-2">どの時間に予約を入れても、前後の隙間の合計が120分（最小施術時間）と同じになり、1つの予約が時間を分断してしまいます。</p>
+                  <p class="font-bold text-amber-300">「前の隙間 + 後の隙間 = 最小施術時間」という条件を満たす時、すべて△（調整推奨）になります。これがアルゴリズムの核心です！</p>
+              </div>
+          `;
+      }
+
+      result.classList.add('animate-in');
+  }
+
+  // ページ読み込み時に最初のケースを表示
+  document.addEventListener('DOMContentLoaded', function() {
+      // ボタンの初期状態設定
+      const firstBtn = document.querySelector('.demo-button');
+      if(firstBtn) {
+        firstBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+        firstBtn.classList.add('bg-brand-blue', 'text-white', 'border-brand-blue', 'shadow-md');
+      }
+      showCase('case60');
+  });
