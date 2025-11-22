@@ -294,7 +294,7 @@ RSpec.describe 'Stylists::Sales' do
     it '売り上げ管理ページへ遷移できる' do
       click_on '売上管理'
       expect(page).to have_current_path(stylists_sales_path)
-      expect(page).to have_content('売上管理')
+      expect(page).to have_content('売り上げ管理')
     end
   end
 

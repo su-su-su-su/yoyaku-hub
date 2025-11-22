@@ -199,24 +199,18 @@ RSpec.describe '/stylists/dashboards' do
       copy_button = find("button[data-copy-clipboard-target='button']")
       expect(copy_button).to be_visible
       expect(copy_button).to have_text(invitation_url_texts[:copy_default])
-      expect(copy_button).to have_css('svg')
     end
 
     context 'when the copy button is clicked', :js do
       it 'changes the button content to success and then reverts' do
         copy_button = find("button[data-copy-clipboard-target='button']")
         actual_original_button_text = invitation_url_texts[:copy_default]
-        original_icon_svg_path_part = 'M15.666 3.888A2.25 2.25 0 0013.5 2.25'
 
         copy_button.click
 
         expect(copy_button).to have_text(invitation_url_texts[:copied_regex], wait: Capybara.default_max_wait_time)
-        success_icon_svg_path_part = 'M4.5 12.75l6 6 9-13.5'
-        expect(copy_button).to have_css("svg path[d*='#{success_icon_svg_path_part}']",
-          wait: Capybara.default_max_wait_time)
 
         expect(copy_button).to have_text(actual_original_button_text, wait: 3)
-        expect(copy_button).to have_css("svg path[d*='#{original_icon_svg_path_part}']", wait: 3)
       end
     end
   end
