@@ -166,9 +166,9 @@ RSpec.describe '/stylists/dashboards' do
     let(:invitation_url_texts) do
       {
         menu_url: "https://yoyakuhub.jp/customers/stylists/#{stylist.id}/menus",
-        title: 'お客様へのご案内用URL',
-        desc1: 'あなたのメニュー一覧ページのURLはこちらです。',
-        desc2: 'お客様が予約される際は、このURLを共有し、メニューを選択して手続きを進めてもらうようお伝えください。',
+        title: '予約ページのご案内URL',
+        desc1: 'お客様にこのURLを共有して、予約を受け付けましょう。',
+        desc2: '',
         copy_default: 'コピー',
         copied_regex: /コピー完了!/
       }
