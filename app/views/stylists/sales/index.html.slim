@@ -1,84 +1,114 @@
-.container.mx-auto.px-4.py-4.md:py-6
-  .mb-6
-    .text-center
-      h1.page-title-gradient.subtle-gradient-look 売り上げ管理
+- content_for :title, '売り上げ管理'
+- content_for :meta_description, '日次・月次の売上を確認し、CSV形式でエクスポートできます。'
 
-    .flex.items-center.justify-between.mt-4
-      = link_to '前月へ', stylists_sales_path(year: @month == 1 ? @year - 1 : @year, month: @month == 1 ? 12 : @month - 1),
-                class: "px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded"
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-6xl
 
-      .flex.items-center.gap-2(data-controller="sales-date-picker")
-        select.border.rounded.px-2.py-1(data-sales-date-picker-target="year" data-action="change->sales-date-picker#navigate")
-          - (2020..Date.current.year + 1).each do |year|
-            option(value=year selected=(@year == year)) = "#{year}年"
-        select.border.rounded.px-2.py-1(data-sales-date-picker-target="month" data-action="change->sales-date-picker#navigate")
-          - (1..12).each do |month|
-            option(value=month selected=(@month == month)) = "#{month}月"
+    .flex.flex-col.items-center.mb-10
+      h1.text-2xl.font-bold.text-slate-800.mb-2 売り上げ管理
 
-      = link_to '次月へ', stylists_sales_path(year: @month == 12 ? @year + 1 : @year, month: @month == 12 ? 1 : @month + 1),
-                class: "px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded"
+      .bg-white.p-1.5.rounded-lg.shadow-sm.border.border-slate-200.flex.items-center.gap-1
+        = link_to stylists_sales_path(year: @month == 1 ? @year - 1 : @year, month: @month == 1 ? 12 : @month - 1), class: "p-2 hover:bg-slate-50 text-slate-500 hover:text-brand-blue rounded-md transition-colors"
+          svg.w-5.h-5(fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
 
-    = form_with url: export_stylists_sales_path, method: :post, local: true, data: { turbo: false }, class: "flex justify-center mt-4" do |f|
-      = f.hidden_field :year, value: @year
-      = f.hidden_field :month, value: @month
-      .flex.items-center.gap-3
-        = f.select :format_type, options_for_select([['標準形式 (汎用)', 'standard'], ['マネーフォワード形式', 'moneyforward'], ['freee形式', 'freee']], 'standard'), {}, class: "border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        = f.submit 'CSVダウンロード', class: "px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors cursor-pointer font-semibold"
+        .flex.items-center.gap-1.px-2(data-controller="sales-date-picker")
+          .relative
+            select.appearance-none.border-none.py-1.pl-2.pr-6.text-slate-700.font-bold.bg-transparent.focus:ring-0.cursor-pointer.text-lg(data-sales-date-picker-target="year" data-action="change->sales-date-picker#navigate")
+              - (2020..Date.current.year + 1).each do |year|
+                option(value=year selected=(@year == year)) = "#{year}年"
 
-  / 月間サマリー
-  .grid.grid-cols-2.md:grid-cols-3.lg:grid-cols-6.gap-2.mb-6
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-3.py-1.text-xs.text-gray-700.font-medium 総売上
-      .px-3.py-2.text-lg.font-bold.text-gray-800.md:text-xl
-        = "¥#{number_with_delimiter(@monthly_sales[:total].to_i)}"
+          .relative
+            select.appearance-none.border-none.py-1.pl-2.pr-6.text-slate-700.font-bold.bg-transparent.focus:ring-0.cursor-pointer.text-lg(data-sales-date-picker-target="month" data-action="change->sales-date-picker#navigate")
+              - (1..12).each do |month|
+                option(value=month selected=(@month == month)) = "#{month}月"
 
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-3.py-1.text-xs.text-gray-700.font-medium 技術売上
-      .px-3.py-2.text-lg.font-bold.text-gray-800.md:text-xl
-        = "¥#{number_with_delimiter(@monthly_sales[:service_amount].to_i)}"
+        = link_to stylists_sales_path(year: @month == 12 ? @year + 1 : @year, month: @month == 12 ? 1 : @month + 1), class: "p-2 hover:bg-slate-50 text-slate-500 hover:text-brand-blue rounded-md transition-colors"
+          svg.w-5.h-5(fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
 
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-3.py-1.text-xs.text-gray-700.font-medium 商品売上
-      .px-3.py-2.text-lg.font-bold.text-gray-800.md:text-xl
-        = "¥#{number_with_delimiter(@monthly_sales[:product_amount].to_i)}"
+    .grid.grid-cols-2.md:grid-cols-3.lg:grid-cols-6.gap-4.mb-8
+      .col-span-2.bg-brand-blue.rounded-xl.shadow-lg.shadow-blue-100.p-5.text-white.relative.overflow-hidden
+        .relative.z-10
+          p.text-xs.font-medium.text-blue-100.mb-1 総売上
+          p.text-3xl.font-bold = "¥#{number_with_delimiter(@monthly_sales[:total].to_i)}"
+        .absolute.top-0.right-0.-mt-4.-mr-4.w-24.h-24.bg-white.opacity-10.rounded-full.blur-xl
 
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-3.py-1.text-xs.text-gray-700.font-medium 予約数
-      .px-3.py-2.text-lg.font-bold.text-gray-800.md:text-xl
-        = "#{@monthly_sales[:count]}件"
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-4.flex.flex-col.justify-between
+        p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 技術売上
+        p.text-lg.font-bold.text-slate-700 = "¥#{number_with_delimiter(@monthly_sales[:service_amount].to_i)}"
 
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-3.py-1.text-xs.text-gray-700.font-medium 技術平均単価
-      .px-3.py-2.text-lg.font-bold.text-gray-800.md:text-xl
-        = "¥#{number_with_delimiter(@monthly_sales[:average_service_price])}"
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-4.flex.flex-col.justify-between
+        p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 商品売上
+        p.text-lg.font-bold.text-slate-700 = "¥#{number_with_delimiter(@monthly_sales[:product_amount].to_i)}"
 
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-3.py-1.text-xs.text-gray-700.font-medium 日平均売上
-      .px-3.py-2.text-lg.font-bold.text-gray-800.md:text-xl
-        - if @daily_sales.any?
-          = "¥#{number_with_delimiter((@monthly_sales[:total].to_f / @daily_sales.keys.count).to_i)}"
-        - else
-          | ¥0
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-4.flex.flex-col.justify-between
+        p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 予約数
+        p.text-lg.font-bold.text-slate-700 = "#{@monthly_sales[:count]}件"
 
-  / カテゴリー別売上
-  - if @category_sales.any?
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .bg-gray-50.px-4.py-2
-        h2.text-base.font-bold カテゴリー別売上
-      .p-4.space-y-3
-        - @category_sales.each do |category, data|
-          .flex.items-center.justify-between
-            .flex.items-center.flex-1
-              span.text-sm.font-medium.w-24 = category
-              .flex-1.mx-4
-                .w-full.bg-gray-200.rounded-full.h-2
-                  .bg-blue-600.h-2.rounded-full style="width: #{data[:percentage]}%"
-              span.text-sm.text-gray-600 = "#{data[:percentage]}%"
-            .text-sm.font-semibold.ml-4
-              = "¥#{number_with_delimiter(data[:amount])}"
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-4.flex.flex-col.justify-between
+        p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 技術平均単価
+        p.text-lg.font-bold.text-slate-700 = "¥#{number_with_delimiter(@monthly_sales[:average_service_price])}"
 
-  .mt-12.text-center
-    = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
-      svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
-      | スタイリストトップへ戻る
+    .grid.grid-cols-1.lg:grid-cols-3.gap-8
+      
+      .lg:col-span-2
+        .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden.h-full
+          .px-6.py-4.border-b.border-slate-100
+            h3.font-bold.text-slate-700 カテゴリー別売上
+          
+          .p-6
+            - if @category_sales.any?
+              .space-y-6
+                - @category_sales.each do |category, data|
+                  div
+                    .flex.justify-between.items-end.mb-2
+                      span.text-sm.font-bold.text-slate-700 = category
+                      .text-right
+                        span.text-sm.font-bold.text-slate-900 = "¥#{number_with_delimiter(data[:amount])}"
+                        span.text-xs.text-slate-400.ml-2 = "(#{data[:percentage]}%)"
+                    
+                    .w-full.bg-slate-100.rounded-full.h-2.5
+                      .bg-brand-blue.h-2.5.rounded-full(style="width: #{data[:percentage]}%")
+            - else
+              .py-12.text-center
+                .w-12.h-12.bg-slate-50.rounded-full.flex.items-center.justify-center.mx-auto.mb-3
+                  svg.w-6.h-6.text-slate-300(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+                p.text-slate-400.text-sm データがありません
+
+      .lg:col-span-1
+        .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden
+          .px-6.py-4.border-b.border-slate-100.bg-slate-50
+            h3.font-bold.text-slate-700 データ出力
+          
+          .p-6
+            = form_with url: export_stylists_sales_path, method: :post, local: true, data: { turbo: false } do |f|
+              = f.hidden_field :year, value: @year
+              = f.hidden_field :month, value: @month
+              
+              .mb-6
+                label.block.text-xs.font-bold.text-slate-400.uppercase.tracking-wider.mb-3 出力フォーマット
+                .space-y-3
+                  label.flex.items-center.p-3.border.border-slate-200.rounded-lg.cursor-pointer.hover:bg-slate-50.transition-colors.has-[:checked]:border-brand-blue.has-[:checked]:bg-blue-50
+                    = f.radio_button :format_type, 'standard', checked: true, class: "radio radio-primary radio-sm mr-3"
+                    div
+                      span.block.text-sm.font-bold.text-slate-700 標準形式
+                  
+                  label.flex.items-center.p-3.border.border-slate-200.rounded-lg.cursor-pointer.hover:bg-slate-50.transition-colors.has-[:checked]:border-brand-blue.has-[:checked]:bg-blue-50
+                    = f.radio_button :format_type, 'moneyforward', class: "radio radio-primary radio-sm mr-3"
+                    div
+                      span.block.text-sm.font-bold.text-slate-700 マネーフォワード形式
+                  
+                  label.flex.items-center.p-3.border.border-slate-200.rounded-lg.cursor-pointer.hover:bg-slate-50.transition-colors.has-[:checked]:border-brand-blue.has-[:checked]:bg-blue-50
+                    = f.radio_button :format_type, 'freee', class: "radio radio-primary radio-sm mr-3"
+                    div
+                      span.block.text-sm.font-bold.text-slate-700 freee形式
+
+              = f.submit 'CSVダウンロード', class: "btn w-full bg-slate-800 text-white hover:bg-slate-700 border-none shadow-sm"
+
+    .mt-12.text-center
+      = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+        svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+        | スタイリストトップへ戻る
