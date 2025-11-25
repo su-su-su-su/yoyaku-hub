@@ -33,8 +33,8 @@ RSpec.describe 'Stylist Menu Management' do
       expect(page).to have_text('メニュー管理')
       expect(page).to have_text('カット')
       expect(page).to have_text('カラー')
-      expect(page).to have_text('￥6600')
-      expect(page).to have_text('￥8800')
+      expect(page).to have_text('¥6,600')
+      expect(page).to have_text('¥8,800')
       expect(page).to have_text('60分')
       expect(page).to have_text('90分')
     end
@@ -49,7 +49,7 @@ RSpec.describe 'Stylist Menu Management' do
     before do
       sign_in stylist
       visit menus_settings_path
-      click_on '新規登録'
+      click_on '新規メニュー登録'
     end
 
     context 'with valid data' do
@@ -64,7 +64,7 @@ RSpec.describe 'Stylist Menu Management' do
         end
 
         expect(page).to have_text('トリートメント')
-        expect(page).to have_text('￥5500')
+        expect(page).to have_text('¥5,500')
         expect(page).to have_text('60分')
         expect(page).to have_text('髪質改善トリートメント')
         expect(stylist.menus.count).to eq(1)
@@ -107,7 +107,7 @@ RSpec.describe 'Stylist Menu Management' do
         end
 
         expect(page).to have_text('ベーシックカット')
-        expect(page).to have_text('￥7700')
+        expect(page).to have_text('¥7,700')
         expect(page).to have_text('60分')
         expect(menu.reload.name).to eq('ベーシックカット')
       end
@@ -160,7 +160,7 @@ RSpec.describe 'Stylist Menu Management' do
       sign_in stylist
       create_list(:menu, Menu::MAX_MENUS_PER_STYLIST, stylist: stylist)
       visit menus_settings_path
-      click_on '新規登録'
+      click_on '新規メニュー登録'
     end
 
     it 'displays an error when reaching the menu creation limit', :js do
