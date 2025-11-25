@@ -160,8 +160,8 @@ RSpec.describe 'Stylists::Sales' do
         expect(page).to have_content('¥3,000') # 前月の総売上
 
         # 次月へのリンクをクリック（アイコンボタン）
-        next_month = Date.new(current_year, current_month, 1)
-        page.all('a').find { |a| a[:href]&.include?("month=#{current_month}") && a[:href]&.include?("year=#{current_year}") }.click
+        Date.new(current_year, current_month, 1)
+        page.all('a').find { |a| a[:href]&.include?("month=#{current_month}") && a[:href].include?("year=#{current_year}") }.click
 
         # ページ遷移を待つ - 現在の年月がURLに含まれることを確認
         expect(page).to have_current_path(stylists_sales_path(year: current_year, month: current_month))

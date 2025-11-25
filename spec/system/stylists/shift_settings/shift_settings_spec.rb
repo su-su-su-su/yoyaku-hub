@@ -21,15 +21,15 @@ RSpec.describe 'Stylist shift settings' do
     end
 
     it 'displays the shift settings page with all sections' do
-      expect(page).to have_content('シフト設定')
+      expect(page).to have_content('シフト・受付設定')
 
-      expect(page).to have_content('営業時間')
-      expect(page).to have_content('休業日')
-      expect(page).to have_content('受付可能数')
+      expect(page).to have_content('営業時間の設定')
+      expect(page).to have_content('休業日の設定')
+      expect(page).to have_content('予約枠の上限設定')
 
       expect(page).to have_content('毎月の受付設定')
 
-      expect(page).to have_css('.card-body p.text-lg.font-bold', count: 3)
+      expect(page).to have_css('section', count: 3)
     end
 
     it 'displays monthly settings cards with correct labels' do
@@ -55,7 +55,7 @@ RSpec.describe 'Stylist shift settings' do
       this_month_year = today.year
       this_month = today.month
 
-      find(".card a[href*='#{this_month_year}/#{this_month}']").click
+      find("a[href*='#{this_month_year}/#{this_month}']").click
 
       expect(page).to have_content("#{this_month_year}年#{this_month}月の受付設定")
       expect(page).to have_table
@@ -85,9 +85,9 @@ RSpec.describe 'Stylist shift settings' do
       first_day_cell = first('.day-cell')
 
       within(first_day_cell) do
-        check '休業日'
+        check '休'
 
-        expect(page).to have_field('休業日', checked: true)
+        expect(page).to have_field('休', checked: true)
       end
     end
 
@@ -146,8 +146,11 @@ RSpec.describe 'Stylist shift settings' do
 
       visit stylists_shift_settings_path
 
-      month_card = find('.card', text: "#{year}\n#{month}月")
-      expect(month_card).to have_content('設定済み')
+      # 年と月を含むリンクを探す（年と月が別要素の場合もあるため、親要素から探す）
+      month_links = all('a').select { |link| link.text.include?("#{year}年") && link.text.include?("#{month}月") }
+      expect(month_links).not_to be_empty
+      month_card = month_links.first
+      expect(month_card).to have_content('設定済')
 
       expect(month_card).to have_no_content('未設定')
     end

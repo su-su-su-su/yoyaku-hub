@@ -143,7 +143,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
       it '休業日に設定しようとするとアラートが表示される' do
         # 1日を休業日に設定
         within("td[class*='wday-'][class*='border']", match: :first) do
-          check '休業日'
+          check '休'
         end
 
         # alertをacceptする設定（アラートは自動的に閉じられる）
@@ -157,7 +157,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
 
       it 'アラートメッセージに正しい予約情報が表示される' do
         within("td[class*='wday-'][class*='border']", match: :first) do
-          check '休業日'
+          check '休'
         end
 
         message = accept_alert do
@@ -268,7 +268,7 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
       it '複数の競合が日付順・時間順にソートされて表示される' do
         # 1日を休業日、3日を短縮営業に設定
         within all("td[class*='wday-'][class*='border']")[0] do
-          check '休業日'
+          check '休'
         end
 
         within all("td[class*='wday-'][class*='border']")[2] do
@@ -308,21 +308,22 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         # 一部の日を営業日として設定し、10日を休業日に設定
         # 1日を営業日として設定
         within all("td[class*='wday-'][class*='border']")[0] do
-          uncheck '休業日' if has_checked_field?('休業日')
+          uncheck '休' if has_checked_field?('休')
           select '09:00', from: find("select[data-holiday-toggle-target='startTime']")[:name]
           select '18:00', from: find("select[data-holiday-toggle-target='endTime']")[:name]
         end
 
         # 10日を休業日に設定
         within all("td[class*='wday-'][class*='border']")[9] do
-          check '休業日'
+          check '休'
         end
 
         # アラートが表示されないことを確認して、フォームが送信される
         click_on '一括設定'
 
         # フォーム送信処理が時間がかかる場合があるため、長めに待つ
-        expect(page).to have_content('シフトを設定しました', wait: 10)
+        # リダイレクト後、設定ページに戻ることを確認
+        expect(page).to have_current_path(stylists_shift_settings_path, wait: 10)
       end
     end
 
@@ -359,25 +360,26 @@ RSpec.describe 'Shift settings with reservation conflicts', :js do
         # 一部の日を営業日として設定
         # 1日を営業日として設定
         within all("td[class*='wday-'][class*='border']")[0] do
-          uncheck '休業日' if has_checked_field?('休業日')
+          uncheck '休' if has_checked_field?('休')
           select '09:00', from: find("select[data-holiday-toggle-target='startTime']")[:name]
           select '18:00', from: find("select[data-holiday-toggle-target='endTime']")[:name]
         end
 
         # 2日と3日を休業日に設定
         within all("td[class*='wday-'][class*='border']")[1] do
-          check '休業日'
+          check '休'
         end
 
         within all("td[class*='wday-'][class*='border']")[2] do
-          check '休業日'
+          check '休'
         end
 
         # アラートが表示されないことを確認して、フォームが送信される
         click_on '一括設定'
 
         # フォーム送信処理が時間がかかる場合があるため、長めに待つ
-        expect(page).to have_content('シフトを設定しました', wait: 10)
+        # リダイレクト後、設定ページに戻ることを確認
+        expect(page).to have_current_path(stylists_shift_settings_path, wait: 10)
       end
     end
   end
