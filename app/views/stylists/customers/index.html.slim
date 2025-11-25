@@ -51,5 +51,8 @@
         p.text-lg.font-medium まだ担当している顧客がいません
         p.text-sm.text-gray-500.mt-2 お客様からの予約をお待ちください
 
-.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
-  = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+.mt-12.text-center
+  = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+    svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+    | スタイリストトップへ戻る
