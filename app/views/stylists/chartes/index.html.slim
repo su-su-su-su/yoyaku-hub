@@ -1,66 +1,84 @@
-- content_for :title, "#{@customer.family_name}#{@customer.given_name}様のカルテ履歴"
+- content_for :title, "#{@customer.family_name} #{@customer.given_name}様のカルテ履歴"
 - content_for :meta_description, 'お客様のカルテ履歴です。過去の施術履歴や備考を確認・編集できます。'
 
-.container.mx-auto.p-4
-  .mb-4.text-center
-    h1.page-title-gradient
-      = @customer.family_name
-      = @customer.given_name
-      |  様のカルテ履歴
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-3xl
 
+    .mb-8
+      = link_to stylists_customers_path, class: "inline-block text-sm text-slate-500 hover:text-brand-blue mb-4 transition-colors"
+        | < 顧客一覧に戻る
 
-  - if @paid_reservations.any?
-    .space-y-4
-      - @paid_reservations.each do |reservation|
-        - charte = @chartes.find { |c| c.reservation_id == reservation.id }
-        .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
-          .p-4
-            .mb-3
-              p.text-base.font-medium.mb-1
-                = I18n.l(reservation.start_at, format: :wday_short)
-              .text-sm.text-gray-600.space-y-1
-                p
-                  | メニュー:
-                  = reservation.menus.pluck(:name).join(', ')
-                - if reservation.accounting&.accounting_products&.any?
-                  p
-                    | 店販商品:
-                    - product_names = reservation.accounting.accounting_products.map { |ap| "#{ap.product.name}×#{ap.quantity}" }
-                    = product_names.join(', ')
-                p
-                  | 合計金額:
+      .text-center.md:text-left
+        h1.text-2xl.font-bold.text-slate-800.mb-1
+          span.mr-2 = "#{@customer.family_name} #{@customer.given_name}"
+          span.text-lg.font-normal.text-slate-500 様
+        p.text-sm.text-slate-500 カルテ履歴
+
+    - if @paid_reservations.any?
+      .space-y-6
+        - @paid_reservations.each do |reservation|
+          - charte = @chartes.find { |c| c.reservation_id == reservation.id }
+          
+          .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden.transition-shadow.hover:shadow-md
+            .bg-slate-50.px-5.py-4.border-b.border-slate-100.flex.flex-col.md:flex-row.md:items-center.justify-between.gap-3
+              div
+                p.text-lg.font-bold.text-slate-800
+                  = I18n.l(reservation.start_at, format: '%Y年%m月%d日(%a)')
+                p.text-xs.text-slate-500 = I18n.l(reservation.start_at, format: '%H:%M') + " 〜 " + I18n.l(reservation.end_at, format: '%H:%M')
+              
+              div.text-right.md:text-right
+                p.text-sm.font-bold.text-slate-700
                   - if reservation.accounting&.completed?
                     = "¥#{number_with_delimiter(reservation.accounting.total_with_products)}"
                   - else
-                    span.text-gray-500 未設定
+                    span.text-slate-400 未会計
 
-            - if charte&.treatment_memo.present? || charte&.remarks.present?
-              .mt-3.pt-3.border-t.border-gray-200
-                - if charte.treatment_memo.present?
-                  p.text-sm.mb-2.break-words
-                    span.text-gray-700.whitespace-nowrap 施術メモ:
-                    = truncate(charte.treatment_memo, length: 100)
-                - if charte.remarks.present?
-                  p.text-sm.break-words
-                    span.text-gray-700.whitespace-nowrap 備考:
-                    = truncate(charte.remarks, length: 100)
+            / カードボディ（詳細情報）
+            .p-5
+              / メニュー・商品情報
+              .mb-4
+                .flex.flex-wrap.gap-2.mb-2
+                  - reservation.menus.each do |menu|
+                    span.inline-block.px-2.py-1.bg-blue-50.text-brand-blue.text-xs.rounded.font-medium = menu.name
+                  
+                  - if reservation.accounting&.accounting_products&.any?
+                    - reservation.accounting.accounting_products.each do |ap|
+                      span.inline-block.px-2.py-1.bg-amber-50.text-amber-700.text-xs.rounded.font-medium = "#{ap.product.name} ×#{ap.quantity}"
 
-            .flex.justify-end.mt-3.space-x-2
+              / カルテ内容（メモ・備考）
               - if charte
-                = link_to '詳細', stylists_customer_charte_path(@customer, charte), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
-                = link_to '編集', edit_stylists_customer_charte_path(@customer, charte), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
-              - else
-                = link_to 'カルテを作成', new_stylists_charte_path(reservation), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
-  - else
-    .border.border-gray-300.rounded-lg.bg-white.shadow-sm.p-8.text-center
-      p.text-gray-500.mb-4
-        = @customer.family_name
-        = @customer.given_name
-        | 様のカルテはまだありません
-      p.text-sm.text-gray-400 予約から会計完了後にカルテを作成できます
+                - if charte.treatment_memo.present? || charte.remarks.present?
+                  .bg-slate-50.rounded-lg.p-4.space-y-3.mb-4
+                    - if charte.treatment_memo.present?
+                      div
+                        p.text-xs.font-bold.text-slate-400.mb-1 施術メモ
+                        p.text-sm.text-slate-700.whitespace-pre-wrap.line-clamp-3 = charte.treatment_memo
+                    
+                    - if charte.remarks.present?
+                      div
+                        p.text-xs.font-bold.text-slate-400.mb-1 備考
+                        p.text-sm.text-slate-700.whitespace-pre-wrap.line-clamp-3 = charte.remarks
+                
+                / アクション（詳細・編集）
+                .flex.justify-end.gap-3
+                  = link_to '詳細を見る', stylists_customer_charte_path(@customer, charte), class: 'text-sm font-medium text-brand-blue hover:text-blue-700'
+                  span.text-slate-300 |
+                  = link_to '編集する', edit_stylists_customer_charte_path(@customer, charte), class: 'text-sm font-medium text-slate-500 hover:text-slate-700'
 
-  .mt-12.text-center
-    = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
-      svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
-      | スタイリストトップへ戻る
+              - else
+                / カルテ未作成の場合
+                .flex.flex-col.items-center.justify-center.py-4.border-t.border-slate-100.mt-2
+                  p.text-sm.text-slate-400.mb-3 この来店のカルテはまだ作成されていません
+                  = link_to new_stylists_charte_path(reservation), class: 'btn btn-sm bg-brand-blue text-white hover:bg-blue-700 border-none w-full md:w-auto'
+                    | カルテを作成する
+
+    - else
+      / データなし
+      .bg-white.rounded-xl.border.border-dashed.border-slate-300.p-12.text-center
+        p.text-slate-500.font-medium.mb-2 カルテ履歴がありません
+        p.text-sm.text-slate-400 予約・会計が完了すると、ここに履歴が表示されます
+
+    / --- フッター ---
+    .mt-12.text-center
+      = link_to stylists_dashboard_path, class: "inline-block text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+        | スタイリストトップへ戻る
