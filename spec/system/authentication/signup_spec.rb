@@ -21,10 +21,18 @@ RSpec.describe 'User signup' do
 
     it 'displays errors with invalid information' do
       visit new_customer_registration_path
+
+      # HTML5バリデーションをバイパスするため、無効な値を入力
+      fill_in 'user_email', with: 'invalid'
+      fill_in 'user_password', with: 'short'
+      fill_in 'user_password_confirmation', with: 'short'
+
+      # HTML5のemailバリデーションをバイパス
+      page.execute_script("document.getElementById('user_email').removeAttribute('type')")
+
       click_on '登録'
 
-      expect(page).to have_content('メールアドレスを入力してください')
-      expect(page).to have_content('パスワードを入力してください')
+      expect(page).to have_content('メールアドレスは不正な値です')
     end
   end
 
