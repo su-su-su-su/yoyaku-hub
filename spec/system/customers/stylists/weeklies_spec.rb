@@ -9,7 +9,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
   def get_day_column_index_from_header(day)
     date_str = day.day.to_s
     day_char = %w[日 月 火 水 木 金 土][day.wday]
-    search_str = "#{date_str}\n(#{day_char})"
+    search_str = "#{date_str}\n#{day_char}"
 
     all('thead th').each_with_index do |th, i|
       return i if th.text.include?(search_str)
@@ -54,7 +54,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
   def verify_link_mark_in_cell(cell, expected_link_text)
     if expected_link_text == '◎'
-      expect(cell).to have_css('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
+      expect(cell).to have_css('a span.material-symbols-outlined', text: 'nest_thermostat_gen_3')
     else
       expect(cell).to have_link(expected_link_text)
     end
@@ -208,15 +208,15 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       end
 
       it 'starts the calendar from today (Wednesday), not from Monday' do
-        expected_start_date = wednesday.strftime('%-m月%-d日')
-        expected_end_date = (wednesday + 6.days).strftime('%-m月%-d日')
-        expect(page).to have_content("#{expected_start_date}〜#{expected_end_date}")
+        expected_start_date = wednesday.strftime('%-m/%-d')
+        expected_end_date = (wednesday + 6.days).strftime('%-m/%-d')
+        expect(page).to have_content("#{expected_start_date} 〜 #{expected_end_date}")
 
         headers = all('thead th').map(&:text)
-        expect(headers[1]).to include("#{wednesday.day}\n(水)")
+        expect(headers[1]).to include("#{wednesday.day}\n水")
 
         monday = wednesday.beginning_of_week
-        expect(headers[1]).not_to include("#{monday.day} (月)")
+        expect(headers[1]).not_to include("#{monday.day}\n月")
       end
     end
 
@@ -230,7 +230,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       end
 
       it 'displays correct date range for the week' do
-        expected_range = "#{base_date.strftime('%-m月%-d日')}〜#{(base_date + 6.days).strftime('%-m月%-d日')}"
+        expected_range = "#{base_date.strftime('%-m/%-d')} 〜 #{(base_date + 6.days).strftime('%-m/%-d')}"
         expect(page).to have_content(expected_range)
         expect(page).to have_current_path(
           %r{/customers/stylists/\d+/menus/weekly}
@@ -247,7 +247,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
       it 'displays X marks in holiday column' do
         wednesday = base_date + 2.days
-        wed_str = "#{wednesday.day}\n(水)"
+        wed_str = "#{wednesday.day}\n水"
 
         header = all('thead th').find { |th| th.text.include?(wed_str) }
         header_index = all('thead th').index(header)
@@ -298,7 +298,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
           expect(cell).to have_content('×')
         elsif cell.has_css?('a')
           if expected_mark == '◎'
-            expect(cell).to have_css('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
+            expect(cell).to have_css('a span.material-symbols-outlined', text: 'nest_thermostat_gen_3')
           else
             link_text = cell.find('a').text
             expect(link_text).to eq('△')
@@ -314,7 +314,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
 
         time_with_circle = find_cell('11:30', monday)
         if time_with_circle&.has_css?('a')
-          expect(time_with_circle).to have_css('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
+          expect(time_with_circle).to have_css('a span.material-symbols-outlined', text: 'nest_thermostat_gen_3')
         end
 
         time_with_triangle = find_cell('12:00', monday)
@@ -327,7 +327,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       it 'checks time slot markers for scenario B (Tuesday)' do
         tuesday = base_date + 1.day
 
-        expect(page).to have_css('table thead th', text: "#{tuesday.day}\n(火)")
+        expect(page).to have_css('table thead th', text: "#{tuesday.day}\n火")
 
         check_time_slot(tuesday, '10:00', '×')
         check_time_slot(tuesday, '12:30', '×')
@@ -340,7 +340,7 @@ RSpec.describe 'Customers::Stylists::Weeklies' do
       end
 
       it 'navigates to reservation confirmation page when clicking available time slot' do
-        available_slot = first('a.material-symbols-outlined', text: 'nest_thermostat_gen_3')
+        available_slot = first('a span.material-symbols-outlined', text: 'nest_thermostat_gen_3')
         available_slot.click
         sleep 1
 
