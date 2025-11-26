@@ -22,12 +22,12 @@ RSpec.describe 'Stylists::Schedules' do
 
       it 'displays date and date navigation buttons' do
         expect(page).to have_content(I18n.l(today, format: :long))
-        expect(page).to have_link('前の日へ')
-        expect(page).to have_link('後の日へ')
+        expect(page).to have_content('前の日')
+        expect(page).to have_content('後の日')
       end
 
       it 'displays message when business hours are not set' do
-        expect(page).to have_content('営業時間が設定されていません')
+        expect(page).to have_content('営業時間未設定')
       end
     end
   end
@@ -56,7 +56,7 @@ RSpec.describe 'Stylists::Schedules' do
 
     it 'displays rows for reservation count and remaining available slots' do
       expect(page).to have_css('th', text: '予約数')
-      expect(page).to have_css('th', text: '残り受付可能数')
+      expect(page).to have_css('th', text: '残り枠')
     end
 
     # rubocop:disable RSpec/MultipleMemoizedHelpers
@@ -75,9 +75,9 @@ RSpec.describe 'Stylists::Schedules' do
 
       def find_target_slot_elements(time_text)
         column_index = find_time_column_index(time_text)
-        target_row = find('tr', text: '残り受付可能数')
+        target_row = find('tr', text: '残り枠')
         target_td = target_row.all('td')[column_index]
-        value_div = target_td.find('div.font-medium')
+        value_div = target_td.find('div.font-bold')
         [target_td, value_div]
       end
 
@@ -94,7 +94,8 @@ RSpec.describe 'Stylists::Schedules' do
         target_td, _initial_value_div = find_target_slot_elements(slot_text)
 
         within(target_td) do
-          click_on '▲'
+          # 増加ボタン（上向き矢印SVG）は最初のbutton
+          all('button')[0].click
         end
 
         _updated_target_td, updated_value_div = find_target_slot_elements(slot_text)
@@ -124,7 +125,8 @@ RSpec.describe 'Stylists::Schedules' do
 
         target_td, _initial_value_div = find_target_slot_elements(slot_text)
         within(target_td) do
-          click_on '▼'
+          # 減少ボタン（下向き矢印SVG）は2番目のbutton
+          all('button')[1].click
         end
 
         _updated_target_td_decrease, updated_value_div_decrease = find_target_slot_elements(slot_text)
@@ -188,7 +190,7 @@ RSpec.describe 'Stylists::Schedules' do
     it 'correctly displays the remaining available slots' do
       slot_text = '10:00'
 
-      within('tr', text: '残り受付可能数') do
+      within('tr', text: '残り枠') do
         all('td').each_with_index do |td, idx|
           next unless page.all('thead tr th')[idx + 1]&.text == slot_text
 
@@ -231,7 +233,7 @@ RSpec.describe 'Stylists::Schedules' do
     end
 
     it 'displays the holiday message' do
-      expect(page).to have_content('休業日です')
+      expect(page).to have_content('休業日')
     end
   end
 
@@ -245,13 +247,13 @@ RSpec.describe 'Stylists::Schedules' do
     end
 
     it 'can navigate to the previous day\'s schedule' do
-      click_on '前の日へ'
+      find('a', text: '前の日').click
       expect(page).to have_content(I18n.l(yesterday, format: :long))
       expect(page).to have_current_path(%r{/stylists/schedules/#{yesterday.strftime('%Y-%m-%d')}})
     end
 
     it 'can navigate to the next day\'s schedule' do
-      click_on '後の日へ'
+      find('a', text: '後の日').click
       expect(page).to have_content(I18n.l(tomorrow, format: :long))
       expect(page).to have_current_path(%r{/stylists/schedules/#{tomorrow.strftime('%Y-%m-%d')}})
     end
@@ -293,7 +295,7 @@ RSpec.describe 'Stylists::Schedules' do
       expect(page).to have_content(I18n.l(target_date, format: :long))
       expect(page).to have_current_path(%r{/stylists/schedules/#{target_date.strftime('%Y-%m-%d')}})
 
-      expect(page).to have_content('営業時間が設定されていません')
+      expect(page).to have_content('営業時間未設定')
     end
   end
 
@@ -471,18 +473,19 @@ RSpec.describe 'Stylists::Schedules' do
 
     it 'displays weekly view with navigation links' do
       visit stylists_schedules_path(date: start_date.strftime('%Y-%m-%d'))
-      click_on '週間表示'
+      click_on '週間表示へ'
       expect(page).to have_content('週間予約表')
-      expect(page).to have_link('日別表示')
-      expect(page).to have_link('前の週へ')
-      expect(page).to have_link('次の週へ')
+      expect(page).to have_link('日別表示へ')
+      expect(page).to have_content('前の週')
+      expect(page).to have_content('次の週')
     end
 
     it 'displays all days of the week with proper headers' do
       visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
       weekdays = %w[日 月 火 水 木 金 土]
       week_dates.each do |date|
-        expect(page).to have_content("#{date.day} (#{weekdays[date.wday]})")
+        expect(page).to have_content(weekdays[date.wday])
+        expect(page).to have_content(date.day.to_s)
       end
     end
 
@@ -539,7 +542,7 @@ RSpec.describe 'Stylists::Schedules' do
 
       it 'displays holiday dates with gray background' do
         visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
-        holiday_cells = page.all('td.bg-gray-200')
+        holiday_cells = page.all('td.bg-slate-50')
         expect(holiday_cells.count).to be > 0
       end
     end
@@ -548,16 +551,16 @@ RSpec.describe 'Stylists::Schedules' do
 
     it 'navigates between weeks' do
       visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
-      click_on '次の週へ'
+      find('a', text: '次の週').click
       next_week_start = start_date + 7.days
       expect(page).to have_current_path(%r{/stylists/schedules/weekly/#{next_week_start.strftime('%Y-%m-%d')}})
-      click_on '前の週へ'
+      find('a', text: '前の週').click
       expect(page).to have_current_path(%r{/stylists/schedules/weekly/#{start_date.strftime('%Y-%m-%d')}})
     end
 
     it 'navigates back to daily view' do
       visit stylists_weekly_schedules_path(start_date: start_date.strftime('%Y-%m-%d'))
-      click_on '日別表示'
+      click_on '日別表示へ'
       expect(page).to have_current_path(%r{/stylists/schedules/#{start_date.strftime('%Y-%m-%d')}})
       expect(page).to have_content('予約表')
     end
