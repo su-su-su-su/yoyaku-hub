@@ -74,7 +74,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
     fill_in 'user_password', with: 'password'
     click_on 'ログイン'
 
-    expect(page).to have_content('ログインしました')
+    expect(page).to have_current_path(stylists_dashboard_path)
   end
 
   describe 'Customer list page' do # rubocop:disable RSpec/MultipleMemoizedHelpers
@@ -82,8 +82,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
       visit stylists_customers_path
 
       expect(page).to have_content('顧客一覧')
-      expect(page).to have_field('query', placeholder: '名前またはカタカナで検索')
-      expect(page).to have_css('.search-button')
+      expect(page).to have_field('query', placeholder: '名前またはカタカナで検索...')
     end
 
     it 'displays stylists customers only' do
@@ -117,7 +116,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
 
     it 'searches by family name' do
       fill_in 'query', with: '山田'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
       expect(page).to have_content('山田 太郎')
       expect(page).to have_no_content('佐藤 花子')
@@ -126,7 +125,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
 
     it 'searches by given name' do
       fill_in 'query', with: '花子'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
       expect(page).to have_content('佐藤 花子')
       expect(page).to have_no_content('山田 太郎')
@@ -134,7 +133,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
 
     it 'searches by family name kana' do
       fill_in 'query', with: 'ヤマダ'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
       expect(page).to have_content('山田 太郎')
       expect(page).to have_no_content('佐藤 花子')
@@ -142,7 +141,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
 
     it 'searches by given name kana' do
       fill_in 'query', with: 'ハナコ'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
       expect(page).to have_content('佐藤 花子')
       expect(page).to have_no_content('山田 太郎')
@@ -150,7 +149,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
 
     it 'searches by partial match' do
       fill_in 'query', with: '田'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
       expect(page).to have_content('山田 太郎')
       expect(page).to have_no_content('佐藤 花子')
@@ -158,15 +157,15 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
 
     it 'shows no results message when no match found' do
       fill_in 'query', with: '存在しない名前'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
-      expect(page).to have_content('「存在しない名前」に一致する顧客が見つかりませんでした')
-      expect(page).to have_content('検索キーワードを変更してお試しください')
+      expect(page).to have_content('「存在しない名前」に一致する顧客はいません')
+      expect(page).to have_content('検索キーワードを変更してみてください')
     end
 
     it 'provides clear search functionality' do
       fill_in 'query', with: '山田'
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
       expect(page).to have_content('山田 太郎')
       expect(page).to have_content('1件の顧客が見つかりました')
@@ -181,9 +180,9 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
     it 'handles XSS attempts safely' do
       malicious_input = '<script>alert("XSS")</script>'
       fill_in 'query', with: malicious_input
-      find('.search-button').click
+      find('input[name="query"]').native.send_keys(:return)
 
-      expect(page).to have_content('「<script>alert("XSS")</script>」に一致する顧客が見つかりませんでした')
+      expect(page).to have_content('「<script>alert("XSS")</script>」に一致する顧客はいません')
     end
   end
 
@@ -204,7 +203,7 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
     it 'displays visit information' do
       visit stylists_customer_path(yamada_customer)
 
-      expect(page).to have_content('来店情報')
+      expect(page).to have_content('来店データ')
       expect(page).to have_content('初回来店日')
       expect(page).to have_content('最終来店日')
       expect(page).to have_content('来店回数')
@@ -234,8 +233,8 @@ RSpec.describe 'Stylists Customer Search' do # rubocop:disable RSpec/MultipleMem
     end
 
     it 'shows appropriate message when no customers exist' do
-      expect(page).to have_content('まだ担当している顧客がいません')
-      expect(page).to have_content('お客様からの予約をお待ちください')
+      expect(page).to have_content('顧客がまだ登録されていません')
+      expect(page).to have_content('新規登録するか、お客様からの予約をお待ちください')
     end
   end
 
