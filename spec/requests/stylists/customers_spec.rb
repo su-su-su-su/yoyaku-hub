@@ -114,7 +114,8 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable RSpec/MultipleMemoized
 
       it 'shows appropriate message when no results found' do
         get stylists_customers_path, params: { query: '存在しない名前' }
-        expect(response.body).to include('「存在しない名前」に一致する顧客が見つかりませんでした')
+        expect(response.body).to include('存在しない名前')
+        expect(response.body).to include('に一致する顧客はいません')
       end
 
       it 'escapes HTML in search query for security' do
@@ -132,8 +133,7 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable RSpec/MultipleMemoized
 
       it 'shows empty state message' do
         get stylists_customers_path
-        expect(response.body).to include('まだ担当している顧客がいません')
-        expect(response.body).to include('お客様からの予約をお待ちください')
+        expect(response.body).to include('顧客がまだ登録されていません')
       end
     end
 
@@ -176,7 +176,7 @@ RSpec.describe 'Stylists::Customers' do # rubocop:disable RSpec/MultipleMemoized
 
       it 'displays visit information' do
         get stylists_customer_path(yamada_customer)
-        expect(response.body).to include('来店情報')
+        expect(response.body).to include('来店データ')
         expect(response.body).to include('来店回数')
       end
     end

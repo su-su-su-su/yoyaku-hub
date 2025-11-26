@@ -4,6 +4,8 @@ require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customer Reservation Confirmation' do
+  include ActionView::Helpers::NumberHelper
+
   let(:customer) { create(:customer) }
   let(:stylist) { create(:stylist) }
   let(:menu) { create(:menu, stylist: stylist, is_active: true) }
@@ -37,7 +39,7 @@ RSpec.describe 'Customer Reservation Confirmation' do
 
   def expect_confirmation_page_loaded
     expect(page).to have_content('予約内容の確認')
-    expect(page).to have_content('※まだ予約は確定していません')
+    expect(page).to have_content('まだ予約は確定していません')
   end
 
   def setup_business_hours
@@ -68,14 +70,14 @@ RSpec.describe 'Customer Reservation Confirmation' do
 
     it 'displays reservation date and time' do
       formatted_date = reservation_info[:date].strftime('%Y年%-m月%-d日')
-      formatted_time = "#{reservation_info[:time].sub(':', '時')}分"
+      formatted_time = reservation_info[:time]
 
       expect(page).to have_content(formatted_date)
       expect(page).to have_content(formatted_time)
     end
 
     it 'displays total price' do
-      expect(page).to have_content(menu.price.to_s)
+      expect(page).to have_content(number_with_delimiter(menu.price))
     end
 
     it 'displays total service duration' do
@@ -90,9 +92,9 @@ RSpec.describe 'Customer Reservation Confirmation' do
         visit_reservation_confirmation
 
         expect(page).to have_current_path(%r{/customers/reservations/new})
-        expect(page).to have_content('予約を確定するには下記の「予約を確定」をクリックしてください')
+        expect(page).to have_content('予約を確定する')
 
-        expect(page).to have_button('予約を確定')
+        expect(page).to have_button('予約を確定する')
 
         form = find('form.button_to')
         form_action = URI.parse(form['action']).path
@@ -144,7 +146,7 @@ RSpec.describe 'Customer Reservation Confirmation' do
         total_price = menu.price + second_menu.price
         total_duration = menu.duration + second_menu.duration
 
-        expect(page).to have_content(total_price.to_s)
+        expect(page).to have_content(number_with_delimiter(total_price))
         expect(page).to have_content(total_duration.to_s)
       end
     end

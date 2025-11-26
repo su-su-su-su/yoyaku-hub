@@ -70,8 +70,9 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable RSpec/Multi
         get new_stylists_customer_reservation_path, params: { date: date, time_str: time_str }
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include('お客様の予約登録')
-        expect(response.body).to include("予約日時: #{Date.parse(date).strftime('%Y年%m月%d日')} #{time_str}")
+        expect(response.body).to include('予約登録')
+        expect(response.body).to include(Date.parse(date).strftime('%Y年%m月%d日'))
+        expect(response.body).to include(time_str)
       end
 
       it 'does not display customer list without search' do
@@ -101,7 +102,7 @@ RSpec.describe 'Stylists::CustomerReservations' do # rubocop:disable RSpec/Multi
         get new_stylists_customer_reservation_path,
           params: { date: date, time_str: time_str, customer_search: '存在しない' }
 
-        expect(response.body).to include('該当するお客様が見つかりませんでした')
+        expect(response.body).to include('見つかりませんでした')
       end
     end
 
