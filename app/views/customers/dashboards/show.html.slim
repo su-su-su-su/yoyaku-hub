@@ -2,10 +2,9 @@
 - content_for :meta_description, 'YOYAKU HUBのマイページです。こちらから新規予約や予約履歴の確認ができます。'
 
 .bg-slate-50.min-h-screen.py-12
-  .container.mx-auto.px-4.py-4.md:py-6
-    - if user_signed_in?
+  .container.mx-auto.px-4.py-4.md:py-6.max-w-lg
 
-    .link-items-container.space-y-4.md:space-y-0.md:grid.md:grid-cols-2.md:gap-4.lg:grid-cols-3
+    .link-items-container.space-y-4
       .link-item
         a.block.p-2.rounded-lg.hover:bg-gray-200.transition.duration-150(href="/customers/stylists/index")
           .image-box.overflow-hidden.rounded.border-4.border-black
