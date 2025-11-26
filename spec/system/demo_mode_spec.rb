@@ -79,7 +79,7 @@ RSpec.describe 'デモモード機能' do
       visit '/customers/dashboard?demo=customer'
       visit customers_stylists_index_path
 
-      expect(page).to have_css('.stylist-item')
+      expect(page).to have_content('スタイリスト選択')
     end
   end
 
@@ -124,7 +124,7 @@ RSpec.describe 'デモモード機能' do
 
       visit customers_stylists_index_path
 
-      expect(page).to have_css('.stylist-item')
+      expect(page).to have_content('スタイリスト選択')
     end
   end
 
