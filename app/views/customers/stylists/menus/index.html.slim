@@ -1,43 +1,56 @@
 - content_for :title, "#{@stylist.family_name} #{@stylist.given_name}さんのメニュー"
 - content_for :meta_description, "#{@stylist.family_name} #{@stylist.given_name}さんが提供する施術メニューの一覧です。ご希望のメニューを選択して予約日時設定へ進んでください。"
 
-div class="w-full max-w-lg mx-auto px-4 sm:px-6 md:px-8"
-  = render 'shared/reservation_steps', current_step: 'menu'
-  .mb-6.text-center
-    h1.page-title-gradient= "#{@stylist.family_name} #{@stylist.given_name} さんのメニュー一覧"
-    .mt-2.text-sm.text-gray-600
-      | メニューを選択してください(複数選択可)
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-2xl
 
-  - if @menus.empty?
-    p.text-center.py-8.text-gray-600 メニューが登録されていません。
-  - else
-    = form_with url: select_menus_customers_stylist_menus_path(@stylist), method: :post, local: true do
-      .menu-list
-        - @menus.each do |menu|
-          = check_box_tag "menu_ids[]", menu.id, false,
-                      class: "cs-menu-checkbox",
-                      id: "menu_#{menu.id}"
+    .mb-10
+      = render 'shared/reservation_steps', current_step: 'menu'
 
-          label for="menu_#{menu.id}" class="cs-menu-item"
-            .menu-inner
-              .menu-header
-                h2.font-bold.text-base.md:text-lg= menu.name
+    .text-center.mb-8
+      h1.text-2xl.font-bold.text-slate-800.mb-2 メニュー選択
+      p.text-sm.text-slate-500
+        | 担当: 
+        span.font-bold.text-slate-700 = "#{@stylist.family_name} #{@stylist.given_name}"
+      p.text-xs.text-slate-400.mt-1 施術内容を選択してください（複数選択可）
 
-              .menu-body
-                p.mt-2.text-sm.md:text-base= "備考: #{menu.description}"
+    - if @menus.empty?
+      .bg-white.rounded-xl.border.border-dashed.border-slate-300.p-12.text-center
+        p.text-slate-500.font-medium メニューが登録されていません
+        p.text-sm.text-slate-400 申し訳ありませんが、別のスタイリストをお探しください
 
-              hr.my-3.border-1.border-gray-300
+      .mt-8.text-center
+        = link_to "スタイリスト一覧に戻る", customers_stylists_index_path, class: "text-brand-blue hover:underline"
 
-              .menu-footer.flex.flex-wrap.gap-4.mt-3
-                span.text-sm.md:text-base= "¥#{menu.price} (税込み)"
-                span.text-sm.md:text-base= "#{menu.duration}分"
+    - else
+      = form_with url: select_menus_customers_stylist_menus_path(@stylist), method: :post, local: true do
+        .space-y-4.mb-10
+          - @menus.each do |menu|
+            label.menu-card-label.block.cursor-pointer.relative
+              = check_box_tag "menu_ids[]", menu.id, false, class: "peer sr-only menu-checkbox", id: "menu_#{menu.id}"
 
-      .mt-6.mb-2.text-center
-        = submit_tag "日時を設定", class: "btn-primary px-6 py-3 text-base rounded-lg w-full sm:w-auto"
+              .menu-card.p-5.bg-white.border.border-slate-200.rounded-xl.shadow-sm.transition-all.hover:border-blue-200
+                .flex.justify-between.items-start.gap-3
+                  .menu-check-icon.w-6.h-6.rounded-full.border-2.border-slate-300.bg-white.flex.items-center.justify-center.flex-shrink-0.mt-0.5.transition-colors
+                    svg.w-4.h-4.text-transparent(fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3")
+                      path(stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7")
 
-  .mt-6.flex.flex-col.md:flex-row.md:justify-between.items-center.space-y-4.md:space-y-0
-    = link_to "戻る", customers_stylists_index_path,
-        class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+                  .flex-1
+                    .flex.flex-col.md:flex-row.md:justify-between.md:items-baseline.mb-2
+                      h3.menu-title.text-lg.font-bold.text-slate-800.transition-colors = menu.name
 
-    = link_to 'ユーザートップページへ', customers_dashboard_path,
-        class: "bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+                      .flex.items-baseline.gap-3.mt-1.md:mt-0
+                        span.text-sm.text-slate-500 = "#{menu.duration}分"
+                        span.text-lg.font-bold.text-slate-700 = "¥#{number_with_delimiter(menu.price)}"
+
+                    - if menu.description.present?
+                      p.text-sm.text-slate-500.leading-relaxed.whitespace-pre-wrap.break-all.max-w-full.overflow-hidden
+                        = menu.description
+
+        .sticky.bottom-4.z-20.flex.justify-center
+          = submit_tag "日時選択へ進む", class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none px-12 py-3 shadow-lg rounded-full w-full md:w-auto text-lg font-bold"
+
+    .mt-12.flex.flex-col.items-center.space-y-4
+      = link_to "スタイリスト選択に戻る", customers_stylists_index_path, class: "text-sm text-slate-500 hover:text-brand-blue transition-colors underline"
+      
+      = link_to 'マイページへ', customers_dashboard_path, class: "text-xs text-slate-400 hover:text-slate-600 transition-colors"

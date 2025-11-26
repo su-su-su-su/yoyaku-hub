@@ -21,11 +21,11 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'displays the stylist menu list' do
-      expect(page).to have_text("#{stylist.family_name} #{stylist.given_name} さんのメニュー一覧")
+      expect(page).to have_text("担当: #{stylist.family_name} #{stylist.given_name}")
       expect(page).to have_text('カット')
       expect(page).to have_text('カラー')
-      expect(page).to have_text('¥6600')
-      expect(page).to have_text('¥8800')
+      expect(page).to have_text('¥6,600')
+      expect(page).to have_text('¥8,800')
       expect(page).to have_text('60分')
       expect(page).to have_text('90分')
     end
@@ -37,9 +37,9 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'allows selecting a menu and proceeding to the next step' do
-      first('label.cs-menu-item').click
+      first('label.menu-card-label').click
 
-      click_on '日時を設定'
+      click_on '日時選択へ進む'
 
       expect(page).to have_current_path(/weekly/, url: true)
       expect(page).to have_content('日')
@@ -55,7 +55,7 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'displays an error when trying to proceed without selecting a menu' do
-      click_on '日時を設定'
+      click_on '日時選択へ進む'
 
       expect(page).to have_text(I18n.t('flash.menu_not_selected'))
 
@@ -86,9 +86,9 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'displays an appropriate message when no menus are registered' do
-      expect(page).to have_text('メニューが登録されていません。')
+      expect(page).to have_text('メニューが登録されていません')
 
-      expect(page).to have_no_button('日時を設定')
+      expect(page).to have_no_button('日時選択へ進む')
     end
   end
 
@@ -100,12 +100,12 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'back link functions correctly' do
-      click_on '戻る'
+      click_on 'スタイリスト選択に戻る'
       expect(page).to have_current_path(customers_stylists_index_path)
     end
 
     it 'user top page link functions correctly' do
-      click_on 'ユーザートップページへ'
+      click_on 'マイページへ'
       expect(page).to have_current_path(customers_dashboard_path)
     end
   end
@@ -121,7 +121,7 @@ RSpec.describe 'Customer menu viewing and selection' do
     end
 
     it 'displays menus in sort_order sequence' do
-      menu_names = page.all('.cs-menu-item h2').map(&:text)
+      menu_names = page.all('.menu-card .menu-title').map(&:text)
       expect(menu_names).to eq(%w[カット カラー パーマ])
     end
   end
@@ -136,8 +136,8 @@ RSpec.describe 'Customer menu viewing and selection' do
 
       it 'allows access and displays their own menus correctly' do
         expect(page).to have_current_path(customers_stylist_menus_path(stylist))
-        expect(page).to have_text("#{stylist.family_name} #{stylist.given_name} さんのメニュー一覧")
-        expect(page.all('.cs-menu-item').count).to eq(2)
+        expect(page).to have_text("担当: #{stylist.family_name} #{stylist.given_name}")
+        expect(page.all('.menu-card').count).to eq(2)
       end
     end
 
