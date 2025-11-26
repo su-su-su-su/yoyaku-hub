@@ -61,9 +61,10 @@ RSpec.describe 'Stylists::Reservations' do
       end
 
       it 'displays basic information correctly' do
-        expect(page).to have_content(I18n.l(reservation.start_at, format: :wday_short))
+        expect(page).to have_content(I18n.l(reservation.start_at, format: '%Y年%m月%d日(%a)'))
+        expect(page).to have_content(I18n.l(reservation.start_at, format: '%H:%M'))
         expect(page).to have_content(customer.family_name.to_s)
-        expect(page).to have_content("#{customer.given_name} 様")
+        expect(page).to have_content(customer.given_name.to_s)
       end
 
       it 'displays menu information' do
@@ -73,14 +74,14 @@ RSpec.describe 'Stylists::Reservations' do
 
       it 'displays treatment duration' do
         duration_minutes = ((reservation.end_at - reservation.start_at) / 60).to_i
-        expect(page).to have_content("#{duration_minutes} 分")
+        expect(page).to have_content("#{duration_minutes}分")
       end
 
       it 'displays total price' do
         cut_menu = menus.find { |m| m.name == 'カット' }
         color_menu = menus.find { |m| m.name == 'カラー' }
         total_price = cut_menu.price + color_menu.price
-        expect(page).to have_content("¥#{number_with_delimiter(total_price)} (税込み)")
+        expect(page).to have_content("¥#{number_with_delimiter(total_price)}")
       end
     end
 
@@ -93,7 +94,7 @@ RSpec.describe 'Stylists::Reservations' do
 
       it 'displays confirmation dialog and can cancel the reservation' do
         accept_confirm do
-          click_link_or_button 'キャンセル'
+          click_link_or_button '予約をキャンセル'
         end
 
         expect(page).to have_content('予約表')
@@ -102,7 +103,7 @@ RSpec.describe 'Stylists::Reservations' do
         expect(page).to have_no_content('カット')
         expect(page).to have_no_content('カラー')
 
-        within('tr', text: '残り受付可能数') do
+        within('tr', text: '残り枠') do
           all('td').each_with_index do |td, idx|
             next unless page.all('thead tr th')[idx + 1]&.text == '10:00'
 
@@ -123,7 +124,7 @@ RSpec.describe 'Stylists::Reservations' do
       end
 
       it 'navigates to the edit screen' do
-        click_on '変更する'
+        click_on '予約内容を変更'
         expect(page).to have_content('予約の変更')
       end
 
@@ -131,7 +132,7 @@ RSpec.describe 'Stylists::Reservations' do
         cut_menu = menus.find { |m| m.name == 'カット' }
         color_menu = menus.find { |m| m.name == 'カラー' }
 
-        click_on '変更する'
+        click_on '予約内容を変更'
 
         expect(page).to have_field('reservation[start_date_str]', with: today.strftime('%Y-%m-%d'))
         expect(page).to have_select('reservation[start_time_str]', selected: '10:00')
@@ -148,7 +149,7 @@ RSpec.describe 'Stylists::Reservations' do
 
       before do
         visit stylists_reservation_path(reservation)
-        click_on '変更する'
+        click_on '予約内容を変更'
       end
 
       it 'can modify and save reservation information' do
@@ -161,14 +162,14 @@ RSpec.describe 'Stylists::Reservations' do
 
         check 'reservation[menu_ids][]', with: cut_menu.id.to_s
         select "#{cut_menu.duration}分", from: 'reservation[custom_duration]'
-        click_on '変更を確定'
+        click_on '変更を確定する'
 
         expect(page).to have_content('予約詳細')
-        expect(page).to have_content('予約が正常に更新されました')
+        expect(page).to have_css('*', text: '予約が正常に更新されました', visible: :all)
         expect(page).to have_content('カット')
         expect(page).to have_no_content('カラー')
-        expect(page).to have_content("#{cut_menu.duration} 分")
-        expect(page).to have_content("¥#{number_with_delimiter(cut_menu.price)} (税込み)")
+        expect(page).to have_content("#{cut_menu.duration}分")
+        expect(page).to have_content("¥#{number_with_delimiter(cut_menu.price)}")
       end
     end
 
@@ -181,9 +182,9 @@ RSpec.describe 'Stylists::Reservations' do
         end
 
         it 'displays accounting button when no accounting exists' do
-          expect(page).to have_link('会計', href: new_stylists_accounting_path(reservation.id))
+          expect(page).to have_link('会計へ進む', href: new_stylists_accounting_path(reservation.id))
           expect(page).to have_no_link('会計詳細')
-          expect(page).to have_link('変更する', href: edit_stylists_reservation_path(reservation))
+          expect(page).to have_link('予約内容を変更', href: edit_stylists_reservation_path(reservation))
         end
       end
 
@@ -202,8 +203,8 @@ RSpec.describe 'Stylists::Reservations' do
 
         it 'displays accounting detail button when accounting is completed' do
           expect(page).to have_link('会計詳細', href: stylists_accounting_path(accounting))
-          expect(page).to have_no_link('会計', href: new_stylists_accounting_path(reservation.id))
-          expect(page).to have_no_link('変更する')
+          expect(page).to have_no_link('会計へ進む', href: new_stylists_accounting_path(reservation.id))
+          expect(page).to have_no_link('予約内容を変更')
         end
 
         it 'allows navigation to accounting detail page' do
@@ -224,9 +225,9 @@ RSpec.describe 'Stylists::Reservations' do
         end
 
         it 'displays accounting modification button when accounting is pending' do
-          expect(page).to have_link('会計', href: new_stylists_accounting_path(reservation.id))
+          expect(page).to have_link('会計へ進む', href: new_stylists_accounting_path(reservation.id))
           expect(page).to have_no_link('会計詳細')
-          expect(page).to have_link('変更する', href: edit_stylists_reservation_path(reservation))
+          expect(page).to have_link('予約内容を変更', href: edit_stylists_reservation_path(reservation))
         end
       end
     end

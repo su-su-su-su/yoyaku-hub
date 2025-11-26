@@ -1,82 +1,99 @@
 - content_for :title, '予約詳細'
 - content_for :meta_description, 'お客様の予約詳細（日時、氏名、メニュー、料金、施術時間）を確認できます。予約の変更やキャンセルもこちらから行えます。'
 
-.container.mx-auto.p-4.max-w-lg
-  .flex.justify-between.items-center.mb-4
-    h1.page-title-gradient.subtle-gradient-look 予約詳細
-    - if @reservation.accounting&.completed? || @reservation.status == 'paid'
-      span.text-sm.text-blue-600.font-semibold.bg-blue-100.px-2.py-1.rounded 会計済み
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-2xl
 
-  .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden.md:border-0.md:rounded-none.md:shadow-none
-    table.w-full.responsive-table
-      tbody
-        tr
-          th.md:w-1/3 来店日時
-          td
-            = I18n.l(@reservation.start_at, format: :wday_short)
-        tr
-          th.md:w-1/3 お客様の名前
-          td
-            - if @reservation.customer.present?
-              = @reservation.customer.family_name
-              |
-              = @reservation.customer.given_name
-              |  様
-            - else
-              | (情報なし)
-        tr
-          th.md:w-1/3 メニュー
-          td
-            - if @reservation.menus.any?
-              ul.space-y-1.list-none.p-0.m-0
-                - @reservation.menus.each do |menu|
-                  li= menu.name
-            - else
-              | なし
-        tr
-          th.md:w-1/3 施術時間
-          td
-            - final_duration_minutes = ((@reservation.end_at - @reservation.start_at) / 60).to_i
-            = "#{final_duration_minutes} 分"
-        - if @reservation.accounting&.completed?
-          - if @reservation.accounting.accounting_products.any?
-            tr
-              th.md:w-1/3 店販商品
-              td
-                - @reservation.accounting.accounting_products.each do |ap|
-                  .flex.justify-between.items-center
-                    span
-                      = ap.product.name
-                      span.text-gray-600.ml-2= "×#{ap.quantity}"
-                    span= "¥#{number_with_delimiter(ap.actual_price * ap.quantity)}"
-          tr
-            th.md:w-1/3 合計金額
-            td.font-bold
-              = "¥#{number_with_delimiter(@reservation.accounting.total_with_products)} (税込み)"
-        - else
-          tr
-            th.md:w-1/3 合計金額
-            td.font-bold
-              - total_price = @reservation.menus.sum(&:price)
-              = "¥#{number_with_delimiter(total_price)} (税込み)"
+    .mb-6
+      = link_to stylists_schedules_path(date: @reservation.start_at.to_date), class: "inline-flex items-center text-sm text-slate-500 hover:text-brand-blue mb-4 transition-colors"
+        svg.w-4.h-4.mr-1(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
+        | 予約表に戻る
 
-  .mt-4.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
-    - if @reservation.accounting&.completed?
-      = link_to "会計詳細", stylists_accounting_path(@reservation.accounting), class: "btn-primary w-full md:w-auto text-center"
-      - if @reservation.charte
-        = link_to "カルテを見る", stylists_customer_charte_path(@reservation.customer, @reservation.charte), class: "btn-primary w-full md:w-auto text-center"
-      - else
-        = link_to "カルテを作成", new_stylists_charte_path(reservation_id: @reservation.id), class: "btn-primary w-full md:w-auto text-center"
-    - elsif @reservation.status == 'before_visit'
-      = link_to "会計", new_stylists_accounting_path(@reservation.id), class: "btn-primary w-full md:w-auto text-center"
-    - unless @reservation.accounting&.completed?
-      = link_to "変更する", edit_stylists_reservation_path(@reservation), class: "btn-primary w-full md:w-auto text-center", method: :get
-      = link_to "キャンセル", cancel_stylists_reservation_path(@reservation),
-        data: { turbo_method: :patch, turbo_confirm: "本当にキャンセルしますか？" },
-        class: "text-gray-500 hover:text-gray-600 underline"
+      .flex.justify-between.items-center
+        h1.text-2xl.font-bold.text-slate-800 予約詳細
+        
+        - if @reservation.accounting&.completed? || @reservation.status == 'paid'
+          span.text-sm.text-blue-600.font-semibold.bg-blue-100.px-2.py-1.rounded 会計済み
 
-  .mt-12.text-center
-    = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
-      svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
-      | スタイリストトップへ戻る
+    .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden.mb-6
+      
+      .bg-slate-50.px-6.py-4.border-b.border-slate-100.text-center
+        p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider.mb-1 来店日時
+        p.text-xl.font-bold.text-slate-800
+          = I18n.l(@reservation.start_at, format: '%Y年%m月%d日(%a)')
+          span.ml-2 = I18n.l(@reservation.start_at, format: '%H:%M')
+
+      .p-6.space-y-6
+        .flex.flex-col.items-center
+          - if @reservation.customer.present?
+            h2.text-xl.font-bold.text-slate-900
+              = "#{@reservation.customer.family_name} #{@reservation.customer.given_name}"
+              span.text-base.font-normal.text-slate-500.ml-1 様
+          - else
+            p.text-slate-500 (情報なし)
+
+        hr.border-slate-100
+
+        div
+          p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider.mb-3 施術メニュー
+          - if @reservation.menus.any?
+            ul.space-y-2
+              - @reservation.menus.each do |menu|
+                li.flex.justify-between.items-center.text-sm
+                  span.font-medium.text-slate-700 = menu.name
+                  span.text-slate-500 = "¥#{number_with_delimiter(menu.price)}"
+          - else
+            p.text-sm.text-slate-400 メニュー指定なし
+
+        hr.border-slate-100
+
+        .flex.justify-between.items-center
+          div
+            p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 施術時間
+            p.text-lg.font-bold.text-slate-700
+              - final_duration_minutes = ((@reservation.end_at - @reservation.start_at) / 60).to_i
+              = "#{final_duration_minutes}分"
+          
+          div.text-right
+            p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 合計金額
+            p.text-2xl.font-bold.text-slate-900
+              - if @reservation.accounting&.completed?
+                = "¥#{number_with_delimiter(@reservation.accounting.total_with_products)}"
+              - else
+                - total_price = @reservation.menus.sum(&:price)
+                = "¥#{number_with_delimiter(total_price)}"
+                span.text-xs.font-normal.text-slate-400.block (予定)
+
+    .grid.grid-cols-1.gap-3
+      - if @reservation.accounting&.completed?
+        .grid.grid-cols-2.gap-3
+          = link_to stylists_accounting_path(@reservation.accounting), class: "btn btn-outline border-slate-300 text-slate-600 hover:bg-slate-50" do
+            svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+            | 会計詳細
+          
+          - if @reservation.charte
+            = link_to stylists_customer_charte_path(@reservation.customer, @reservation.charte), class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none" do
+              svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+              | カルテを見る
+          - else
+            = link_to new_stylists_charte_path(reservation_id: @reservation.id), class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none" do
+              svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
+              | カルテ作成
+
+      - elsif @reservation.status == 'before_visit'
+        = link_to new_stylists_accounting_path(@reservation.id), class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none w-full py-3 h-auto shadow-lg" do
+          svg.w-5.h-5.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z")
+          | 会計へ進む
+
+      - unless @reservation.accounting&.completed?
+        .mt-4.pt-4.border-t.border-slate-200.flex.justify-between.items-center
+          = link_to "予約内容を変更", edit_stylists_reservation_path(@reservation), class: "text-sm text-brand-blue font-bold hover:underline"
+          
+          = link_to "予約をキャンセル", cancel_stylists_reservation_path(@reservation),
+            data: { turbo_method: :patch, turbo_confirm: "本当にこの予約をキャンセルしますか？" },
+            class: "text-sm text-red-500 hover:text-red-700 hover:underline"
