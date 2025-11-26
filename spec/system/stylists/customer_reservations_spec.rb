@@ -64,8 +64,8 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
         first('td.cursor-pointer').click
       end
 
-      expect(page).to have_content('お客様の予約登録')
-      expect(page).to have_content("予約日時: #{Date.current.strftime('%Y年%m月%d日')}")
+      expect(page).to have_content('予約登録')
+      expect(page).to have_content(Date.current.strftime('%Y年%m月%d日'))
     end
   end
 
@@ -76,8 +76,8 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
         first('td.cursor-pointer').click
       end
 
-      expect(page).to have_content('お客様の予約登録')
-      expect(page).to have_content("予約日時: #{Date.current.strftime('%Y年%m月%d日')}")
+      expect(page).to have_content('予約登録')
+      expect(page).to have_content(Date.current.strftime('%Y年%m月%d日'))
     end
   end
 
@@ -124,7 +124,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
     it 'shows message when no search results found' do
       fill_in 'customer_search', with: '存在しない名前'
 
-      expect(page).to have_content('該当するお客様が見つかりませんでした', wait: 5)
+      expect(page).to have_content('見つかりませんでした', wait: 5)
     end
   end
 
@@ -146,7 +146,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
       check 'カット'
       check 'カラー'
 
-      click_on '予約を登録'
+      click_on '予約を確定する'
 
       expect(page).to have_css('#toast-container .toast-message', text: '予約を登録しました')
       expect(page).to have_current_path(stylists_schedules_path(date: Date.current.strftime('%Y-%m-%d')))
@@ -160,7 +160,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
     it 'shows error when customer not selected' do
       check 'カット'
 
-      click_on '予約を登録'
+      click_on '予約を確定する'
 
       expect(page).to have_content('お客様を選択してください')
       expect(page).to have_no_content('予約を登録しました')
@@ -173,7 +173,7 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
         find('.customer-item', text: '山田 太郎').click
       end
 
-      click_on '予約を登録'
+      click_on '予約を確定する'
 
       expect(page).to have_content('は1つ以上選択してください')
       expect(page).to have_no_content('予約を登録しました')
@@ -189,16 +189,22 @@ RSpec.describe 'Stylists::CustomerReservations', :js do
     end
 
     it 'displays reservation date and time correctly' do
-      expect(page).to have_content("予約日時: #{Date.current.strftime('%Y年%m月%d日')} 10:00")
+      expect(page).to have_content('予約日時')
+      expect(page).to have_content(Date.current.strftime('%Y年%m月%d日'))
+      expect(page).to have_content('10:00')
     end
 
     it 'displays menu list' do
-      expect(page).to have_content('カット (60分, ¥3,000)')
-      expect(page).to have_content('カラー (90分, ¥5,000)')
+      expect(page).to have_content('カット')
+      expect(page).to have_content('60分')
+      expect(page).to have_content('¥3,000')
+      expect(page).to have_content('カラー')
+      expect(page).to have_content('90分')
+      expect(page).to have_content('¥5,000')
     end
 
     it 'displays search placeholder' do
-      expect(page).to have_field('customer_search', placeholder: 'お客様を検索')
+      expect(page).to have_field('customer_search', placeholder: '名前またはフリガナで検索')
     end
   end
 end
