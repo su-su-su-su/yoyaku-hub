@@ -1,63 +1,87 @@
 - content_for :title, '予約履歴'
 - content_for :meta_description, 'YOYAKU HUBでの予約履歴一覧です。今後のご予約と過去のご利用履歴をご確認いただけます。'
 
-.container.mx-auto.p-4.max-w-lg
-  .mb-6.text-center
-    h1.page-title-gradient 予約履歴
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-2xl
 
-  .section.bg-gray-100.p-4.mb-6.rounded-lg
-    h2.text-lg.md:text-xl.font-bold.mb-3 現在の予約
+    .mb-8
+      = link_to customers_dashboard_path, class: "inline-flex items-center text-sm text-slate-500 hover:text-brand-blue mb-4 transition-colors"
+        svg.w-4.h-4.mr-1(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
+        | マイページに戻る
 
-    - if @upcoming_reservations.any?
-      .space-y-4
-        - @upcoming_reservations.each do |res|
-          .border.rounded-lg.bg-white.p-4.shadow-sm
-            .mb-3
-              span.font-medium.text-gray-600 来店日時:
-              span.ml-2= I18n.l(res.start_at, format: :wday_short)
+      h1.text-2xl.font-bold.text-slate-800.text-center 予約履歴
 
-            .mb-3
-              span.font-medium.text-gray-600 スタイリスト:
-              span.ml-2= "#{res.stylist.family_name} #{res.stylist.given_name}"
+    .mb-10
+      .flex.items-center.mb-4.gap-2
+        span.w-1.h-6.bg-brand-blue.rounded-full
+        h2.text-lg.font-bold.text-slate-800 現在の予約
 
-            .mb-3
-              span.font-medium.text-gray-600 メニュー:
-              span.ml-2
-                - if res.menus.any?
-                  = res.menus.map(&:name).join(", ")
-                - else
-                  | (メニュー情報なし)
+      - if @upcoming_reservations.any?
+        .space-y-4
+          - @upcoming_reservations.each do |res|
+            .bg-white.rounded-xl.shadow-md.border.border-slate-100.overflow-hidden.transition-transform.hover:-translate-y-0.5
+              .bg-blue-50.px-5.py-3.border-b.border-blue-100.flex.justify-between.items-center
+                .flex.items-center.gap-2
+                  span.text-brand-blue.font-bold
+                    = I18n.l(res.start_at, format: '%Y年%m月%d日(%a)')
+                  span.text-sm.text-slate-600
+                    = I18n.l(res.start_at, format: '%H:%M') + "〜"
+                span.bg-white.text-brand-blue.text-xs.font-bold.px-2.py-1.rounded.border.border-blue-100
+                  | 予約確定
 
-            .mt-4.flex
-              = link_to "詳細", customers_reservation_path(res), class: "btn-primary py-2 px-4 rounded-lg inline-block min-h-[44px] flex items-center justify-center"
+              .p-5
+                .mb-4
+                  p.text-xs.text-slate-400.font-bold.mb-1 担当スタイリスト
+                  p.text-lg.font-bold.text-slate-800 = "#{res.stylist.family_name} #{res.stylist.given_name}"
+                
+                .mb-4
+                  p.text-xs.text-slate-400.font-bold.mb-1 メニュー
+                  - if res.menus.any?
+                    ul.list-disc.list-inside.text-sm.text-slate-700
+                      - res.menus.each do |menu|
+                        li = menu.name
+                  - else
+                    p.text-sm.text-slate-400 指定なし
 
-    - else
-      .bg-white.p-4.rounded-lg.border 現在の予約はありません。
+                = link_to customers_reservation_path(res), class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none w-full shadow-sm h-auto py-3" do
+                  | 詳細を確認する
 
-  .section.bg-gray-100.p-4.rounded-lg
-    h2.text-lg.md:text-xl.font-bold.mb-3 過去の予約
+      - else
+        .bg-white.rounded-xl.border.border-dashed.border-slate-300.p-8.text-center
+          p.text-slate-500.text-sm 現在予定されている予約はありません
 
-    - if @past_reservations.any?
-      .space-y-4
-        - @past_reservations.each do |res|
-          .border.rounded-lg.bg-white.p-4.shadow-sm
-            .mb-3
-              span.font-medium.text-gray-600 来店日時:
-              span.ml-2= I18n.l(res.start_at, format: :wday_short)
-            .mb-3
-              span.font-medium.text-gray-600 スタイリスト:
-              span.ml-2= "#{res.stylist.family_name} #{res.stylist.given_name}"
-            .mb-3
-              span.font-medium.text-gray-600 メニュー:
-              span.ml-2
-                - if res.menus.any?
-                  = res.menus.map(&:name).join(", ")
-                - else
-                  | (メニュー情報なし)
-            .mt-4.flex
-              = link_to "詳細", customers_reservation_path(res), class: "btn-primary py-2 px-4 rounded-lg inline-block min-h-[44px] flex items-center justify-center", aria: { disabled: true }
-    - else
-      .bg-white.p-4.rounded-lg.border 過去の予約は存在しません。
+    div
+      .flex.items-center.mb-4.gap-2
+        span.w-1.h-6.bg-slate-300.rounded-full
+        h2.text-lg.font-bold.text-slate-600 過去の予約
 
-  .mt-6.mb-6.flex.justify-center
-    = link_to '戻る', customers_dashboard_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center"
+      - if @past_reservations.any?
+        .space-y-4
+          - @past_reservations.each do |res|
+            .bg-white.rounded-xl.shadow-sm.border.border-slate-200.p-5.opacity-90.hover:opacity-100.transition-opacity
+              .flex.flex-col.sm:flex-row.sm:justify-between.sm:items-start.gap-4
+                div
+                  p.text-lg.font-bold.text-slate-700.mb-1
+                    = I18n.l(res.start_at, format: '%Y年%m月%d日(%a)')
+                  p.text-sm.text-slate-500.mb-2
+                    = "#{res.stylist.family_name} #{res.stylist.given_name}"
+                  
+                  p.text-xs.text-slate-400.line-clamp-1
+                    - if res.menus.any?
+                      = res.menus.map(&:name).join(" / ")
+                    - else
+                      | メニューなし
+
+                div.mt-2.sm:mt-0
+                  = link_to "詳細", customers_reservation_path(res), class: "btn btn-sm btn-outline border-slate-300 text-slate-500 hover:bg-slate-50 hover:text-slate-700 w-full sm:w-auto"
+
+      - else
+        .bg-white.rounded-xl.border.border-dashed.border-slate-300.p-8.text-center
+          p.text-slate-400.text-sm 過去の予約履歴はありません
+
+    .mt-12.text-center
+      = link_to customers_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+        svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+        | トップページへ戻る
