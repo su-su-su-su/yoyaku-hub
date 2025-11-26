@@ -94,13 +94,11 @@ RSpec.describe 'Customer Stylist Selection' do
       end
 
       it 'displays explanatory text about the stylists shown' do
-        expect(page).to have_content('過去3年以内に予約したことがあるスタイリストを表示しています')
+        expect(page).to have_content('過去3年以内に利用したスタイリストを表示しています')
       end
 
       it 'displays stylists booked within the last 3 years' do
-        within('.stylist-list') do
-          expect(page).to have_content("#{stylists[:recent].family_name} #{stylists[:recent].given_name}")
-        end
+        expect(page).to have_content("#{stylists[:recent].family_name} #{stylists[:recent].given_name}")
       end
 
       it 'does not display stylists booked only more than 3 years ago' do
@@ -113,7 +111,7 @@ RSpec.describe 'Customer Stylist Selection' do
 
       it 'navigates to the menu selection page when clicking on a stylist' do
         stylist_name = "#{stylists[:recent].family_name} #{stylists[:recent].given_name}"
-        find('.stylist-item', text: stylist_name).click
+        click_on stylist_name
 
         expect(page).to have_current_path(
           customers_stylist_menus_path(stylist_id: stylists[:recent].id),
@@ -122,7 +120,7 @@ RSpec.describe 'Customer Stylist Selection' do
       end
 
       it 'returns to the dashboard when clicking the "Back" link' do
-        click_on '戻る'
+        click_on 'マイページに戻る'
         expect(page).to have_current_path(customers_dashboard_path, wait: 5)
       end
     end
