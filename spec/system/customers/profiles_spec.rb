@@ -27,17 +27,17 @@ RSpec.describe 'Customers::Profiles' do
 
       it 'displays the profile edit page' do
         expect(page).to have_content('カスタマー情報')
-        expect(page).to have_field('性')
+        expect(page).to have_field('姓')
         expect(page).to have_field('名')
-        expect(page).to have_field('セイ')
-        expect(page).to have_field('メイ')
+        expect(page).to have_field('セイ (カタカナ)')
+        expect(page).to have_field('メイ (カタカナ)')
         expect(page).to have_field('user[gender]', type: 'radio', count: 3)
         expect(page).to have_select('user_date_of_birth_1i')
       end
 
       it 'when entering valid information, updates profile and redirects to dashboard' do
         fill_in_profile_form(valid_attributes)
-        click_on '登録'
+        click_on '登録情報を更新する'
 
         expect(page).to have_current_path(customers_dashboard_path)
         expect(page).to have_css('#toast-container .toast-message', text: I18n.t('customers.profiles.updated'))
@@ -47,9 +47,9 @@ RSpec.describe 'Customers::Profiles' do
       end
 
       it 'when required fields are empty, displays errors' do
-        fill_in '性', with: ''
+        fill_in '姓', with: ''
         fill_in '名', with: ''
-        click_on '登録'
+        click_on '登録情報を更新する'
 
         expect(page).to have_content('を入力してください')
         # バリデーションエラー時はeditページが再表示される
@@ -61,9 +61,9 @@ RSpec.describe 'Customers::Profiles' do
         page.execute_script("document.getElementById('user_family_name_kana').removeAttribute('pattern')")
         page.execute_script("document.getElementById('user_given_name_kana').removeAttribute('pattern')")
 
-        fill_in 'セイ', with: 'よやく'
-        fill_in 'メイ', with: 'たろう'
-        click_on '登録'
+        fill_in 'セイ (カタカナ)', with: 'よやく'
+        fill_in 'メイ (カタカナ)', with: 'たろう'
+        click_on '登録情報を更新する'
 
         expect(page).to have_content('全角カタカナのみ入力できます')
         # バリデーションエラー時はeditページが再表示される
@@ -72,7 +72,7 @@ RSpec.describe 'Customers::Profiles' do
 
       it 'when selecting "no answer" for gender, saves that value' do
         fill_in_profile_form(valid_attributes.merge(gender: 'no_answer'))
-        click_on '登録'
+        click_on '登録情報を更新する'
 
         expect(page).to have_current_path(customers_dashboard_path)
         customer.reload
@@ -153,10 +153,10 @@ RSpec.describe 'Customers::Profiles' do
   private
 
   def fill_in_profile_form(attributes)
-    fill_in '性', with: attributes[:family_name]
+    fill_in '姓', with: attributes[:family_name]
     fill_in '名', with: attributes[:given_name]
-    fill_in 'セイ', with: attributes[:family_name_kana]
-    fill_in 'メイ', with: attributes[:given_name_kana]
+    fill_in 'セイ (カタカナ)', with: attributes[:family_name_kana]
+    fill_in 'メイ (カタカナ)', with: attributes[:given_name_kana]
 
     select_gender(attributes[:gender])
     select_birth_date(attributes[:date_of_birth])
