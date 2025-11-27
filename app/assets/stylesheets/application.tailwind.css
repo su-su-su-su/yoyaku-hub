@@ -248,6 +248,25 @@
     @apply absolute opacity-0 w-0 h-0 pointer-events-none;
   }
 
+  /* メニュー選択カードのスタイル */
+  .menu-checkbox:checked ~ .menu-card {
+    @apply border-blue-500 bg-blue-50 shadow-md;
+    border-color: #3e5cd7;
+  }
+
+  .menu-checkbox:checked ~ .menu-card .menu-check-icon {
+    background-color: #3e5cd7;
+    border-color: #3e5cd7;
+  }
+
+  .menu-checkbox:checked ~ .menu-card .menu-check-icon svg {
+    color: white;
+  }
+
+  .menu-checkbox:checked ~ .menu-card .menu-title {
+    color: #3e5cd7;
+  }
+
   table.st-fixed-table {
     table-layout: fixed;
     width: 100%;

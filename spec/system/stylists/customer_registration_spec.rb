@@ -27,7 +27,7 @@ RSpec.describe 'Stylists Customer Registration' do
       choose 'user_gender_male'
       fill_in 'user[email]', with: 'tanaka@example.com'
 
-      click_on '登録'
+      click_on '登録する'
 
       # トースト通知の確認
       expect(page).to have_css('#toast-container .toast-message', text: '顧客を登録しました。')
@@ -49,7 +49,7 @@ RSpec.describe 'Stylists Customer Registration' do
       fill_in 'user[given_name_kana]', with: 'ハナコ'
       choose 'user_gender_female'
 
-      click_on '登録'
+      click_on '登録する'
 
       expect(page).to have_css('#toast-container .toast-message', text: '顧客を登録しました。')
 
@@ -67,7 +67,7 @@ RSpec.describe 'Stylists Customer Registration' do
       fill_in 'user[given_name_kana]', with: 'ジロウ'
       choose 'user_gender_no_answer'
 
-      click_on '登録'
+      click_on '登録する'
 
       expect(page).to have_css('#toast-container .toast-message', text: '顧客を登録しました。')
 
@@ -79,9 +79,9 @@ RSpec.describe 'Stylists Customer Registration' do
     it 'shows validation errors for missing required fields' do
       visit new_stylists_customer_path
 
-      click_on '登録'
+      click_on '登録する'
 
-      expect(page).to have_content('エラーが発生しました。')
+      expect(page).to have_content('を入力してください')
       expect(page).to have_content('顧客登録')
       expect(User.count).to eq(1)
     end
@@ -111,9 +111,9 @@ RSpec.describe 'Stylists Customer Registration' do
       visit stylists_customer_path(manual_customer)
 
       expect(page).to have_content('元田中 太郎')
-      expect(page).to have_link('顧客情報を編集')
+      expect(page).to have_link('編集')
 
-      click_on '顧客情報を編集'
+      click_on '編集'
 
       expect(page).to have_content('顧客情報編集')
       expect(page).to have_field('user[family_name]', with: '元田中')
@@ -122,7 +122,7 @@ RSpec.describe 'Stylists Customer Registration' do
       fill_in 'user[family_name]', with: '新田中'
       fill_in 'user[email]', with: 'updated@example.com'
 
-      click_on '更新'
+      click_on '更新する'
 
       expect(page).to have_css('#toast-container .toast-message', text: '顧客情報を更新しました。')
       expect(page).to have_content('新田中 太郎')
@@ -136,7 +136,7 @@ RSpec.describe 'Stylists Customer Registration' do
       visit edit_stylists_customer_path(manual_customer)
 
       fill_in 'user[email]', with: ''
-      click_on '更新'
+      click_on '更新する'
 
       expect(page).to have_css('#toast-container .toast-message', text: '顧客情報を更新しました。')
 
@@ -161,9 +161,9 @@ RSpec.describe 'Stylists Customer Registration' do
 
       fill_in 'user[family_name]', with: ''
       fill_in 'user[given_name]', with: ''
-      click_on '更新'
+      click_on '更新する'
 
-      expect(page).to have_content('エラーが発生しました。')
+      expect(page).to have_content('を入力してください')
       expect(page).to have_content('顧客情報編集')
 
       manual_customer.reload
@@ -224,7 +224,7 @@ RSpec.describe 'Stylists Customer Registration' do
 
       expect(page).to have_content('手動 顧客')
       # 手動登録した顧客には編集リンクが表示される
-      expect(page).to have_link('顧客情報を編集')
+      expect(page).to have_link('編集')
     end
 
     it 'can search for manually registered customers' do
@@ -232,7 +232,7 @@ RSpec.describe 'Stylists Customer Registration' do
       visit stylists_customers_path
 
       fill_in 'query', with: '手動'
-      find('.search-button').click
+      find('input[name="query"]').send_keys(:enter)
 
       expect(page).to have_content('手動 顧客')
       expect(page).to have_no_content('予約 顧客')

@@ -228,9 +228,8 @@ RSpec.describe 'Shift settings reservation data', :js do
         visit stylists_shift_settings_path
 
         # 未設定と表示されることを確認
-        within('.card', text: "#{current_month}月") do
-          expect(page).to have_content('未設定')
-        end
+        month_link = find('a', text: /#{current_month}月/)
+        expect(month_link).to have_content('未設定')
       end
 
       it '設定済みの月の場合' do
@@ -244,9 +243,8 @@ RSpec.describe 'Shift settings reservation data', :js do
         visit stylists_shift_settings_path
 
         # 設定済みと表示されることを確認
-        within('.card', text: "#{current_month}月") do
-          expect(page).to have_content('設定済み')
-        end
+        month_link = find('a', text: /#{current_month}月/)
+        expect(month_link).to have_content('設定済')
       end
     end
 

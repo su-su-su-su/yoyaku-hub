@@ -14,6 +14,19 @@ export default class extends Controller {
         console.error("Failed to parse toast data:", e)
       }
     }
+
+    // Turboのキャッシュ前にtoast属性をクリア
+    document.addEventListener('turbo:before-cache', this.clearToast.bind(this))
+  }
+
+  disconnect() {
+    document.removeEventListener('turbo:before-cache', this.clearToast.bind(this))
+  }
+
+  clearToast() {
+    // キャッシュされる前にtoast属性とコンテナをクリア
+    delete this.element.dataset.toast
+    this.element.innerHTML = ''
   }
 }
 

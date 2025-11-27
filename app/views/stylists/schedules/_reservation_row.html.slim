@@ -1,12 +1,18 @@
-td.border.p-1(colspan=colspan)
-  = link_to stylists_reservation_path(reservation), class: "block w-full h-full" do
+td.border.border-slate-100.p-1(colspan=colspan)
+  = link_to stylists_reservation_path(reservation), class: "block w-full h-full group" do
     - if reservation.paid?
-      .st-reservation-card.bg-gray-100.border.border-gray-400.rounded.p-2
-        - menu_names = reservation.menus.map(&:name).join(", ")
-        p.st-trim-magic.text-xs.md:text-sm.text-gray-600 #{menu_names}
-        p.st-trim-magic.text-xs.md:text-sm.text-gray-600 #{reservation.customer.family_name} #{reservation.customer.given_name} 様
+      .bg-slate-50.border.border-slate-200.rounded-lg.p-2.h-full.hover:bg-slate-100.transition-colors.flex.items-center.gap-2
+        span.w-1.h-8.bg-slate-300.rounded-full
+        div.overflow-hidden
+          p.text-xs.font-bold.text-slate-600.truncate
+            = "#{reservation.customer.family_name} #{reservation.customer.given_name} 様"
+          p.text-xs.text-slate-400.truncate
+            = reservation.menus.map(&:name).join(", ")
+    
     - else
-      .st-reservation-card.bg-blue-100.border.border-blue-300.rounded.p-2
-        - menu_names = reservation.menus.map(&:name).join(", ")
-        p.st-trim-magic.text-xs.md:text-sm.text-blue-700 #{menu_names}
-        p.st-trim-magic.text-xs.md:text-sm.text-blue-700 #{reservation.customer.family_name} #{reservation.customer.given_name} 様
+      .bg-white.border.border-l-4.border-brand-blue.rounded-r-lg.shadow-sm.p-2.h-full.hover:shadow-md.transition-all.flex.items-center.gap-2
+        div.overflow-hidden
+          p.text-xs.font-bold.text-slate-800.truncate
+            = "#{reservation.customer.family_name} #{reservation.customer.given_name} 様"
+          p.text-xs.text-brand-blue.truncate
+            = reservation.menus.map(&:name).join(", ")

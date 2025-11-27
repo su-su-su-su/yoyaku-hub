@@ -1,55 +1,84 @@
 - content_for :title, '顧客一覧'
 - content_for :meta_description, '担当している顧客の一覧を表示し、名前やカタカナで検索できます。'
 
-.container.mx-auto.px-4.py-4.md:py-6
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-6xl
 
-  .flex.justify-between.items-center.mb-4
-    h1.page-title-gradient.subtle-gradient-look 顧客一覧
-    = link_to "新規顧客登録", new_stylists_customer_path, class: "btn-primary"
+    .flex.flex-col.md:flex-row.justify-between.items-center.mb-8.gap-4
+      .text-center.md:text-left
+        h1.text-2xl.font-bold.text-slate-800.mb-1 顧客一覧
 
-  .bg-white.border.border-gray-200.rounded-lg.p-4.mb-4
-    = form_with url: stylists_customers_path, method: :get, local: true, class: "relative" do |form|
-      = form.text_field :query, value: params[:query], placeholder: "名前またはカタカナで検索", class: "input input-bordered w-full pr-10"
-      = form.button type: "submit", class: "search-button absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600" do
+      = link_to new_stylists_customer_path, class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none shadow-sm rounded-lg px-6 py-3 flex items-center gap-2 w-full md:w-auto justify-center"
         svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+        | 新規顧客登録
 
-  - if @customers.any?
-    .bg-white.border.border-gray-200.rounded-lg.overflow-hidden
-      .overflow-x-auto
-        table.table.w-full
-          thead
+    .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-4.mb-8
+      = form_with url: stylists_customers_path, method: :get, local: true, class: "relative" do |form|
+        .relative
+          .absolute.inset-y-0.left-0.pl-3.flex.items-center.pointer-events-none
+            svg.w-5.h-5.text-slate-400(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
+          = form.text_field :query, value: params[:query], placeholder: "名前またはカタカナで検索...", class: "input input-bordered w-full pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 border-slate-200"
+          
+          - if params[:query].present?
+            = link_to stylists_customers_path, class: "absolute inset-y-0.right-2.flex.items-center pr-3 text-slate-400 hover:text-slate-600"
+              svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor")
+                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd")
+
+    - if @customers.any?
+      .hidden.md:block.bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden
+        table.w-full.text-left
+          thead.bg-slate-50.border-b.border-slate-100
             tr
-              th.bg-gray-50.text-left.py-3.px-4 名前
-              th.bg-gray-50.text-left.py-3.px-4 フリガナ
-              th.bg-gray-50.text-left.py-3.px-4 操作
-          tbody
+              th.px-6.py-4.text-xs.font-bold.text-slate-500.uppercase.tracking-wider 名前
+              th.px-6.py-4.text-xs.font-bold.text-slate-500.uppercase.tracking-wider フリガナ
+              th.px-6.py-4.text-xs.font-bold.text-slate-500.uppercase.tracking-wider.text-right 操作
+          tbody.divide-y.divide-slate-100
             - @customers.each do |customer|
-              tr.border-t
-                td.py-3.px-4
-                  = "#{customer.family_name} #{customer.given_name}"
-                td.py-3.px-4
+              tr.hover:bg-slate-50.transition-colors
+                td.px-6.py-4
+                  .font-bold.text-slate-800 = "#{customer.family_name} #{customer.given_name}"
+                td.px-6.py-4.text-slate-600
                   = "#{customer.family_name_kana} #{customer.given_name_kana}"
-                td.py-3.px-4.space-x-2
-                  = link_to "詳細", stylists_customer_path(customer), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
-                  = link_to "カルテ", stylists_customer_chartes_path(customer), class: 'text-blue-600 text-sm hover:text-blue-800 active:text-blue-900 underline'
+                td.px-6.py-4.text-right.space-x-3
+                  = link_to stylists_customer_path(customer), class: 'text-brand-blue hover:text-blue-700 font-medium text-sm inline-flex items-center'
+                    | 詳細
+                  = link_to stylists_customer_chartes_path(customer), class: 'text-slate-500 hover:text-slate-700 font-medium text-sm inline-flex items-center'
+                    | カルテ
 
-    .mt-4.text-sm.text-gray-600
-      = "#{@customers.count}件の顧客が見つかりました"
-  - else
-    .bg-white.border.border-gray-200.rounded-lg.p-8.text-center
-      .text-gray-500.mb-4
-        svg.w-12.h-12.mx-auto.mb-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")
-      - if params[:query].present?
-        p.text-lg.font-medium
-          | 「
-          = params[:query]
-          | 」に一致する顧客が見つかりませんでした
-        p.text-sm.text-gray-500.mt-2 検索キーワードを変更してお試しください
-      - else
-        p.text-lg.font-medium まだ担当している顧客がいません
-        p.text-sm.text-gray-500.mt-2 お客様からの予約をお待ちください
+      .md:hidden.space-y-3
+        - @customers.each do |customer|
+          = link_to stylists_customer_path(customer), class: "block bg-white rounded-xl shadow-sm border border-slate-100 p-4 hover:bg-slate-50 active:scale-[0.98] transition-all"
+            .flex.justify-between.items-center
+              div
+                h3.font-bold.text-slate-800.text-lg = "#{customer.family_name} #{customer.given_name}"
+                p.text-xs.text-slate-500 = "#{customer.family_name_kana} #{customer.given_name_kana}"
+              svg.w-5.h-5.text-slate-300(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
 
-.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
-  = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+      .mt-4.text-center.text-sm.text-slate-500
+        = "#{@customers.count}件の顧客が見つかりました"
+
+    - else
+      .bg-white.rounded-xl.border.border-dashed.border-slate-300.p-12.text-center
+        .w-16.h-16.bg-slate-50.rounded-full.flex.items-center.justify-center.mx-auto.mb-4
+          svg.w-8.h-8.text-slate-400(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")
+        
+        - if params[:query].present?
+          h3.text-lg.font-medium.text-slate-900.mb-1 見つかりませんでした
+          p.text-slate-500
+            | 「
+            span.font-bold.text-slate-700 = params[:query]
+            | 」に一致する顧客はいません。
+          p.text-sm.text-slate-400.mt-2 検索キーワードを変更してみてください。
+        - else
+          h3.text-lg.font-medium.text-slate-900.mb-1 顧客がまだ登録されていません
+          p.text-slate-500.mb-6 新規登録するか、お客様からの予約をお待ちください。
+
+    .mt-12.text-center
+      = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+        svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+        | スタイリストトップへ戻る

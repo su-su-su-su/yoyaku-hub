@@ -3,77 +3,91 @@
 
 - visit_info = @customer.visit_info_for_stylist(current_user.id)
 
-.container.mx-auto.px-4.py-4.md:py-6
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-3xl
 
-  .flex.items-center.justify-between.mb-4
-    h1.page-title-gradient.subtle-gradient-look 顧客詳細
-    = link_to "一覧に戻る", stylists_customers_path, class: "btn btn-outline"
+    .mb-6
+      = link_to stylists_customers_path, class: "inline-block text-sm text-slate-500 hover:text-brand-blue mb-4 transition-colors"
+        | < 一覧に戻る
 
-  .bg-white.border.border-gray-200.rounded-lg.p-6
-    .space-y-6
-      .border-b.pb-4
-        h2.text-lg.font-semibold.mb-3 基本情報
+      .flex.flex-col.md:flex-row.justify-between.items-center.md:items-end.gap-4
+        h1.text-2xl.font-bold.text-slate-800.text-center.md:text-left 顧客詳細
+        - if @customer.created_by_stylist_id == current_user.id
+          = link_to edit_stylists_customer_path(@customer), class: "btn btn-sm btn-outline border-slate-300 text-slate-600 hover:bg-slate-50 hover:text-brand-blue w-full md:w-auto"
+            | 編集
 
-        .grid.grid-cols-1.gap-3
-          .flex.justify-between.items-center
-            span.text-gray-600 お名前
-            span.font-medium = "#{@customer.family_name} #{@customer.given_name}"
+    .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden.mb-6
+      
+      .bg-slate-50.px-6.py-6.border-b.border-slate-100.text-center
+        h2.text-xl.font-bold.text-slate-900 = "#{@customer.family_name} #{@customer.given_name}"
+        p.text-sm.text-slate-500 = "#{@customer.family_name_kana} #{@customer.given_name_kana}"
 
-          .flex.justify-between.items-center
-            span.text-gray-600 フリガナ
-            span.font-medium = "#{@customer.family_name_kana} #{@customer.given_name_kana}"
+      .p-6.space-y-8
+        section
+          h3.text-xs.font-bold.text-slate-400.uppercase.tracking-wider.mb-4 基本情報
+          .grid.grid-cols-1.md:grid-cols-2.gap-6
+            .flex.flex-col
+              span.text-xs.text-slate-500.mb-1 年齢
+              span.text-base.text-slate-800.font-medium
+                - if @customer.age
+                  | #{@customer.age}歳
+                - else
+                  span.text-slate-400 未設定
+            
+            .flex.flex-col
+              span.text-xs.text-slate-500.mb-1 性別
+              span.text-base.text-slate-800.font-medium
+                - case @customer.gender
+                - when 'male'
+                  | 男性
+                - when 'female'
+                  | 女性
+                - when 'no_answer'
+                  | 回答なし
+                - else
+                  span.text-slate-400 未設定
 
-          .flex.justify-between.items-center
-            span.text-gray-600 年齢
-            span.font-medium
-              - if @customer.age
-                = "#{@customer.age}歳"
-              - else
-                span.text-gray-400 未設定
+            .flex.flex-col.md:col-span-2
+              span.text-xs.text-slate-500.mb-1 メールアドレス
+              span.text-base.text-slate-800.font-medium
+                - if @customer.email.present?
+                  = @customer.email
+                - else
+                  span.text-slate-400 未設定
 
-      .border-b.pb-4
-        h2.text-lg.font-semibold.mb-3 来店情報
+        hr.border-slate-100
 
-        .grid.grid-cols-1.gap-3
-          .flex.justify-between.items-center
-            span.text-gray-600 初回来店日
-            span.font-medium
-              - if visit_info[:first_visit]
-                = visit_info[:first_visit].strftime('%Y年%m月%d日')
-              - else
-                span.text-gray-400 来店履歴なし
+        section
+          h3.text-xs.font-bold.text-slate-400.uppercase.tracking-wider.mb-4 来店データ
+          .grid.grid-cols-2.gap-4
+            .bg-slate-50.rounded-lg.p-3
+              span.block.text-xs.text-slate-500.mb-1 来店回数
+              span.block.text-lg.font-bold.text-brand-blue = "#{visit_info[:total_visits]}回"
+            
+            .bg-slate-50.rounded-lg.p-3
+              span.block.text-xs.text-slate-500.mb-1 来店周期
+              span.block.text-lg.font-bold.text-slate-700
+                - if visit_info[:visit_frequency]
+                  = visit_info[:visit_frequency]
+                - else
+                  | -
 
-          .flex.justify-between.items-center
-            span.text-gray-600 最終来店日
-            span.font-medium
-              - if visit_info[:last_visit]
-                = visit_info[:last_visit].strftime('%Y年%m月%d日')
-              - else
-                span.text-gray-400 来店履歴なし
+            .bg-slate-50.rounded-lg.p-3
+              span.block.text-xs.text-slate-500.mb-1 初回来店日
+              span.block.text-sm.font-medium.text-slate-700
+                - if visit_info[:first_visit]
+                  = visit_info[:first_visit].strftime('%Y.%m.%d')
+                - else
+                  | -
 
-          .flex.justify-between.items-center
-            span.text-gray-600 来店回数
-            span.font-medium = "#{visit_info[:total_visits]}回"
+            .bg-slate-50.rounded-lg.p-3
+              span.block.text-xs.text-slate-500.mb-1 最終来店日
+              span.block.text-sm.font-medium.text-slate-700
+                - if visit_info[:last_visit]
+                  = visit_info[:last_visit].strftime('%Y.%m.%d')
+                - else
+                  | -
 
-          .flex.justify-between.items-center
-            span.text-gray-600 来店周期
-            span.font-medium
-              - if visit_info[:visit_frequency]
-                = visit_info[:visit_frequency]
-              - else
-                span.text-gray-400 算出不可
-
-      .border-b.pb-4
-        h2.text-lg.font-semibold.mb-3 操作メニュー
-
-        .space-y-2
-          = link_to stylists_customer_chartes_path(@customer), class: "btn btn-primary w-full" do
-            svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
-            | カルテを見る
-
-          - if @customer.created_by_stylist_id == current_user.id
-            = link_to edit_stylists_customer_path(@customer), class: "btn btn-outline w-full" do
-              svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
-              | 顧客情報を編集
+    .flex.flex-col.gap-3
+      = link_to stylists_customer_chartes_path(@customer), class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none w-full shadow-sm py-3 h-auto" do
+        | カルテを見る

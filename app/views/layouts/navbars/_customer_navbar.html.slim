@@ -1,21 +1,50 @@
 div.navbar class="bg-[#3e5cd7] text-white"
   div.navbar-start
-    a.btn.btn-ghost.text-xl href="https://yoyakuhub.jp" YOYAKU HUB
+    = link_to customers_dashboard_path, class: "btn btn-ghost text-xl"
+      | YOYAKU HUB
   div.navbar-end
     div.dropdown.dropdown-end
       div.btn.btn-ghost.btn-circle(tabindex="0" role="button")
-        svg.h-4.w-4.opacity-70(xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7")
-      ul class="menu menu-sm dropdown-content bg-blue-500 bg-opacity-85 rounded-box z-[1] mt-3 w-52 p-2 shadow" tabindex="0"
+        svg.h-5.w-5.opacity-70(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+
+      ul class="menu menu-sm dropdown-content bg-blue-500 bg-opacity-95 rounded-xl z-50 mt-3 w-56 p-2 shadow-lg" tabindex="0"
+        li.menu-title.text-xs.font-bold.text-blue-200.uppercase.tracking-wider.px-3.pt-2.pb-1
+          | メニュー
         li
-          = link_to '予約する', customers_stylists_index_path
+          = link_to customers_dashboard_path, class: "flex items-center gap-3 px-3 py-2 text-white hover:bg-blue-400 rounded-lg transition-colors"
+            svg.w-4.h-4.opacity-70(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6")
+            span マイページトップ
         li
-          = link_to '予約履歴', customers_reservations_path
+          = link_to customers_stylists_index_path, class: "flex items-center gap-3 px-3 py-2 text-white hover:bg-blue-400 rounded-lg transition-colors"
+            svg.w-4.h-4.opacity-70(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
+            span 予約する
         li
-          = link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }
+          = link_to customers_reservations_path, class: "flex items-center gap-3 px-3 py-2 text-white hover:bg-blue-400 rounded-lg transition-colors"
+            svg.w-4.h-4.opacity-70(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+            span 予約履歴
+
+        .my-2.h-px.bg-blue-400.opacity-50
+
         li
-          = link_to '利用規約', terms_path
+          = link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "flex items-center gap-3 px-3 py-2 text-white hover:bg-blue-400 rounded-lg transition-colors"
+            svg.w-4.h-4.opacity-70(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1")
+            span ログアウト
+
+        .my-2.h-px.bg-blue-400.opacity-50
+
+        li.menu-title.text-xs.font-bold.text-blue-200.uppercase.tracking-wider.px-3.pt-2.pb-1
+          | その他
         li
-          = link_to 'プライバシーポリシー', privacy_path
+          = link_to terms_path, class: "flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-400 rounded-lg transition-colors text-sm"
+            span 利用規約
         li
-          = link_to '特定商取引法に基づく表記', tokushoho_path
+          = link_to privacy_path, class: "flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-400 rounded-lg transition-colors text-sm"
+            span プライバシーポリシー
+        li
+          = link_to tokushoho_path, class: "flex items-center gap-3 px-3 py-2 text-blue-100 hover:bg-blue-400 rounded-lg transition-colors text-sm"
+            span 特定商取引法に基づく表記

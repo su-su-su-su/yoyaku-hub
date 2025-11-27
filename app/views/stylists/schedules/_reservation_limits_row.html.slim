@@ -1,13 +1,21 @@
 tr#reservation-limits-row
-  th.border.bg-gray-100.text-center.p-1.text-xs.md:text-sm 残り受付可能数
+  th.border-b.border-r.border-slate-200.bg-slate-50.text-center.p-1.text-xs.text-slate-500.font-bold
+    | 残り枠
+  
   - schedule.time_slots.each do |time_str|
     - slot_idx = to_slot_index(time_str)
-    td.text-center.border.p-0
-      div.flex.flex-col.items-center.justify-center.w-full.h-full
-        = button_to "▲", stylists_reservation_limits_path(date: schedule.date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'up'),
-          class: 'limit-up-btn w-full flex-1 text-sm md:text-base text-blue-600 hover:bg-blue-100 rounded-t py-1', data: { turbo: true }, method: :patch
+    td.text-center.border-b.border-r.border-slate-100.bg-white.p-0.h-14
+      div.flex.flex-col.items-center.justify-between.h-full.py-1
+        = button_to stylists_reservation_limits_path(date: schedule.date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'up'),
+          class: 'text-slate-500 hover:text-brand-blue hover:bg-blue-50 rounded w-full h-4 flex items-center justify-center transition-colors', data: { turbo: true }, method: :patch do
+          svg.w-3.h-3(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor")
+            path(fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd")
+        
         - remaining_count = (schedule.reservation_limits[slot_idx].to_i - schedule.reservation_counts[slot_idx].to_i).clamp(0, 2)
-        div.my-1.font-medium.text-sm.md:text-base class=(remaining_count == 0 ? 'text-red-500' : '')
+        div.font-bold.text-sm class=(remaining_count == 0 ? 'text-red-500' : 'text-slate-700')
           = remaining_count
-        = button_to "▼", stylists_reservation_limits_path(date: schedule.date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'down'),
-          class: 'limit-down-btn w-full flex-1 text-sm md:text-base text-blue-600 hover:bg-blue-100 rounded-b py-1', data: { turbo: true }, method: :patch
+        
+        = button_to stylists_reservation_limits_path(date: schedule.date.strftime("%Y-%m-%d"), slot: slot_idx, direction: 'down'),
+          class: 'text-slate-500 hover:text-red-500 hover:bg-red-50 rounded w-full h-4 flex items-center justify-center transition-colors', data: { turbo: true }, method: :patch do
+          svg.w-3.h-3(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor")
+            path(fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd")

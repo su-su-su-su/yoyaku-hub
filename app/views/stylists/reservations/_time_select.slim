@@ -1,6 +1,4 @@
-- shared_classes = "border rounded p-2 w-full min-h-[44px] md:w-auto"
-
 - if f.present?
-  = f.select :start_time_str, options_for_select(time_options, selected_time), {}, { class: shared_classes }
+  = f.select :start_time_str, options_for_select(time_options, selected_time), {}, { class: "select select-bordered w-full text-sm focus:ring-2 focus:ring-blue-500" }
 - else
-  = select_tag "reservation[start_time_str]", options_for_select(time_options, selected_time), class: shared_classes
+  = select_tag "reservation[start_time_str]", options_for_select(time_options, selected_time), class: "select select-bordered w-full text-sm focus:ring-2 focus:ring-blue-500"

@@ -2,110 +2,156 @@
 - content_for :title, "#{date_str}の予約表"
 - content_for :meta_description, "#{date_str}の予約状況と予約枠を確認できます。時間帯ごとの予約数や予約上限も表示されます。"
 
-.px-4.mt-6.flex.justify-between.items-center
-  h1.page-title-gradient.subtle-gradient-look 予約表
-  = link_to "週間表示", stylists_weekly_schedules_path(start_date: @schedule.date.strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
-.flex.px-2.mt-4.items-center.justify-between
-  = link_to '前の日へ', stylists_schedules_path(date: (@schedule.date - 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
-  .relative.inline-block
-    .font-bold.cursor-pointer.underline.hover:text-gray-500.active:text-gray-700.px-2.py-1(onclick="document.getElementById('schedule_date_picker').showPicker()")
-      = I18n.l(@schedule.date, format: :long)
-    input.absolute.opacity-0.inset-0.w-full.h-full.cursor-pointer(
-      type="date"
-      value=@schedule.date.strftime("%Y-%m-%d")
-      id="schedule_date_picker"
-      data-controller="schedule-date-picker"
-      data-action="change->schedule-date-picker#navigate"
-    )
-  = link_to '後の日へ', stylists_schedules_path(date: (@schedule.date + 1.day).strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
+.bg-slate-50.min-h-screen.py-4.md:py-8
+  .container.mx-auto.px-0.md:px-4.max-w-full
 
-.overflow-x-auto.whitespace-nowrap.mt-4
-  - if @schedule.holiday?
-    p.text-center 休業日です
-  - elsif @schedule.working_hour.nil?
-    p.text-center 営業時間が設定されていません
-  - else
-    table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: #{100 + @schedule.time_slots.size * 58}px;"
-      colgroup
-        col style="width: 100px;"
-        - @schedule.time_slots.each do |_time_slot|
-          col style="width: 58px;"
-      thead
-        tr
-          th.bg-gray-100.border.border-gray-400
-          - @schedule.time_slots.each do |time_slot|
-            th.border.border-gray-400.bg-gray-100.text-center
-              = time_slot
-      tbody
-        tr
-          th.border.bg-gray-100.text-center 予約数
-          - @schedule.time_slots.each do |time_str|
-            - slot_idx_for_count = to_slot_index(time_str)
-            td.text-center.border
-             = @schedule.reservation_counts[slot_idx_for_count].to_i
-        = render 'reservation_limits_row', schedule: @schedule
+    .flex.flex-row.justify-between.items-center.mb-6.gap-4.px-4.md:px-0
+      h1.text-xl.md:text-2xl.font-bold.text-slate-800 予約表
 
-        - displayed_in_row1_ids = []
+      = link_to stylists_weekly_schedules_path(start_date: @schedule.date.strftime("%Y-%m-%d")), class: 'btn btn-sm md:btn-md bg-white text-slate-600 border-slate-300 hover:bg-slate-50 hover:text-brand-blue shadow-sm'
+        svg.w-4.h-4.mr-1.md:mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+        | 週間表示へ
 
-        tr(data-testid="reservation-row-1")
-          th.border.bg-gray-100.text-center
-          - occupied_slots_for_this_row1 = Hash.new(false)
-          - @schedule.time_slots.each do |time_str|
-            - current_absolute_slot = to_slot_index(time_str)
-            - unless occupied_slots_for_this_row1[current_absolute_slot]
-              - reservations_at_slot =  @schedule.reservations_map[current_absolute_slot]
-              - reservation_to_display = reservations_at_slot.present? ? reservations_at_slot[0] : nil
-              - condition_met = reservation_to_display.present? && (to_slot_index(reservation_to_display.start_at) == current_absolute_slot)
+    .px-4.md:px-0
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-2.mb-6.flex.items-center.justify-between.max-w-lg.mx-auto
+        = link_to stylists_schedules_path(date: (@schedule.date - 1.day).strftime("%Y-%m-%d")), class: "btn btn-ghost btn-sm px-2 md:px-3 text-slate-500 flex-shrink-0"
+          svg.w-5.h-5(fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
+          span.hidden.md:inline.ml-1 前の日
 
-              - if condition_met
-                - res = reservation_to_display
-                - displayed_in_row1_ids << res.id
-                - start_s = to_slot_index(res.start_at)
-                - end_s = to_slot_index(res.end_at)
-                - col_span = end_s - start_s
+        .relative.overflow-hidden.flex-1.text-center
+          .font-bold.text-sm.md:text-lg.text-slate-800.cursor-pointer.hover:text-brand-blue.transition-colors.flex.items-center.justify-center.gap-1.md:gap-2.whitespace-nowrap(onclick="document.getElementById('schedule_date_picker').showPicker()")
+            = I18n.l(@schedule.date, format: :long)
+            svg.w-3.h-3.md:w-4.md:h-4.text-slate-400.flex-shrink-0(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
 
-                - if col_span > 0
-                  - (start_s + 1...end_s).each do |slot_to_mark|
-                    - occupied_slots_for_this_row1[slot_to_mark] = true
+          input.absolute.opacity-0.inset-0.w-full.h-full.cursor-pointer(
+            type="date"
+            value=@schedule.date.strftime("%Y-%m-%d")
+            id="schedule_date_picker"
+            data-controller="schedule-date-picker"
+            data-action="change->schedule-date-picker#navigate"
+          )
 
-                  = render 'reservation_row', reservation: res, colspan: col_span
-                - else
-                  td.border &nbsp;
-              - else
-                td.border.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: @schedule.date.strftime("%Y-%m-%d"), time_str: time_str)}'")
-                  .py-1
+        = link_to stylists_schedules_path(date: (@schedule.date + 1.day).strftime("%Y-%m-%d")), class: "btn btn-ghost btn-sm px-2 md:px-3 text-slate-500 flex-shrink-0"
+          span.hidden.md:inline.mr-1 後の日
+          svg.w-5.h-5(fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
 
-        - should_display_second_row_flag = @schedule.reservation_limits.values.any? { |limit_value| limit_value.to_i >= 2 }
-        - if should_display_second_row_flag
-          tr(data-testid="reservation-row-2")
-            th.border.bg-gray-100.text-center
-            - occupied_slots_for_row2 = Hash.new(false)
-            - @schedule.time_slots.each do |time_str|
-              - current_absolute_slot = to_slot_index(time_str)
-              - unless occupied_slots_for_row2[current_absolute_slot]
-                - reservations_at_slot = @schedule.reservations_map[current_absolute_slot]
+    / スマホでは border-x-0, rounded-none にして画面幅いっぱいに見せる
+    .bg-white.md:rounded-xl.shadow-sm.border-y.md:border.border-slate-200.overflow-hidden
+      - if @schedule.holiday?
+        .p-12.text-center
+          .w-16.h-16.bg-red-50.rounded-full.flex.items-center.justify-center.mx-auto.mb-4
+            svg.w-8.h-8.text-red-400(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636")
+          h3.text-lg.font-bold.text-slate-700 休業日
+          p.text-slate-500 本日はお休みとして設定されています
 
-                - reservation_to_display_row2 = reservations_at_slot.present? ? reservations_at_slot.find { |res_candidate| !displayed_in_row1_ids.include?(res_candidate.id) } : nil
-                - condition_met_row2 = reservation_to_display_row2.present? && (to_slot_index(reservation_to_display_row2.start_at) == current_absolute_slot)
+      - elsif @schedule.working_hour.nil?
+        .p-12.text-center
+          .w-16.h-16.bg-slate-50.rounded-full.flex.items-center.justify-center.mx-auto.mb-4
+            svg.w-8.h-8.text-slate-400(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+          h3.text-lg.font-bold.text-slate-700 営業時間未設定
+          p.text-slate-500 シフト設定から営業時間を登録してください
 
-                - if condition_met_row2
-                  - res = reservation_to_display_row2
-                  - start_s = to_slot_index(res.start_at)
-                  - end_s = to_slot_index(res.end_at)
-                  - col_span = end_s - start_s
+      - else
+        .overflow-x-auto.pb-2
+          table.st-fixed-table.border-collapse style="table-layout: fixed; min-width: #{100 + @schedule.time_slots.size * 58}px;"
+            colgroup
+              col style="width: 100px;"
+              - @schedule.time_slots.each do |_time_slot|
+                col style="width: 58px;"
+            
+            thead
+              tr
+                th.bg-slate-50.border-r.border-b.border-slate-200.p-2
+                - @schedule.time_slots.each do |time_slot|
+                  th.bg-slate-50.border-r.border-b.border-slate-200.text-center.text-xs.font-medium.text-slate-500.py-2
+                    = time_slot
+            
+            tbody
+              tr
+                th.bg-slate-50.border-r.border-b.border-slate-200.text-center.text-xs.font-bold.text-slate-500
+                  | 予約数
+                - @schedule.time_slots.each do |time_str|
+                  - slot_idx_for_count = to_slot_index(time_str)
+                  td.text-center.border-r.border-b.border-slate-100.text-sm.font-medium.text-slate-700.bg-white
+                    = @schedule.reservation_counts[slot_idx_for_count].to_i
+              
+              = render 'reservation_limits_row', schedule: @schedule
 
-                  - if col_span > 0
-                    - (start_s + 1...end_s).each do |slot_to_mark|
-                      - occupied_slots_for_row2[slot_to_mark] = true
-                    = render 'reservation_row', reservation: res, colspan: col_span
-                  - else
-                    td.border &nbsp;
-                - else
-                  - if @schedule.reservation_limits[current_absolute_slot].to_i >= 2
-                    td.border.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: @schedule.date.strftime("%Y-%m-%d"), time_str: time_str)}'")
-                      .py-1
-                  - else
-                    td.border &nbsp;
+              - displayed_in_row1_ids = []
+              tr(data-testid="reservation-row-1")
+                th.bg-slate-50.border-r.border-b.border-slate-200
+                
+                - occupied_slots_for_this_row1 = Hash.new(false)
+                - @schedule.time_slots.each do |time_str|
+                  - current_absolute_slot = to_slot_index(time_str)
+                  
+                  - unless occupied_slots_for_this_row1[current_absolute_slot]
+                    - reservations_at_slot = @schedule.reservations_map[current_absolute_slot]
+                    - reservation_to_display = reservations_at_slot.present? ? reservations_at_slot[0] : nil
+                    - condition_met = reservation_to_display.present? && (to_slot_index(reservation_to_display.start_at) == current_absolute_slot)
 
-.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
-  = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+                    - if condition_met
+                      - res = reservation_to_display
+                      - displayed_in_row1_ids << res.id
+                      - start_s = to_slot_index(res.start_at)
+                      - end_s = to_slot_index(res.end_at)
+                      - col_span = end_s - start_s
+
+                      - if col_span > 0
+                        - (start_s + 1...end_s).each do |slot_to_mark|
+                          - occupied_slots_for_this_row1[slot_to_mark] = true
+
+                        = render 'reservation_row', reservation: res, colspan: col_span
+                      - else
+                        td.border-r.border-b.border-slate-100.bg-white &nbsp;
+                    
+                    - else
+                      td.border-r.border-b.border-slate-100.bg-white.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: @schedule.date.strftime("%Y-%m-%d"), time_str: time_str)}'")
+                        .w-full.h-full.py-4
+
+              - should_display_second_row_flag = @schedule.reservation_limits.values.any? { |limit_value| limit_value.to_i >= 2 }
+              - if should_display_second_row_flag
+                tr(data-testid="reservation-row-2")
+                  th.bg-slate-50.border-r.border-b.border-slate-200
+                  
+                  - occupied_slots_for_row2 = Hash.new(false)
+                  - @schedule.time_slots.each do |time_str|
+                    - current_absolute_slot = to_slot_index(time_str)
+                    
+                    - unless occupied_slots_for_row2[current_absolute_slot]
+                      - reservations_at_slot = @schedule.reservations_map[current_absolute_slot]
+                      - reservation_to_display_row2 = reservations_at_slot.present? ? reservations_at_slot.find { |res_candidate| !displayed_in_row1_ids.include?(res_candidate.id) } : nil
+                      - condition_met_row2 = reservation_to_display_row2.present? && (to_slot_index(reservation_to_display_row2.start_at) == current_absolute_slot)
+
+                      - if condition_met_row2
+                        - res = reservation_to_display_row2
+                        - start_s = to_slot_index(res.start_at)
+                        - end_s = to_slot_index(res.end_at)
+                        - col_span = end_s - start_s
+
+                        - if col_span > 0
+                          - (start_s + 1...end_s).each do |slot_to_mark|
+                            - occupied_slots_for_row2[slot_to_mark] = true
+                          
+                          = render 'reservation_row', reservation: res, colspan: col_span
+                        - else
+                          td.border-r.border-b.border-slate-100.bg-white &nbsp;
+                      
+                      - else
+                        - if @schedule.reservation_limits[current_absolute_slot].to_i >= 2
+                          td.border-r.border-b.border-slate-100.bg-white.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: @schedule.date.strftime("%Y-%m-%d"), time_str: time_str)}'")
+                            .w-full.h-full.py-4
+                        - else
+                          td.border-r.border-b.border-slate-100.bg-slate-50 &nbsp;
+
+    .mt-12.text-center
+      = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+        svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+        | スタイリストトップへ戻る

@@ -32,7 +32,7 @@ module Stylists
       @date = params[:date]
       @time_str = params[:time_str]
       @customers = User.none
-      @active_menus = current_user.menus.where(is_active: true)
+      @active_menus = current_user.menus.where(is_active: true).order(:sort_order)
       @reservation = Reservation.new
     end
 
@@ -52,7 +52,7 @@ module Stylists
       @reservation = Reservation.new
       @reservation.errors.add(:base, t('stylists.reservations.customer_required'))
       @customers = User.none
-      @active_menus = current_user.menus.where(is_active: true)
+      @active_menus = current_user.menus.where(is_active: true).order(:sort_order)
       render :new, status: :unprocessable_entity
     end
 
@@ -69,7 +69,7 @@ module Stylists
 
     def handle_validation_error
       @customers = User.none
-      @active_menus = current_user.menus.where(is_active: true)
+      @active_menus = current_user.menus.where(is_active: true).order(:sort_order)
       render :new, status: :unprocessable_entity
     end
 

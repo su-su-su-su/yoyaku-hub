@@ -1,14 +1,26 @@
 = turbo_frame_tag "customer_search_results" do
-  .customer-list(data-customer-search-target="list")
+  .customer-list.max-h-60.overflow-y-auto.pr-1(data-customer-search-target="list")
     - if customers.any?
-      - customers.limit(20).each do |customer|
-        .customer-item.p-2.border.border-gray-200.rounded.mb-2.cursor-pointer.hover:bg-blue-50(
-          data-customer-id=customer.id 
-          data-customer-name="#{customer.family_name} #{customer.given_name}"
-          data-action="click->customer-search#selectCustomer"
-        )
-          .font-medium= "#{customer.family_name} #{customer.given_name}"
-          .text-sm.text-gray-600= "#{customer.family_name_kana} #{customer.given_name_kana}"
+      .space-y-2
+        - customers.limit(20).each do |customer|
+          .customer-item.p-3.border.border-slate-100.rounded-lg.cursor-pointer.hover:bg-blue-50.hover:border-blue-200.transition-all.flex.justify-between.items-center(
+            data-customer-id=customer.id 
+            data-customer-name="#{customer.family_name} #{customer.given_name}"
+            data-action="click->customer-search#selectCustomer"
+          )
+            div
+              p.text-sm.font-bold.text-slate-700 = "#{customer.family_name} #{customer.given_name}"
+              p.text-xs.text-slate-400 = "#{customer.family_name_kana} #{customer.given_name_kana}"
+            
+            div.text-slate-300.hover:text-brand-blue
+              svg.w-5.h-5(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+
     - elsif params[:customer_search].present?
-      .text-center.text-gray-500.py-4
-        | 該当するお客様が見つかりませんでした
+      .py-8.text-center
+        p.text-sm.text-slate-500 見つかりませんでした
+        p.text-xs.text-slate-400 別のキーワードで検索してください
+    
+    - else
+      .py-4.text-center.text-xs.text-slate-400
+        | 検索してお客様を選択してください

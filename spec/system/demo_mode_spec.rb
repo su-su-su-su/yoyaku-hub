@@ -57,8 +57,8 @@ RSpec.describe 'デモモード機能' do
       visit '/stylists/dashboard?demo=stylist'
       visit edit_stylists_profile_path
 
-      fill_in '性', with: '変更後'
-      click_on '登録'
+      fill_in '姓', with: '変更後'
+      click_on '登録情報を更新する'
 
       expect(page).to have_content 'デモユーザーの情報は変更できません。'
       expect(page).to have_current_path stylists_dashboard_path, ignore_query: true
@@ -79,7 +79,7 @@ RSpec.describe 'デモモード機能' do
       visit '/customers/dashboard?demo=customer'
       visit customers_stylists_index_path
 
-      expect(page).to have_css('.stylist-item')
+      expect(page).to have_content('スタイリスト選択')
     end
   end
 
@@ -124,7 +124,7 @@ RSpec.describe 'デモモード機能' do
 
       visit customers_stylists_index_path
 
-      expect(page).to have_css('.stylist-item')
+      expect(page).to have_content('スタイリスト選択')
     end
   end
 

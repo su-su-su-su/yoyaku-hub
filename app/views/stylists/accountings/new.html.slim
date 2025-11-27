@@ -1,98 +1,108 @@
 - content_for :title, '会計処理'
 - content_for :meta_description, 'お客様の会計処理を行います。金額の変更、支払方法の選択、複数支払方法での分割払いに対応しています。'
 
-.container.mx-auto.p-4.max-w-lg
-  .mb-4.text-center
-    h1.page-title-gradient 会計処理
+.bg-slate-50.min-h-screen.py-8
+  .container.mx-auto.px-4.max-w-2xl
 
-  - if @accounting.errors.any?
-    .alert.alert-error.mb-4
-      ul
-        - @accounting.errors.full_messages.each do |message|
-          li= message
+    .text-center.mb-8
+      h1.text-2xl.font-bold.text-slate-800.mb-1 会計処理
 
-  .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden.mb-4
-    table.w-full.responsive-table
-      tbody
-        tr
-          th.md:w-1/3 来店日時
-          td= I18n.l(@reservation.start_at, format: :wday_short)
-        tr
-          th.md:w-1/3 お客様の名前
-          td
+    - if @accounting.errors.any?
+      .bg-red-50.border.border-red-200.text-red-700.px-4.py-3.rounded-xl.mb-6.text-sm
+        ul.list-disc.list-inside
+          - @accounting.errors.full_messages.each do |message|
+            li= message
+
+    .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-4.mb-6
+      .flex.items-start.justify-between
+        div
+          p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider お客様
+          p.font-bold.text-slate-800
             - if @reservation.customer.present?
-              = @reservation.customer.family_name
-              |
-              = @reservation.customer.given_name
-              |  様
+              = "#{@reservation.customer.family_name} #{@reservation.customer.given_name} 様"
             - else
-              | (情報なし)
-        tr
-          th.md:w-1/3 メニュー
-          td
-            - if @reservation.menus.any?
-              ul.space-y-1.list-none.p-0.m-0
-                - @reservation.menus.each do |menu|
-                  li
-                    = menu.name
-                    span.ml-2.text-gray-600= "¥#{menu.price}"
-            - else
-              | なし
+              | 情報なし
+        
+        div.text-right
+          p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 来店日時
+          p.font-medium.text-slate-700 = I18n.l(@reservation.start_at, format: '%m/%d %H:%M')
 
-  = form_with model: @accounting, url: stylists_accountings_path(reservation_id: @reservation.id), local: true, class: "space-y-4", data: { controller: "accounting", accounting_products: @products.to_json, accounting_menu_total_value: @accounting.total_amount } do |form|
-    .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
-      .bg-gray-100.p-3.border-b.border-gray-300
-        h2.text-lg.font-semibold.mb-0 店販商品
-      .p-3
-        p.text-sm.text-gray-600.mb-3 店販商品を購入された場合は追加してください。
-        #product-items.space-y-3 data-accounting-target="productItems"
-          / 初期状態では商品フィールドを表示しない
-        .text-center.mt-3
-          button.text-blue-600.text-sm.hover:text-blue-800 type="button" data-action="click->accounting#addProduct" + 商品を追加
+      hr.border-slate-100.my-3
 
-    .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
-      .bg-gray-100.p-3.border-b.border-gray-300
-        h2.text-lg.font-semibold.mb-0 会計金額
-      .p-4
-        p.text-sm.text-gray-600.mb-3 必要に応じて金額を変更できます。
+      div
+        p.text-xs.font-bold.text-slate-400.uppercase.tracking-wider 予約メニュー
+        .flex.flex-wrap.gap-2.mt-1
+          - if @reservation.menus.any?
+            - @reservation.menus.each do |menu|
+              span.inline-flex.items-center.bg-slate-100.text-slate-700.px-2.py-1.rounded.text-xs
+                = menu.name
+                span.ml-1.text-slate-500 = "¥#{number_with_delimiter(menu.price)}"
+          - else
+            span.text-slate-400 なし
 
-        .relative
-          span.absolute.left-3.top-1/2.transform.-translate-y-1/2.text-gray-500 ¥
-          = form.number_field :total_amount,
-              class: "border border-gray-300 rounded px-3 py-2 pl-8 w-full min-h-[44px]",
+    = form_with model: @accounting, url: stylists_accountings_path(reservation_id: @reservation.id), local: true, class: "space-y-6", data: { controller: "accounting", accounting_products: @products.to_json, accounting_menu_total_value: @accounting.total_amount } do |form|
+      
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden
+        .bg-slate-50.px-6.py-3.border-b.border-slate-100.flex.justify-between.items-center
+          h2.font-bold.text-slate-700 店販商品
+          button.text-brand-blue.text-sm.font-bold.hover:text-blue-700.flex.items-center(type="button" data-action="click->accounting#addProduct")
+            svg.w-4.h-4.mr-1(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+            | 商品追加
+
+        .p-6
+          #product-items.space-y-4(data-accounting-target="productItems")
+            p.text-sm.text-slate-400.text-center.py-2(data-accounting-target="emptyProductMessage")
+              | 商品がある場合は追加してください
+
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden
+        .bg-slate-50.px-6.py-3.border-b.border-slate-100
+          h2.font-bold.text-slate-700 会計金額
+        
+        .p-6
+          .relative
+            span.absolute.left-4.top-1/2.transform.-translate-y-1/2.text-slate-400.font-bold.text-lg ¥
+            = form.number_field :total_amount,
+              class: "input input-bordered w-full pl-10 text-xl font-bold text-slate-800 focus:ring-2 focus:ring-blue-500",
               min: 0,
               step: 1,
               required: true,
               data: { accounting_target: "totalAmount" }
+          p.text-xs.text-slate-400.mt-2.text-right ※ 手動で金額を調整できます
 
-    .border.border-gray-300.rounded-lg.bg-white.shadow-sm.overflow-hidden
-      .bg-gray-100.p-3.border-b.border-gray-300
-        h2.text-lg.font-semibold.mb-0 支払方法
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.overflow-hidden
+        .bg-slate-50.px-6.py-3.border-b.border-slate-100.flex.justify-between.items-center
+          h2.font-bold.text-slate-700 支払方法
+          button.text-brand-blue.text-sm.font-bold.hover:text-blue-700.flex.items-center(type="button" data-action="click->accounting#addPaymentMethod")
+            svg.w-4.h-4.mr-1(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+            | 支払追加
 
-      #payment-methods.space-y-3 data-accounting-target="paymentMethods"
-        = form.fields_for :accounting_payments do |payment_form|
-          .payment-method.p-3.border.border-gray-200.rounded-lg data-payment-index="0"
-            .grid.grid-cols-1.md:grid-cols-2.gap-3
-              .form-group
-                = payment_form.label :payment_method, "支払方法", class: "block text-sm font-medium text-gray-700 mb-1"
-                = payment_form.select :payment_method, options_for_select([['現金', 'cash'], ['クレジットカード', 'credit_card'], ['QR決済', 'digital_pay'], ['その他', 'other']]), { prompt: '支払方法を選択' }, { class: "border border-gray-300 rounded px-3 py-2 w-full min-h-[44px]", required: true, title: "お客様の支払方法を選択してください" }
-              .form-group
-                = payment_form.label :amount, "支払金額", class: "block text-sm font-medium text-gray-700 mb-1"
-                .relative
-                  span.absolute.left-3.top-1/2.transform.-translate-y-1/2.text-gray-500 ¥
-                  = payment_form.number_field :amount,
-                      class: "border border-gray-300 rounded px-3 py-2 pl-8 w-full min-h-[44px]",
-                      min: 0,
-                      step: 1,
-                      value: @accounting.total_amount,
-                      required: true
-            .text-right.mt-2
-              button.text-red-600.text-sm.hover:text-red-800 type="button" data-action="click->accounting#removePaymentMethod" この支払方法を削除
+        .p-6
+          #payment-methods.space-y-4(data-accounting-target="paymentMethods")
+            = form.fields_for :accounting_payments do |payment_form|
+              .payment-method.p-4.bg-slate-50.border.border-slate-200.rounded-xl.relative(data-payment-index="0")
+                .grid.grid-cols-1.gap-4
+                  div
+                    label.block.text-xs.font-bold.text-slate-500.mb-1 支払方法
+                    = payment_form.select :payment_method, options_for_select([['現金', 'cash'], ['クレジットカード', 'credit_card'], ['QR決済', 'digital_pay'], ['その他', 'other']]), { prompt: '選択してください' }, { class: "select select-bordered w-full text-sm", required: true }
+                  
+                  div
+                    label.block.text-xs.font-bold.text-slate-500.mb-1 支払金額
+                    .relative
+                      span.absolute.left-3.top-1/2.transform.-translate-y-1/2.text-slate-400 ¥
+                      = payment_form.number_field :amount,
+                        class: "input input-bordered w-full pl-7 font-medium",
+                        min: 0,
+                        step: 1,
+                        value: @accounting.total_amount,
+                        required: true
+                
+                button.absolute.-top-2.-right-2.bg-white.text-red-400.hover:text-red-600.rounded-full.p-1.shadow-sm.border.border-slate-200(type="button" data-action="click->accounting#removePaymentMethod" title="削除")
+                  svg.w-4.h-4(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
 
-        .text-center.mt-3
-          button.text-blue-600.text-sm.hover:text-blue-800 type="button" data-action="click->accounting#addPaymentMethod" + 支払方法を追加
-
-    .flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4.mt-6
-      = form.submit "会計完了", class: "btn-primary w-full md:w-auto"
-      = link_to "戻る", stylists_reservation_path(@reservation), class: "btn-gray w-full md:w-auto text-center"
-
+      / アクションボタン
+      .flex.flex-col.gap-3.mt-8
+        = form.submit "会計を完了する", class: "btn bg-brand-blue text-white hover:bg-blue-700 border-none w-full py-3 h-auto shadow-lg text-lg"
+        = link_to "キャンセル", stylists_reservation_path(@reservation), class: "btn btn-ghost text-slate-500 w-full"

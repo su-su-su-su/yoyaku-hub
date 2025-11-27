@@ -16,7 +16,7 @@ RSpec.describe 'Stylists::Products' do
       end
 
       it '商品が登録されていないメッセージが表示される' do
-        expect(page).to have_content('まだ商品が登録されていません')
+        expect(page).to have_content('商品が登録されていません')
       end
 
       it '新規商品登録リンクが表示される' do
@@ -62,15 +62,15 @@ RSpec.describe 'Stylists::Products' do
 
     it '必要な入力フィールドが表示される' do
       expect(page).to have_field('商品名')
-      expect(page).to have_field('デフォルト価格')
+      expect(page).to have_field('価格（税込）')
       expect(page).to have_css('.toggle.toggle-primary')
-      expect(page).to have_content('掲載する')
+      expect(page).to have_content('商品一覧に掲載する')
     end
 
     context 'with valid information' do
       it '商品が登録される' do
         fill_in '商品名', with: 'ヘアオイル'
-        fill_in 'デフォルト価格', with: '4500'
+        fill_in '価格（税込）', with: '4500'
 
         click_on '登録する'
 
@@ -102,15 +102,15 @@ RSpec.describe 'Stylists::Products' do
 
     it '現在の情報が表示される' do
       expect(page).to have_field('商品名', with: 'ワックス')
-      expect(page).to have_field('デフォルト価格', with: '2000')
+      expect(page).to have_field('価格（税込）', with: '2000')
       expect(page).to have_css('.toggle.toggle-primary')
-      expect(page).to have_content('掲載する')
+      expect(page).to have_content('商品一覧に掲載する')
     end
 
     context 'when updating information' do
       it '商品情報が更新される' do
         fill_in '商品名', with: 'ヘアワックス'
-        fill_in 'デフォルト価格', with: '2500'
+        fill_in '価格（税込）', with: '2500'
         # トグルをクリックして非掲載にする
         find('.toggle.toggle-primary').click
 

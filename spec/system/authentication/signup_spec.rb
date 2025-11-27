@@ -21,10 +21,16 @@ RSpec.describe 'User signup' do
 
     it 'displays errors with invalid information' do
       visit new_customer_registration_path
+
+      # 有効なメールアドレスと短いパスワードを入力
+      fill_in 'user_email', with: 'test@example.com'
+      fill_in 'user_password', with: 'short'
+      fill_in 'user_password_confirmation', with: 'short'
+
       click_on '登録'
 
-      expect(page).to have_content('メールアドレスを入力してください')
-      expect(page).to have_content('パスワードを入力してください')
+      # パスワードが8文字未満のためエラーが表示される
+      expect(page).to have_content('パスワードは8文字以上で入力してください')
     end
   end
 

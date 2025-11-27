@@ -1,69 +1,95 @@
 - content_for :title, "#{@start_date.strftime('%Y年%m月%d日')}〜#{(@start_date + 6.days).strftime('%m月%d日')}の予約表"
 - content_for :meta_description, "#{@start_date.strftime('%Y年%m月%d日')}〜#{(@start_date + 6.days).strftime('%m月%d日')}の予約状況を確認できます。"
 
-.px-4.mt-6.flex.justify-between.items-center
-  h1.page-title-gradient.subtle-gradient-look 週間予約表
-  = link_to "日別表示", stylists_schedules_path(date: @start_date.strftime("%Y-%m-%d")), class: 'px-3 py-1 hover:bg-gray-50 active:bg-gray-100 border rounded'
+.bg-slate-50.min-h-screen.py-4.md:py-8
+  .container.mx-auto.px-0.md:px-4.max-w-full
 
+    .flex.flex-row.justify-between.items-center.mb-6.gap-4.px-4.md:px-0
+      h1.text-xl.md:text-2xl.font-bold.text-slate-800 週間予約表
 
-.grid.grid-cols-3.items-center.mb-4.px-2.mt-4
-  .text-left
-    = link_to "前の週へ", stylists_weekly_schedules_path(start_date: (@start_date - 7.days).strftime("%Y-%m-%d")), class: "px-3 py-2 border rounded text-sm md:text-base inline-block hover:bg-gray-50 active:bg-gray-100"
+      = link_to stylists_schedules_path(date: @start_date.strftime("%Y-%m-%d")), class: 'btn btn-sm md:btn-md bg-white text-slate-600 border-slate-300 hover:bg-slate-50 hover:text-brand-blue shadow-sm'
+        svg.w-4.h-4.mr-1.md:mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+        | 日別表示へ
 
-  .text-center
-    p.text-lg.font-bold.mt-1= @start_date.strftime("%Y年")
-    p.whitespace-nowrap.text-sm.md:text-base= "#{@start_date.strftime("%-m月%-d日")}〜#{(@start_date + 6.days).strftime("%-m月%-d日")}"
+    .px-4.md:px-0
+      .bg-white.rounded-xl.shadow-sm.border.border-slate-100.p-2.mb-6.flex.items-center.justify-between.max-w-lg.mx-auto
+        = link_to stylists_weekly_schedules_path(start_date: (@start_date - 7.days).strftime("%Y-%m-%d")), class: "btn btn-ghost btn-sm px-2 md:px-3 text-slate-500 flex-shrink-0"
+          svg.w-5.h-5(fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
+          span.hidden.md:inline.ml-1 前の週
 
-  .text-right
-    = link_to "次の週へ", stylists_weekly_schedules_path(start_date: (@start_date + 7.days).strftime("%Y-%m-%d")), class: "px-3 py-2 border rounded text-sm md:text-base inline-block hover:bg-gray-50 active:bg-gray-100"
+        .flex-1.text-center
+          .font-bold.text-sm.md:text-lg.text-slate-800.whitespace-nowrap
+            = "#{@start_date.strftime("%-m/%-d")} 〜 #{(@start_date + 6.days).strftime("%-m/%-d")}"
 
-table.border.border-gray-300.border-collapse.mt-4.w-full style="table-layout: fixed;"
-  thead
-    tr.bg-gray-100
-      th.border.border-gray-300.pl-2.pr-1.py-2.text-sm.md:text-base 時刻
-      - @dates.each do |date|
-        - wday = date.wday
-        - wday = 7 if HolidayJp.holiday?(date)
-        th.border.border-gray-300.px-2.py-2.text-sm.md:text-base class="wday-#{wday}"
-          p.font-bold.mb-1
-            = "#{date.day} (#{%w[日 月 火 水 木 金 土][date.wday]})"
-  tbody
-    - occupied_slots_by_date = {}
-    - @dates.each_with_index do |date, index|
-      - occupied_slots_by_date[index] = Hash.new(false)
-    - @time_slots.each_with_index do |time_str, time_index|
-      tr style="height: 56px;"
-        th.border.border-gray-300.pl-1.pr-2.py-2.text-right.text-sm.md:text-base= time_str
-        - current_slot = to_slot_index(time_str)
-        - @dates.each_with_index do |date, date_index|
-          - schedule = @schedules[date_index]
-          - if occupied_slots_by_date[date_index][current_slot]
-          - else
-            - if schedule.holiday?
-              td.border.border-gray-300.text-center.px-1.py-1.bg-gray-200
-            - elsif schedule.working_hour.nil?
-              td.border.border-gray-300.text-center.px-1.py-1.bg-gray-200
-            - else
-              - unless schedule.time_slots.include?(time_str)
-                td.border.border-gray-300.text-center.px-1.py-1.bg-gray-200
-              - else
-                - reservations_at_slot = schedule.reservations_map[current_slot]
-                - reservation = reservations_at_slot.present? ? reservations_at_slot[0] : nil
-                - if reservation.present? && to_slot_index(reservation.start_at) == current_slot
-                  - start_slot = to_slot_index(reservation.start_at)
-                  - end_slot = to_slot_index(reservation.end_at)
-                  - rowspan_count = end_slot - start_slot
-                  - if rowspan_count > 1
-                    - (start_slot + 1...end_slot).each do |slot_to_mark|
-                      - occupied_slots_by_date[date_index][slot_to_mark] = true
-                    td.border.border-gray-300.text-center.px-1.py-1(rowspan=rowspan_count style="height: #{rowspan_count * 50}px; vertical-align: top;")
-                      = render 'weekly_reservation_card', reservation: reservation
+        = link_to stylists_weekly_schedules_path(start_date: (@start_date + 7.days).strftime("%Y-%m-%d")), class: "btn btn-ghost btn-sm px-2 md:px-3 text-slate-500 flex-shrink-0"
+          span.hidden.md:inline.mr-1 次の週
+          svg.w-5.h-5(fill="none" viewBox="0 0 24 24" stroke="currentColor")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+
+    .bg-white.md:rounded-xl.shadow-sm.border-y.md:border.border-slate-200.overflow-x-auto
+      .min-w-[800px]
+        table.w-full.border-collapse.table-fixed
+          thead
+            tr.bg-slate-50
+              th.border-b.border-r.border-slate-200.w-16.py-3.sticky.left-0.bg-slate-50.z-10
+              - @dates.each do |date|
+                - wday = date.wday
+                - wday = 7 if HolidayJp.holiday?(date)
+                th.border-b.border-r.border-slate-200.p-2.text-center class="wday-#{wday} last:border-r-0"
+                  .flex.flex-col.items-center
+                    span.text-xs.font-bold.uppercase class="#{'text-red-500' if wday == 0 || wday == 7} #{'text-blue-500' if wday == 6} text-slate-500"
+                      = %w[日 月 火 水 木 金 土][date.wday]
+                    span.text-lg.font-bold.text-slate-800 class="#{'text-red-500' if wday == 0 || wday == 7} #{'text-blue-500' if wday == 6}"
+                      = date.day
+
+          tbody
+            - occupied_slots_by_date = {}
+            - @dates.each_with_index do |date, index|
+              - occupied_slots_by_date[index] = Hash.new(false)
+            
+            - @time_slots.each_with_index do |time_str, time_index|
+              tr.group(style="height: 56px;")
+                th.border-b.border-r.border-slate-200.text-xs.text-slate-500.font-medium.text-center.align-middle.sticky.left-0.bg-white.z-10.group-hover:bg-slate-50
+                  = time_str
+                
+                - current_slot = to_slot_index(time_str)
+                - @dates.each_with_index do |date, date_index|
+                  - schedule = @schedules[date_index]
+                  
+                  / 既に予約で埋まっているセルはスキップ（rowspan処理のため）
+                  - if occupied_slots_by_date[date_index][current_slot]
                   - else
-                    td.border.border-gray-300.text-center.px-1.py-1
-                      = render 'weekly_reservation_card', reservation: reservation
-                - else
-                  td.border.border-gray-300.text-center.px-1.py-1.cursor-pointer.hover:bg-blue-50.transition-colors.duration-200(onclick="window.location='#{new_stylists_customer_reservation_path(date: date.strftime("%Y-%m-%d"), time_str: time_str)}'")
-                    .py-2
+                    / 休業日 or 営業時間外
+                    - if schedule.holiday? || schedule.working_hour.nil? || !schedule.time_slots.include?(time_str)
+                      td.border-b.border-r.border-slate-200.bg-slate-50.relative
+                        
+                    - else
+                      / 予約があるかチェック
+                      - reservations_at_slot = schedule.reservations_map[current_slot]
+                      - reservation = reservations_at_slot.present? ? reservations_at_slot[0] : nil
+                      
+                      - if reservation.present? && to_slot_index(reservation.start_at) == current_slot
+                        - start_slot = to_slot_index(reservation.start_at)
+                        - end_slot = to_slot_index(reservation.end_at)
+                        - rowspan_count = end_slot - start_slot
+                        
+                        / 予約枠の確保処理
+                        - if rowspan_count > 1
+                          - (start_slot + 1...end_slot).each do |slot_to_mark|
+                            - occupied_slots_by_date[date_index][slot_to_mark] = true
+                        
+                        td.border-b.border-r.border-slate-200.p-1.align-top(rowspan=rowspan_count class="last:border-r-0")
+                          = render 'weekly_reservation_card', reservation: reservation
+                      
+                      - else
+                        / 空き枠 (クリックで予約作成へ)
+                        td.border-b.border-r.border-slate-200.bg-white.hover:bg-blue-50.transition-colors.cursor-pointer.last:border-r-0(onclick="window.location='#{new_stylists_customer_reservation_path(date: date.strftime("%Y-%m-%d"), time_str: time_str)}'")
+                          .w-full.h-full
 
-.mt-6.px-6.flex.flex-col.md:flex-row.justify-center.items-center.space-y-4.md:space-y-0.md:space-x-4
-  = link_to "スタイリストトップページへ", stylists_dashboard_path, class: "text-center bg-white border border-blue-500 text-blue-500 font-semibold py-3 px-6 rounded-lg min-h-[48px] flex items-center justify-center w-full md:w-auto"
+    .mt-12.text-center
+      = link_to stylists_dashboard_path, class: "inline-flex items-center text-slate-500 hover:text-brand-blue font-medium transition-colors p-4"
+        svg.w-4.h-4.mr-2(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18")
+        | スタイリストトップへ戻る

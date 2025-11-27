@@ -43,10 +43,10 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
     context 'with basic accounting process' do # rubocop:disable RSpec/MultipleMemoizedHelpers
       it 'can process payment with cash' do
         visit stylists_reservation_path(reservation)
-        click_on '会計'
+        click_on '会計へ進む'
 
         expect(page).to have_content('会計処理')
-        expect(page).to have_content('山田太郎 様')
+        expect(page).to have_content('山田 太郎 様')
         expect(page).to have_content('カット')
         expect(page).to have_content('カラー')
 
@@ -57,7 +57,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           expect(find_field('accounting[accounting_payments_attributes][0][amount]').value).to eq '8000'
         end
 
-        click_on '会計完了'
+        click_on '会計を完了する'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
         expect(page).to have_current_path(stylists_reservation_path(reservation))
@@ -80,7 +80,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '7000'
         end
 
-        click_on '会計完了'
+        click_on '会計を完了する'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
 
@@ -100,14 +100,14 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '5000'
         end
 
-        click_on '+ 支払方法を追加'
+        click_on '支払追加'
 
         within all('.payment-method').last do
           select 'クレジットカード', from: find('select')['name']
           fill_in find('input[type="number"]')['name'], with: '3000'
         end
 
-        click_on '会計完了'
+        click_on '会計を完了する'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
 
@@ -129,19 +129,19 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '3000'
         end
 
-        click_on '+ 支払方法を追加'
+        click_on '支払追加'
         within all('.payment-method').last do
           select 'クレジットカード', from: find('select')['name']
           fill_in find('input[type="number"]')['name'], with: '3000'
         end
-        click_on '+ 支払方法を追加'
+        click_on '支払追加'
 
         within all('.payment-method').last do
           select 'QR決済', from: find('select')['name']
           fill_in find('input[type="number"]')['name'], with: '2000'
         end
 
-        click_on '会計完了'
+        click_on '会計を完了する'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が完了しました')
 
@@ -152,11 +152,11 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
       it 'can remove payment methods', :js do
         visit new_stylists_accounting_path(id: reservation.id)
 
-        click_on '+ 支払方法を追加'
+        click_on '支払追加'
         expect(page).to have_css('.payment-method', count: 2)
 
         within all('.payment-method').last do
-          click_on 'この支払方法を削除'
+          find('button[data-action="click->accounting#removePaymentMethod"]').click
         end
 
         expect(page).to have_css('.payment-method', count: 1)
@@ -172,7 +172,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '5000'
         end
 
-        click_on '会計完了'
+        click_on '会計を完了する'
 
         expect(page).to have_content('支払い合計（¥5000）が会計金額（¥8000）と一致しません')
         expect(page).to have_current_path(%r{accountings/new})
@@ -188,7 +188,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
         select_element = find('select[name="accounting[accounting_payments_attributes][0][payment_method]"]')
         expect(select_element['required']).to be_present
 
-        expect(page).to have_button('会計完了')
+        expect(page).to have_button('会計を完了する')
       end
 
       it 'shows error when payment amount is zero or less' do
@@ -199,7 +199,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '0'
         end
 
-        click_on '会計完了'
+        click_on '会計を完了する'
 
         expect(page).to have_content('支払い金額は0より大きい値を入力してください')
       end
@@ -241,7 +241,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
         visit edit_stylists_accounting_path(accounting)
 
         expect(page).to have_content('会計修正')
-        expect(page).to have_content('山田太郎 様')
+        expect(page).to have_content('山田 太郎 様')
 
         fill_in 'accounting[total_amount]', with: '7000'
 
@@ -253,7 +253,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][1][amount]', with: '3000'
         end
 
-        click_on '会計修正完了'
+        click_on '修正内容を保存'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
         expect(page).to have_current_path(stylists_reservation_path(reservation))
@@ -270,7 +270,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           select 'QR決済', from: 'accounting[accounting_payments_attributes][0][payment_method]'
         end
 
-        click_on '会計修正完了'
+        click_on '修正内容を保存'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
 
@@ -283,7 +283,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
       it 'can add payment methods and modify', :js do
         visit edit_stylists_accounting_path(accounting)
 
-        click_on '+ 支払方法を追加'
+        click_on '支払追加'
 
         within '.payment-method[data-payment-index="0"]' do
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '3000'
@@ -298,7 +298,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][2][amount]', with: '2000'
         end
 
-        click_on '会計修正完了'
+        click_on '修正内容を保存'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
 
@@ -311,14 +311,14 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
         visit edit_stylists_accounting_path(accounting)
 
         within '.payment-method[data-payment-index="1"]' do
-          click_on 'この支払方法を削除'
+          click_button class: 'absolute'
         end
 
         within '.payment-method[data-payment-index="0"]' do
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '8000'
         end
 
-        click_on '会計修正完了'
+        click_on '修正内容を保存'
 
         expect(page).to have_css('#toast-container .toast-message', text: '会計が修正されました')
 
@@ -336,7 +336,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
           fill_in 'accounting[accounting_payments_attributes][0][amount]', with: '3000'
         end
 
-        click_on '会計修正完了'
+        click_on '修正内容を保存'
 
         expect(page).to have_content('支払い合計（¥6000）が会計金額（¥8000）と一致しません')
         expect(page).to have_current_path(/accountings.*edit/)
@@ -362,24 +362,24 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
       visit stylists_accounting_path(accounting)
 
       expect(page).to have_content('会計詳細')
-      expect(page).to have_content('山田太郎 様')
+      expect(page).to have_content('山田 太郎 様')
       expect(page).to have_content('¥8,000')
 
       expect(page).to have_content('現金')
-      expect(page).to have_content('¥3000')
+      expect(page).to have_content('¥3,000')
 
       expect(page).to have_content('クレジットカード')
-      expect(page).to have_content('¥3000')
+      expect(page).to have_content('¥3,000')
 
       expect(page).to have_content('QR決済')
-      expect(page).to have_content('¥2000')
+      expect(page).to have_content('¥2,000')
     end
   end
 
   describe 'navigation' do # rubocop:disable RSpec/MultipleMemoizedHelpers
     it 'can return to reservation details with back button' do
       visit new_stylists_accounting_path(id: reservation.id)
-      click_on '戻る'
+      click_on 'キャンセル'
       expect(page).to have_current_path(stylists_reservation_path(reservation))
     end
 
@@ -388,7 +388,7 @@ RSpec.describe 'Stylists::Accountings' do # rubocop:disable RSpec/MultipleMemoiz
 
       it 'can return to reservation details with back button' do
         visit edit_stylists_accounting_path(accounting)
-        click_on '戻る'
+        click_on 'キャンセル'
         expect(page).to have_current_path(stylists_reservation_path(reservation))
       end
     end

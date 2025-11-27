@@ -4,6 +4,8 @@ require 'rails_helper'
 
 # rubocop:disable Metrics/BlockLength
 RSpec.describe 'Customer Reservation History' do
+  include ActionView::Helpers::NumberHelper
+
   let(:customer) { create(:customer) }
   let(:stylist) { create(:stylist) }
   let(:menu) { create(:menu, stylist: stylist, is_active: true) }
@@ -123,8 +125,8 @@ RSpec.describe 'Customer Reservation History' do
       before { visit_reservation_history }
 
       it 'displays empty state messages' do
-        expect(page).to have_content('現在の予約はありません')
-        expect(page).to have_content('過去の予約は存在しません')
+        expect(page).to have_content('現在予定されている予約はありません')
+        expect(page).to have_content('過去の予約履歴はありません')
       end
     end
 
@@ -140,7 +142,7 @@ RSpec.describe 'Customer Reservation History' do
       it 'displays upcoming reservations in current section' do
         expect(page).to have_content('現在の予約')
         expect(page).to have_content(future_reservation.stylist.family_name)
-        expect(page).to have_content(I18n.l(future_reservation.start_at, format: :wday_short))
+        expect(page).to have_content(future_reservation.start_at.strftime('%-m月%-d日'))
         expect(page).to have_content(menu.name)
       end
     end
@@ -159,9 +161,9 @@ RSpec.describe 'Customer Reservation History' do
 
         expect(page).to have_content('過去の予約')
         expect(page).to have_content(past_reservation.stylist.family_name)
-        expect(page).to have_content(I18n.l(past_reservation.start_at, format: :wday_short))
+        expect(page).to have_content(past_reservation.start_at.strftime('%-m月%-d日'))
         expect(page).to have_content(canceled_reservation.stylist.family_name)
-        expect(page).to have_content(I18n.l(canceled_reservation.start_at, format: :wday_short))
+        expect(page).to have_content(canceled_reservation.start_at.strftime('%-m月%-d日'))
       end
     end
   end
@@ -178,14 +180,14 @@ RSpec.describe 'Customer Reservation History' do
       it 'displays reservation details correctly' do
         expect(page).to have_content('予約詳細')
         expect(page).to have_content("#{stylist.family_name} #{stylist.given_name}")
-        expect(page).to have_content(I18n.l(future_reservation.start_at, format: :wday_short))
+        expect(page).to have_content(future_reservation.start_at.strftime('%Y年%-m月%-d日'))
         expect(page).to have_content(menu.name)
-        expect(page).to have_content("#{menu.duration} 分")
-        expect(page).to have_content("¥#{menu.price}")
+        expect(page).to have_content("#{menu.duration}分")
+        expect(page).to have_content("¥#{number_with_delimiter(menu.price)}")
       end
 
       it 'shows cancel button for upcoming reservations' do
-        expect(page).to have_link('キャンセル')
+        expect(page).to have_link('予約をキャンセルする')
       end
     end
 
@@ -195,22 +197,22 @@ RSpec.describe 'Customer Reservation History' do
       before do
         visit_reservation_history
 
-        within all('.border.rounded-lg.bg-white').last do
-          click_on '詳細'
+        within '.space-y-4', match: :first do
+          click_on '詳細', match: :first
         end
       end
 
       it 'displays reservation details correctly' do
         expect(page).to have_content('予約詳細')
         expect(page).to have_content("#{stylist.family_name} #{stylist.given_name}")
-        expect(page).to have_content(I18n.l(past_reservation.start_at, format: :wday_short))
+        expect(page).to have_content(past_reservation.start_at.strftime('%Y年%-m月%-d日'))
         expect(page).to have_content(menu.name)
-        expect(page).to have_content("#{menu.duration} 分")
-        expect(page).to have_content("¥#{menu.price}")
+        expect(page).to have_content("#{menu.duration}分")
+        expect(page).to have_content("¥#{number_with_delimiter(menu.price)}")
       end
 
       it 'does not show cancel button for past reservations' do
-        expect(page).to have_no_link('キャンセル')
+        expect(page).to have_no_link('予約をキャンセルする')
       end
     end
   end
@@ -225,24 +227,24 @@ RSpec.describe 'Customer Reservation History' do
 
     it 'shows a confirmation dialog when cancel is clicked' do
       accept_confirm('本当にキャンセルしますか？') do
-        click_link_or_button 'キャンセル'
+        click_link_or_button '予約をキャンセルする'
       end
 
       expect(page).to have_current_path(customers_reservations_path, ignore_query: true)
     end
 
     it 'moves the reservation to past reservations after cancellation' do
+      expect(page).to have_link('予約をキャンセルする')
+
       page.accept_confirm do
-        click_link_or_button 'キャンセル'
+        click_link_or_button '予約をキャンセルする'
       end
 
       expect(page).to have_current_path(customers_reservations_path, ignore_query: true)
-      expect(page).to have_content(I18n.t('stylists.reservations.cancelled'))
+      expect(page).to have_content('現在予定されている予約はありません')
 
       expect(page).to have_content(stylist.family_name)
-      expect(page).to have_content(I18n.l(future_reservation.start_at, format: :wday_short))
-
-      expect(page).to have_content('現在の予約はありません')
+      expect(page).to have_content(future_reservation.start_at.strftime('%-m月%-d日'))
     end
   end
 
@@ -257,10 +259,10 @@ RSpec.describe 'Customer Reservation History' do
       click_on '詳細', match: :first
       expect(page).to have_content('予約詳細')
 
-      click_on '戻る'
+      click_on '予約一覧に戻る'
       expect(page).to have_content('予約履歴')
 
-      click_on '戻る'
+      click_on 'マイページに戻る'
       expect(page).to have_current_path(customers_dashboard_path)
     end
   end

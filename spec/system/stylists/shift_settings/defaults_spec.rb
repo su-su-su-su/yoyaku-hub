@@ -16,10 +16,10 @@ RSpec.describe 'Stylist Default Shift Settings' do
     it 'displays the default settings form correctly' do
       visit settings_path
 
-      expect(page).to have_content('シフト設定')
-      expect(page).to have_content('営業時間')
-      expect(page).to have_content('休業日')
-      expect(page).to have_content('受付可能数')
+      expect(page).to have_content('シフト・受付設定')
+      expect(page).to have_content('営業時間の設定')
+      expect(page).to have_content('休業日の設定')
+      expect(page).to have_content('予約枠の上限設定')
 
       form = find("form[action='#{update_defaults_path}'][method='post']")
       expect(form).to be_present
@@ -33,8 +33,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       end
       expect(form).to have_select('default_settings[reservation_limit][max_reservations]')
 
-      expect(form).to have_button('シフトの基本情報を保存')
-      expect(form).to have_no_button('設定')
+      expect(form).to have_button('基本設定を保存する')
     end
 
     it 'prevents non-stylist users from accessing the settings page' do
@@ -69,7 +68,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
 
       select '2', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on 'シフトの基本情報を保存'
+      click_on '基本設定を保存する'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
@@ -144,7 +143,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
 
       select '0', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on 'シフトの基本情報を保存'
+      click_on '基本設定を保存する'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
@@ -212,7 +211,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       select '16:30', from: 'default_settings[working_hour][holiday_end_time]'
       select '1', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on 'シフトの基本情報を保存'
+      click_on '基本設定を保存する'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 
@@ -265,7 +264,7 @@ RSpec.describe 'Stylist Default Shift Settings' do
       select '16:30', from: 'default_settings[working_hour][holiday_end_time]'
       select '2', from: 'default_settings[reservation_limit][max_reservations]'
 
-      click_on 'シフトの基本情報を保存'
+      click_on '基本設定を保存する'
 
       expect(page).to have_content(I18n.t('stylists.shift_settings.defaults.update_success'))
 

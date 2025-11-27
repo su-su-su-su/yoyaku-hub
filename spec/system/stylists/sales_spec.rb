@@ -135,8 +135,6 @@ RSpec.describe 'Stylists::Sales' do
 
         expect(page).to have_content('技術平均単価')
         expect(page).to have_content('¥7,500') # 15000 / 2
-
-        expect(page).to have_content('日平均売上')
       end
 
       it 'カテゴリー別売上が表示される' do
@@ -147,26 +145,29 @@ RSpec.describe 'Stylists::Sales' do
       end
 
       it '前月・次月へのナビゲーションができる' do
-        click_on '前月へ'
+        # 前月へのリンクをクリック（アイコンボタン）
+        page.all('a').find { |a| a[:href]&.include?("month=#{prev_month_date.month}") }.click
 
         # ページ遷移を待つ - 前月の年月がURLに含まれることを確認
         expect(page).to have_current_path(stylists_sales_path(year: prev_month_date.year, month: prev_month_date.month))
 
         # ページ遷移後に要素を取得
-        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+        within '[data-controller="sales-date-picker"]' do
           selects = all('select')
           expect(selects[0].value).to eq(prev_month_date.year.to_s)
           expect(selects[1].value).to eq(prev_month_date.month.to_s)
         end
         expect(page).to have_content('¥3,000') # 前月の総売上
 
-        click_on '次月へ'
+        # 次月へのリンクをクリック（アイコンボタン）
+        Date.new(current_year, current_month, 1)
+        page.all('a').find { |a| a[:href]&.include?("month=#{current_month}") && a[:href].include?("year=#{current_year}") }.click
 
         # ページ遷移を待つ - 現在の年月がURLに含まれることを確認
         expect(page).to have_current_path(stylists_sales_path(year: current_year, month: current_month))
 
         # ページ遷移後に要素を取得
-        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+        within '[data-controller="sales-date-picker"]' do
           selects = all('select')
           expect(selects[0].value).to eq(current_year.to_s)
           expect(selects[1].value).to eq(current_month.to_s)
@@ -194,13 +195,11 @@ RSpec.describe 'Stylists::Sales' do
 
         expect(page).to have_content('技術平均単価')
         expect(page).to have_content('¥0')
-
-        expect(page).to have_content('日平均売上')
-        expect(page).to have_content('¥0')
       end
 
-      it 'カテゴリー別売上が表示されない' do
-        expect(page).to have_no_content('カテゴリー別売上')
+      it 'カテゴリー別売上セクションが表示される' do
+        expect(page).to have_content('カテゴリー別売上')
+        expect(page).to have_content('データがありません')
       end
     end
 
@@ -228,8 +227,8 @@ RSpec.describe 'Stylists::Sales' do
       end
 
       it '年と月のドロップダウンが表示される' do
-        # CSVフォーマット選択を含めて3つのドロップダウンがある
-        expect(page.all('select').count).to eq(3)
+        # 年と月の2つのドロップダウンがある
+        expect(page.all('select').count).to eq(2)
       end
 
       it '現在の年月が選択されている' do
@@ -257,7 +256,7 @@ RSpec.describe 'Stylists::Sales' do
 
       it 'ドロップダウンで年月を変更できる', :js do
         # 2024年5月を選択
-        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+        within '[data-controller="sales-date-picker"]' do
           # 年を選択
           find('select[data-sales-date-picker-target="year"]').select('2024年')
           # 少し待機してから月を選択
@@ -269,7 +268,7 @@ RSpec.describe 'Stylists::Sales' do
         expect(page).to have_current_path(%r{/stylists/sales\?.*year=2024.*month=5|/stylists/sales\?.*month=5.*year=2024}, wait: 5)
 
         # 遷移後に新しい要素を取得
-        within '.flex.items-center.gap-2[data-controller="sales-date-picker"]' do
+        within '[data-controller="sales-date-picker"]' do
           year_select = find('select[data-sales-date-picker-target="year"]')
           month_select = find('select[data-sales-date-picker-target="month"]')
           expect(year_select.value).to eq('2024')
@@ -344,25 +343,23 @@ RSpec.describe 'Stylists::Sales' do
     end
 
     it 'CSVエクスポートフォームが表示される' do
-      expect(page).to have_select('format_type')
+      expect(page).to have_content('データ出力')
       expect(page).to have_button('CSVダウンロード')
     end
 
     it 'フォーマット選択のオプションが正しく表示される' do
-      format_select = find('select[name="format_type"]')
-      options = format_select.all('option').map(&:text)
-
-      expect(options).to eq(['標準形式 (汎用)', 'マネーフォワード形式', 'freee形式'])
+      expect(page).to have_content('標準形式')
+      expect(page).to have_content('マネーフォワード形式')
+      expect(page).to have_content('freee形式')
     end
 
     it 'デフォルトで標準形式が選択されている' do
-      format_select = find('select[name="format_type"]')
-      expect(format_select.value).to eq('standard')
+      expect(page).to have_checked_field('format_type_standard')
     end
 
     context '標準形式のCSVエクスポート' do
       it 'CSVファイルをダウンロードできる' do
-        select '標準形式 (汎用)', from: 'format_type'
+        choose 'format_type_standard'
 
         # フォームの送信をテスト（実際のダウンロードはシステムテストでは検証困難）
         expect do
@@ -376,7 +373,7 @@ RSpec.describe 'Stylists::Sales' do
 
     context 'マネーフォワード形式のCSVエクスポート' do
       it 'CSVファイルをダウンロードできる' do
-        select 'マネーフォワード形式', from: 'format_type'
+        choose 'format_type_moneyforward'
 
         expect do
           click_button 'CSVダウンロード'
@@ -388,7 +385,7 @@ RSpec.describe 'Stylists::Sales' do
 
     context 'freee形式のCSVエクスポート' do
       it 'CSVファイルをダウンロードできる' do
-        select 'freee形式', from: 'format_type'
+        choose 'format_type_freee'
 
         expect do
           click_button 'CSVダウンロード'
@@ -406,7 +403,7 @@ RSpec.describe 'Stylists::Sales' do
       end
 
       it 'データがなくてもCSVファイルをダウンロードできる' do
-        select '標準形式 (汎用)', from: 'format_type'
+        choose 'format_type_standard'
 
         expect do
           click_button 'CSVダウンロード'

@@ -122,7 +122,7 @@ RSpec.describe 'User login' do
 
         # 元のスタイリストメニューページにリダイレクトされることを確認
         expect(page).to have_current_path(customers_stylist_menus_path(stylist), ignore_query: true)
-        expect(page).to have_content("#{stylist.family_name} #{stylist.given_name} さんのメニュー一覧")
+        expect(page).to have_text("担当: #{stylist.family_name} #{stylist.given_name}")
         expect(page).to have_content('カット')
       end
     end

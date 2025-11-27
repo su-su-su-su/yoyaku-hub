@@ -67,7 +67,7 @@ module Stylists
     end
 
     def load_active_menus
-      @active_menus = current_user.menus.where(is_active: true)
+      @active_menus = current_user.menus.where(is_active: true).order(:sort_order)
     end
 
     def send_cancellation_notification_to_customer(reservation)
